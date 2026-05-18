@@ -257,10 +257,10 @@
                 </div>
                 <h5>{{ user.username }}</h5>
 
-                {% if user.client %}
+                {% if client %}
                 <div class="profile-info">
-                    <p><strong><i class="fas fa-user"></i> Имя:</strong> {{ user.client.first_name }} {{ user.client.last_name }}</p>
-                    <p><strong><i class="fas fa-phone"></i> Телефон:</strong> {{ user.client.phone }}</p>
+                    <p><strong><i class="fas fa-user"></i> Имя:</strong> {{ client.first_name }} {{ client.last_name }}</p>
+                    <p><strong><i class="fas fa-phone"></i> Телефон:</strong> {{ client.phone }}</p>
                 </div>
                 {% endif %}
             </div>
@@ -371,7 +371,7 @@
                             Оценка: {{ review.rating }}/5
                         </h6>
                         {% if review.trainer %}
-                        <p class="text-muted">
+                        <p class="text-secondary">
                             <i class="fas fa-user-tie"></i> Тренер: {{ review.trainer }}
                         </p>
                         {% endif %}

@@ -2,7 +2,8 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from gym.models import (
     CompanyInfo, Trainer, Client, MembershipType, Membership, TrainingType,
-    Equipment, FAQ, Article, Vacancy, Hall, Training, Review, Promocode
+    Equipment, FAQ, Article, Vacancy, Hall, Training, Review, Promocode,
+    PersonalTraining,
 )
 from datetime import date, timedelta, time
 from django.utils import timezone
@@ -139,11 +140,19 @@ class Command(BaseCommand):
                     'duration_minutes': 60,
                     'max_participants': 8,
                     'difficulty_level': 'advanced'
-                }
+                },
+                {'name': 'Стретчинг', 'description': 'Растяжка и мобильность', 'duration_minutes': 45, 'max_participants': 15, 'difficulty_level': 'beginner'},
+                {'name': 'Бокс', 'description': 'Ударная техника и кардио', 'duration_minutes': 60, 'max_participants': 12, 'difficulty_level': 'intermediate'},
+                {'name': 'Танцы', 'description': 'Танцевальная аэробика', 'duration_minutes': 55, 'max_participants': 20, 'difficulty_level': 'beginner'},
+                {'name': 'Аквааэробика', 'description': 'Занятия в бассейне', 'duration_minutes': 50, 'max_participants': 10, 'difficulty_level': 'beginner'},
+                {'name': 'TRX', 'description': 'Тренировка с петлями', 'duration_minutes': 50, 'max_participants': 10, 'difficulty_level': 'intermediate'},
+                {'name': 'Спининг', 'description': 'Велотренировка в зале', 'duration_minutes': 45, 'max_participants': 16, 'difficulty_level': 'intermediate'},
+                {'name': 'Барре', 'description': 'Балет и силовые элементы', 'duration_minutes': 55, 'max_participants': 14, 'difficulty_level': 'beginner'},
+                {'name': 'Калистеника', 'description': 'Тренировка с весом тела', 'duration_minutes': 50, 'max_participants': 12, 'difficulty_level': 'advanced'},
             ]
             for data in trainings_data:
                 TrainingType.objects.create(**data)
-            self.stdout.write(self.style.SUCCESS('[OK] Типы тренировок созданы'))
+            self.stdout.write(self.style.SUCCESS('[OK] Типы тренировок созданы (12+)'))
 
         # Оборудование
         if not Equipment.objects.exists():

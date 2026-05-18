@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -65,6 +67,10 @@ class MembershipType(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     description = models.TextField(verbose_name="Описание")
     includes_trainer = models.BooleanField(default=False, verbose_name="Включает персонального тренера")
+    individual_session_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=30.00,
+        verbose_name="Цена индивидуального занятия"
+    )
 
     def __str__(self):
         return f"{self.name} ({self.duration_months} мес.)"
@@ -81,6 +87,12 @@ class Membership(models.Model):
     end_date = models.DateField(verbose_name="Дата окончания")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     purchase_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата покупки")
+    price_paid = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Оплаченная сумма"
+    )
+    promocode = models.ForeignKey(
+        'Promocode', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Промокод"
+    )
 
     def __str__(self):
         return f"Абонемент {self.client} - {self.membership_type}"
@@ -141,10 +153,24 @@ class Training(models.Model):
     trainers = models.ManyToManyField(Trainer, related_name='trainings', verbose_name="Тренеры")
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Зал")
     date = models.DateField(verbose_name="Дата")
-    time = models.TimeField(verbose_name="Время")
+    time = models.TimeField(verbose_name="Время начала")
+    end_time = models.TimeField(verbose_name="Время окончания", null=True, blank=True)
     participants = models.ManyToManyField(Client, blank=True, related_name='trainings', verbose_name="Участники")
     is_cancelled = models.BooleanField(default=False, verbose_name="Отменена")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.end_time and self.time and self.training_type_id:
+            start_time = self.time
+            if isinstance(start_time, str):
+                h, m = map(int, start_time.split(':')[:2])
+                from datetime import time as dt_time
+                start_time = dt_time(h, m)
+            start_dt = datetime.combine(self.date, start_time)
+            end_dt = start_dt + timedelta(minutes=self.training_type.duration_minutes)
+            self.end_time = end_dt.time()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.training_type} - {self.date} {self.time}"
@@ -153,6 +179,34 @@ class Training(models.Model):
         verbose_name = "Тренировка"
         verbose_name_plural = "Тренировки"
         ordering = ['date', 'time']
+
+
+class PersonalTraining(models.Model):
+    """Индивидуальное занятие между клиентом и инструктором."""
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name='personal_trainings', verbose_name="Клиент"
+    )
+    trainer = models.ForeignKey(
+        Trainer, on_delete=models.CASCADE, related_name='personal_trainings', verbose_name="Инструктор"
+    )
+    training_type = models.ForeignKey(
+        TrainingType, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Вид занятия"
+    )
+    date = models.DateField(verbose_name="Дата")
+    start_time = models.TimeField(verbose_name="Время начала")
+    end_time = models.TimeField(verbose_name="Время окончания")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Стоимость")
+    notes = models.TextField(blank=True, verbose_name="Примечания")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.client} — {self.trainer} ({self.date})"
+
+    class Meta:
+        verbose_name = "Индивидуальное занятие"
+        verbose_name_plural = "Индивидуальные занятия"
+        ordering = ['-date', '-start_time']
 
 
 class Equipment(models.Model):

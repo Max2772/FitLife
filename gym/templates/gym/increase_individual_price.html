@@ -1,0 +1,24 @@
+{% extends 'gym/base.html' %}
+
+{% block content %}
+<div class="container my-5 col-md-6">
+    <h1 class="mb-4">Повышение стоимости индивидуальных занятий</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Тип абонемента</label>
+            <select name="membership_type_id" class="form-select" required>
+                {% for mt in membership_types %}
+                <option value="{{ mt.pk }}">{{ mt.name }} (текущая цена: {{ mt.individual_session_price }} BYN)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Новая цена (BYN)</label>
+            <input type="number" name="new_price" step="0.01" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Обновить</button>
+        <a href="{% url 'personal_training_list' %}" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+{% endblock %}

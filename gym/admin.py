@@ -1,9 +1,22 @@
 from django.contrib import admin
+
 from .models import (
     CompanyInfo, Trainer, Client, MembershipType, Membership,
     TrainingType, Training, Hall, Equipment, Review, Promocode,
-    FAQ, Article, Vacancy, UserSessionLog
+    FAQ, Article, Vacancy, UserSessionLog, PersonalTraining,
 )
+
+
+class MembershipInline(admin.TabularInline):
+    model = Membership
+    extra = 0
+    fields = ['membership_type', 'start_date', 'end_date', 'price_paid', 'is_active']
+
+
+class PersonalTrainingInline(admin.TabularInline):
+    model = PersonalTraining
+    extra = 0
+    fields = ['trainer', 'date', 'start_time', 'end_time', 'price']
 
 
 @admin.register(CompanyInfo)
@@ -16,6 +29,7 @@ class TrainerAdmin(admin.ModelAdmin):
     list_display = ['last_name', 'first_name', 'specialization', 'experience_years', 'phone']
     list_filter = ['specialization']
     search_fields = ['last_name', 'first_name', 'email']
+    inlines = [PersonalTrainingInline]
 
 
 @admin.register(Client)
@@ -23,41 +37,49 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ['last_name', 'first_name', 'phone', 'registration_date']
     list_filter = ['registration_date']
     search_fields = ['last_name', 'first_name', 'phone']
+    inlines = [MembershipInline, PersonalTrainingInline]
 
 
 @admin.register(MembershipType)
 class MembershipTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'duration_months', 'price', 'includes_trainer']
+    list_display = ['name', 'duration_months', 'price', 'includes_trainer', 'individual_session_price']
     list_filter = ['includes_trainer']
 
 
 @admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ['client', 'membership_type', 'start_date', 'end_date', 'is_active']
+    list_display = ['client', 'membership_type', 'start_date', 'end_date', 'price_paid', 'is_active']
     list_filter = ['is_active', 'membership_type']
     search_fields = ['client__last_name', 'client__first_name']
 
 
-@admin.register(TrainingType)
-class TrainingTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'duration_minutes', 'max_participants', 'difficulty_level']
-    list_filter = ['difficulty_level']
+class EquipmentInline(admin.TabularInline):
+    model = Equipment
+    extra = 0
+    fields = ['name', 'quantity', 'condition']
 
 
 @admin.register(Hall)
 class HallAdmin(admin.ModelAdmin):
     list_display = ['name', 'area', 'capacity']
     search_fields = ['name']
+    inlines = [EquipmentInline]
+
+
+@admin.register(TrainingType)
+class TrainingTypeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'type', 'duration_minutes', 'max_participants', 'difficulty_level']
+    list_filter = ['difficulty_level', 'type']
 
 
 @admin.register(Training)
 class TrainingAdmin(admin.ModelAdmin):
-    list_display = ['training_type', 'get_trainers', 'hall', 'date', 'time', 'is_cancelled']
+    list_display = ['training_type', 'get_trainers', 'hall', 'date', 'time', 'end_time', 'is_cancelled']
     list_filter = ['is_cancelled', 'date', 'hall']
     filter_horizontal = ['trainers', 'participants']
 
     def get_trainers(self, obj):
-        return ", ".join([str(trainer) for trainer in obj.trainers.all()])
+        return ", ".join(str(t) for t in obj.trainers.all())
     get_trainers.short_description = 'Тренеры'
 
 
@@ -102,3 +124,10 @@ class VacancyAdmin(admin.ModelAdmin):
 class UserSessionLogAdmin(admin.ModelAdmin):
     list_display = ['user', 'login_time', 'logout_time']
     list_filter = ['login_time']
+
+
+@admin.register(PersonalTraining)
+class PersonalTrainingAdmin(admin.ModelAdmin):
+    list_display = ['client', 'trainer', 'date', 'start_time', 'end_time', 'price']
+    list_filter = ['date', 'trainer']
+    search_fields = ['client__last_name', 'trainer__last_name']

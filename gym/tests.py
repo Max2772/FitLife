@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, time
 from decimal import Decimal
 
 from django.contrib.auth.models import User
@@ -58,7 +58,7 @@ class BaseTestCase(TestCase):
         )
         cls.training = Training.objects.create(
             training_type=cls.training_type, hall=cls.hall,
-            date=date.today() + timedelta(days=1), time='10:00'
+            date=date.today() + timedelta(days=1), time=time(10, 0)
         )
         cls.training.trainers.add(cls.trainer)
         cls.faq = FAQ.objects.create(question='Тест?', answer='Ответ')
@@ -223,6 +223,14 @@ class PublicPageTests(BaseTestCase):
         resp = self.client.get(reverse('equipment'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_promocodes_page(self):
+        resp = self.client.get(reverse('promocodes'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_halls_page(self):
+        resp = self.client.get(reverse('halls'))
+        self.assertEqual(resp.status_code, 200)
+
     def test_reviews_page(self):
         resp = self.client.get(reverse('reviews'))
         self.assertEqual(resp.status_code, 200)
@@ -258,7 +266,7 @@ class AuthTests(BaseTestCase):
             'first_name': 'Новый',
             'last_name': 'Пользователь',
             'address': 'ул. Новая',
-            'phone': '+375291234567',
+            'phone': '+375 (29) 123-45-67',
             'birth_date': '2000-01-01',
         })
         self.assertEqual(resp.status_code, 302)
@@ -367,17 +375,25 @@ class StaffRequiredTests(BaseTestCase):
 
 # ── API Tests ────────────────────────────────────────────────────
 class APITests(BaseTestCase):
-    def test_weather_api(self):
+    def test_weather_api_requires_auth(self):
+        resp = self.client.get(reverse('api_weather'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_weather_api_authenticated(self):
+        self.client.login(username='testuser', password='Test1234!')
         resp = self.client.get(reverse('api_weather'))
         self.assertIn(resp.status_code, [200, 502])
-        data = resp.json()
-        self.assertIn('status', data)
+        self.assertIn('status', resp.json())
 
-    def test_quote_api(self):
+    def test_quote_api_requires_auth(self):
+        resp = self.client.get(reverse('api_quote'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_quote_api_authenticated(self):
+        self.client.login(username='testuser', password='Test1234!')
         resp = self.client.get(reverse('api_quote'))
         self.assertEqual(resp.status_code, 200)
-        data = resp.json()
-        self.assertIn('status', data)
+        self.assertIn('status', resp.json())
 
 
 # ── URL Resolution Tests ────────────────────────────────────────
@@ -414,13 +430,11 @@ class RegisterFormTests(TestCase):
             'first_name': 'Тест',
             'last_name': 'Формы',
             'address': 'ул. Тестовая',
-            'phone': '+375291234567',
+            'phone': '+375 (29) 123-45-67',
             'birth_date': '2000-01-01',
         }
         form = RegisterForm(data=form_data)
-        if not form.is_valid():
-            # Phone should be valid
-            self.assertNotIn('phone', form.errors)
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_invalid_phone(self):
         form_data = {
@@ -453,6 +467,39 @@ class RegisterFormTests(TestCase):
         form = RegisterForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('birth_date', form.errors)
+
+
+class UtilsTests(TestCase):
+    def test_format_phone(self):
+        from gym.utils import format_belarus_phone
+        self.assertEqual(format_belarus_phone('+375291234567'), '+375 (29) 123-45-67')
+
+    def test_apply_promocode(self):
+        from gym.utils import apply_promocode_discount
+        from gym.models import Promocode, MembershipType
+        mt = MembershipType.objects.create(
+            name='T', duration_months=1, price=Decimal('100'),
+            description='d', includes_trainer=False,
+        )
+        promo = Promocode.objects.create(code='X', discount_percent=10, membership_type=mt)
+        self.assertEqual(apply_promocode_discount(100, promo), Decimal('90.00'))
+
+
+class StaffExtraTests(BaseTestCase):
+    def setUp(self):
+        self.client.login(username='traineruser', password='Trainer1234!')
+
+    def test_personal_training_list(self):
+        resp = self.client.get(reverse('personal_training_list'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_increase_individual_price(self):
+        resp = self.client.get(reverse('increase_individual_price'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_promocodes_public(self):
+        resp = self.client.get(reverse('promocodes'))
+        self.assertEqual(resp.status_code, 200)
 
 
 class ReviewFormTests(BaseTestCase):

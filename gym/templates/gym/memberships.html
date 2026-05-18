@@ -210,6 +210,23 @@
     </div>
 </div>
 
+<div class="container mb-4">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Цена от (BYN)</label>
+            <input type="number" name="min_price" class="form-control" value="{{ min_price }}" step="0.01">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Цена до (BYN)</label>
+            <input type="number" name="max_price" class="form-control" value="{{ max_price }}" step="0.01">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Фильтровать</button>
+            <a href="{% url 'memberships' %}" class="btn btn-outline-secondary">Сброс</a>
+        </div>
+    </form>
+</div>
+
 <div class="container mb-5">
     <div class="row g-4 justify-content-center">
         {% for membership in membership_types %}

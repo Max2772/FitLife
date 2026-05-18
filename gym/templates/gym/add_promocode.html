@@ -109,7 +109,7 @@
                             <tr>
                                 <th>Код</th>
                                 <th>Скидка</th>
-                                <th>Использований</th>
+                                <th>Абонемент</th>
                                 <th>Действителен до</th>
                                 <th>Статус</th>
                             </tr>
@@ -118,15 +118,9 @@
                             {% for promo in active_promocodes %}
                             <tr>
                                 <td><strong>{{ promo.code }}</strong></td>
-                                <td>
-                                    {% if promo.discount_type == 'percent' %}
-                                    {{ promo.discount_value }}%
-                                    {% else %}
-                                    {{ promo.discount_value }} BYN
-                                    {% endif %}
-                                </td>
-                                <td>{{ promo.used_count }}/{{ promo.usage_limit|default:"∞" }}</td>
-                                <td>{{ promo.valid_until|date:"d.m.Y" }}</td>
+                                <td>{{ promo.discount_percent }}%</td>
+                                <td>{{ promo.membership_type|default:"Любой" }}</td>
+                                <td>{% if promo.valid_until %}{{ promo.valid_until|date:"d/m/Y" }}{% else %}—{% endif %}</td>
                                 <td>
                                     {% if promo.is_active %}
                                     <span class="badge bg-success">Активен</span>

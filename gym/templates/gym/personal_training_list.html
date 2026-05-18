@@ -1,0 +1,42 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Индивидуальные занятия{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Индивидуальные занятия</h1>
+        <a href="{% url 'personal_training_create' %}" class="btn btn-primary">Создать</a>
+    </div>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Инструктор</th>
+                <th>Дата</th>
+                <th>Время</th>
+                <th>Цена</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td>{{ s.client }}</td>
+                <td>{{ s.trainer }}</td>
+                <td>{{ s.date|date:"d/m/Y" }}</td>
+                <td>{{ s.start_time }} — {{ s.end_time }}</td>
+                <td>{{ s.price }} BYN</td>
+                <td>
+                    <a href="{% url 'personal_training_update' s.pk %}" class="btn btn-sm btn-outline-primary">Изменить</a>
+                    <a href="{% url 'personal_training_delete' s.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Нет записей</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'increase_individual_price' %}" class="btn btn-secondary">Повысить стоимость индивидуальных занятий</a>
+</div>
+{% endblock %}

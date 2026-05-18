@@ -129,7 +129,7 @@
                 <div class="mb-3 pb-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <strong>{{ review.user.get_full_name }}</strong>
+                            <strong>{{ review.client.last_name }} {{ review.client.first_name }}</strong>
                             <div>
                                 {% for i in "12345" %}
                                     {% if forloop.counter <= review.rating %}

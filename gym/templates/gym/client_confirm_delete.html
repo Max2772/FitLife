@@ -1,0 +1,13 @@
+{% extends 'gym/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Удалить клиента из базы?</h2>
+    <p>{{ client.last_name }} {{ client.first_name }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'client_cost_report' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

@@ -60,6 +60,49 @@
 </div>
 
 <div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Возраст клиентов</h5></div>
+            <div class="card-body text-center">
+                <p>Среднее: <strong>{{ age_mean }}</strong> лет</p>
+                <p>Медиана: <strong>{{ age_median }}</strong> лет</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Популярность и прибыль</h5></div>
+            <div class="card-body">
+                <p>Популярный тип занятий: <strong>{% if most_popular_type %}{{ most_popular_type.name }}{% else %}—{% endif %}</strong></p>
+                <p>Самый прибыльный абонемент: <strong>{% if most_profitable_type %}{{ most_profitable_type.name }}{% else %}—{% endif %}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">Клиенты (алфавит) и сумма продаж</h5></div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm">
+                    <thead><tr><th>Клиент</th><th>Сумма (BYN)</th></tr></thead>
+                    <tbody>
+                        {% for row in clients_alphabetical %}
+                        <tr>
+                            <td>{{ row.client.last_name }} {{ row.client.first_name }}</td>
+                            <td>{{ row.total_sales }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot><tr><th>Итого</th><th>{{ total_sales_all }} BYN</th></tr></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
@@ -177,7 +220,7 @@
                         <tbody>
                             {% for trainer in top_trainers %}
                             <tr>
-                                <td>{{ trainer.user.get_full_name }}</td>
+                                <td>{{ trainer.last_name }} {{ trainer.first_name }}</td>
                                 <td>{{ trainer.clients_count }}</td>
                                 <td>{{ trainer.rating|floatformat:1 }} ★</td>
                             </tr>
@@ -252,7 +295,7 @@
                 {% for review in recent_reviews %}
                 <div class="mb-3 pb-3 border-bottom">
                     <div class="d-flex justify-content-between">
-                        <strong>{{ review.user.get_full_name }}</strong>
+                        <strong>{{ review.client.last_name }} {{ review.client.first_name }}</strong>
                         <div>
                             {% for i in "12345" %}
                                 {% if forloop.counter <= review.rating %}

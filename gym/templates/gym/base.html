@@ -363,7 +363,13 @@
                         <a class="nav-link" href="{% url 'memberships' %}">Абонементы</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'halls' %}">Залы</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'equipment' %}">Оборудование</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'promocodes' %}">Промокоды</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'reviews' %}">Отзывы</a>
@@ -381,6 +387,12 @@
                             <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Профиль</a>
                         </li>
                         {% if user.is_staff %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'statistics' %}"><i class="fas fa-chart-bar"></i> Статистика</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'personal_training_list' %}"><i class="fas fa-user-clock"></i> Индив. занятия</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'trainer_dashboard' %}"><i class="fas fa-chart-line"></i> Панель</a>
                             </li>
@@ -416,9 +428,24 @@
                 <i class="fas fa-globe" style="color:var(--primary-color)"></i>
                 Часовой пояс: <span id="user-timezone">...</span>
             </div>
+            {% if user.is_authenticated %}
             <div id="weather-bar">
                 <i class="fas fa-cloud-sun" style="color:var(--primary-color)"></i>
                 <span id="weather-info">Загрузка погоды...</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container py-2" style="font-size:0.8rem; color:var(--text-muted);">
+        <div class="row">
+            <div class="col-md-6">
+                <strong>Календарь:</strong>
+                <pre class="mb-0" style="font-size:0.75rem; color:var(--text-muted); background:transparent; border:none;">{{ text_calendar }}</pre>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Сервер ({{ server_timezone }}):</strong> {{ current_date_ddmmyyyy }}</p>
+                <p class="mb-0"><strong>UTC:</strong> {{ server_now_utc|date:"d/m/Y H:i" }}</p>
             </div>
         </div>
     </div>
@@ -507,21 +534,21 @@
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
-            // Weather API
-            fetch('/api/weather/')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.status === 'ok') {
-                        const w = data.weather;
-                        document.getElementById('weather-info').textContent =
-                            'Минск: ' + w.temp_c + '°C, ' + w.description + ', влажность ' + w.humidity + '%';
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('weather-info').textContent = 'Погода недоступна';
-                });
+            {% if user.is_authenticated %}
+            const weatherEl = document.getElementById('weather-info');
+            if (weatherEl) {
+                fetch('/api/weather/')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'ok') {
+                            const w = data.weather;
+                            weatherEl.textContent =
+                                'Минск: ' + w.temp_c + '°C, ' + w.description + ', влажность ' + w.humidity + '%';
+                        }
+                    })
+                    .catch(() => { weatherEl.textContent = 'Погода недоступна'; });
+            }
 
-            // Quote API
             fetch('/api/quote/')
                 .then(r => r.json())
                 .then(data => {
@@ -532,6 +559,7 @@
                     }
                 })
                 .catch(() => {});
+            {% endif %}
         })();
     </script>
     {% block extra_js %}{% endblock %}

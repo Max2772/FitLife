@@ -75,8 +75,10 @@
                     <th>Клиент</th>
                     <th>Телефон</th>
                     <th>Стоимость абонементов</th>
-                    <th>Количество тренировок</th>
+                    <th>Индив. занятия</th>
+                    <th>Групп. тренировок</th>
                     <th>Общая стоимость</th>
+                    {% if user.is_staff %}<th></th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -86,8 +88,12 @@
                     <td>{{ item.client.last_name }} {{ item.client.first_name }}</td>
                     <td>{{ item.client.phone }}</td>
                     <td>{{ item.membership_cost }} BYN</td>
+                    <td>{{ item.personal_cost }} BYN</td>
                     <td><span class="badge bg-info">{{ item.training_count }}</span></td>
                     <td><strong>{{ item.total_cost }} BYN</strong></td>
+                    {% if user.is_staff %}
+                    <td><a href="{% url 'client_delete' item.client.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a></td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

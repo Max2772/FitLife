@@ -318,21 +318,22 @@
     </div>
 </section>
 
-<!-- Latest Training Section -->
-{% if latest_training %}
+<!-- Latest Article Section -->
+{% if latest_article %}
 <section class="features-section" style="padding-top: 0;">
     <div class="container">
         <div class="section-title">
-            <span>Новинка</span>
-            <h2>НОВАЯ ТРЕНИРОВКА</h2>
+            <span>Новости</span>
+            <h2>ПОСЛЕДНЯЯ СТАТЬЯ</h2>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="training-card">
                     <div class="card-body p-5">
-                        <h3 class="card-title mb-4">{{ latest_training.name }}</h3>
-                        <p class="card-text mb-4">{{ latest_training.description|truncatewords:30 }}</p>
-                        <a href="{% url 'training_detail' latest_training.pk %}" class="btn btn-primary">Узнать больше</a>
+                        <h3 class="card-title mb-4">{{ latest_article.title }}</h3>
+                        <p class="card-text mb-2">{{ latest_article.short_description }}</p>
+                        <p class="text-muted small mb-4">Опубликовано: {{ latest_article.published_at|date:"d/m/Y H:i" }}</p>
+                        <a href="{% url 'news_detail' latest_article.pk %}" class="btn btn-primary">Читать далее</a>
                     </div>
                 </div>
             </div>
