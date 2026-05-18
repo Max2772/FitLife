@@ -73,12 +73,30 @@
             color: var(--text-light) !important;
             font-weight: 500;
             text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            padding: 0.5rem 1rem !important;
+            font-size: 0.78rem;
+            letter-spacing: 0.3px;
+            padding: 0.4rem 0.45rem !important;
             position: relative;
             transition: all 0.3s ease;
             white-space: nowrap;
+        }
+
+        .navbar-collapse .navbar-nav {
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .navbar-nav-auth {
+            flex-shrink: 0;
+        }
+
+        .nav-link-logout {
+            color: var(--primary-color) !important;
+            font-weight: 600;
+        }
+
+        .nav-link-logout:hover {
+            color: var(--secondary-color) !important;
         }
 
         .nav-link::after {
@@ -338,7 +356,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
+        <div class="container-fluid px-3 px-lg-4">
             <a class="navbar-brand" href="{% url 'main' %}">
                 <i class="fas fa-dumbbell"></i> FITLIFE
             </a>
@@ -346,7 +364,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'main' %}">Главная</a>
                     </li>
@@ -381,7 +399,7 @@
                         <a class="nav-link" href="{% url 'contacts' %}">Контакты</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav navbar-nav-auth ms-lg-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i> Профиль</a>
@@ -398,7 +416,7 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Выход</a>
+                            <a class="nav-link nav-link-logout" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Выход</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -434,19 +452,6 @@
                 <span id="weather-info">Загрузка погоды...</span>
             </div>
             {% endif %}
-        </div>
-    </div>
-
-    <div class="container py-2" style="font-size:0.8rem; color:var(--text-muted);">
-        <div class="row">
-            <div class="col-md-6">
-                <strong>Календарь:</strong>
-                <pre class="mb-0" style="font-size:0.75rem; color:var(--text-muted); background:transparent; border:none;">{{ text_calendar }}</pre>
-            </div>
-            <div class="col-md-6">
-                <p class="mb-1"><strong>Сервер ({{ server_timezone }}):</strong> {{ current_date_ddmmyyyy }}</p>
-                <p class="mb-0"><strong>UTC:</strong> {{ server_now_utc|date:"d/m/Y H:i" }}</p>
-            </div>
         </div>
     </div>
 

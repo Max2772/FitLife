@@ -2,18 +2,71 @@
 
 {% block title %}Залы - FitLife Gym{% endblock %}
 
+{% block extra_css %}
+<style>
+    .halls-page h1 {
+        color: var(--text-light);
+    }
+
+    .hall-card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.15);
+        border-radius: 15px;
+        height: 100%;
+    }
+
+    .hall-card .card-body {
+        color: var(--text-light);
+    }
+
+    .hall-card h4 {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    .hall-card h6 {
+        color: var(--primary-color);
+        margin-top: 1rem;
+    }
+
+    .hall-card .hall-meta {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .hall-card .hall-description {
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+
+    .hall-card ul {
+        color: var(--text-light);
+        padding-left: 1.25rem;
+        margin-bottom: 0;
+    }
+
+    .hall-card li {
+        margin-bottom: 0.35rem;
+    }
+
+    .hall-card .text-muted {
+        color: var(--text-muted) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
+<div class="container my-5 halls-page">
     <h1 class="mb-4">Залы и оборудование</h1>
     <div class="row g-4">
         {% for hall in halls %}
         <div class="col-md-6">
-            <div class="card bg-dark border-secondary h-100">
+            <div class="card hall-card h-100">
                 <div class="card-body">
                     <h4>{{ hall.name }}</h4>
-                    <p class="text-muted">Площадь: {{ hall.area }} м² | Вместимость: {{ hall.capacity }} чел.</p>
-                    <p>{{ hall.description }}</p>
-                    <h6 class="mt-3">Оборудование в зале:</h6>
+                    <p class="hall-meta">Площадь: {{ hall.area }} м² | Вместимость: {{ hall.capacity }} чел.</p>
+                    <p class="hall-description">{{ hall.description }}</p>
+                    <h6>Оборудование в зале:</h6>
                     <ul>
                         {% for item in hall.equipment.all %}
                         <li>{{ item.name }} — {{ item.quantity }} шт. ({{ item.get_condition_display }})</li>
@@ -25,7 +78,7 @@
             </div>
         </div>
         {% empty %}
-        <p>Залы не добавлены</p>
+        <p class="text-muted">Залы не добавлены</p>
         {% endfor %}
     </div>
 </div>
