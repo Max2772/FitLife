@@ -1,38 +1,126 @@
 {% extends 'gym/base.html' %}
 
-{% block title %}{{ news.title }} - FitLife Gym{% endblock %}
+{% block title %}{{ article.title }} - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
+        padding: 80px 0;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-light);
+    }
+
+    .article-meta {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .article-meta i {
+        color: var(--primary-color);
+        margin-right: 6px;
+    }
+
+    .article-content {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.1);
+        border-radius: 15px;
+        padding: 2.5rem;
+        color: var(--text-muted);
+        line-height: 1.9;
+        font-size: 1.1rem;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+    }
+
+    .article-image {
+        border-radius: 15px;
+        border: 2px solid rgba(255, 69, 0, 0.2);
+        margin-bottom: 2rem;
+        max-height: 500px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 1.5rem 0 0;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+
+    .article-actions {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 69, 0, 0.1);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'news' %}">Новости</a></li>
-        <li class="breadcrumb-item active">{{ news.title }}</li>
-    </ol>
-</nav>
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'news' %}">Новости</a></li>
+            <li class="breadcrumb-item active">{{ article.title }}</li>
+        </ol>
+    </nav>
+</div>
 
-<article>
-    <h1 class="mb-3">{{ news.title }}</h1>
-
-    <p class="text-muted mb-4">
-        <small>Опубликовано: {{ news.published_date|date:"d.m.Y H:i" }}</small>
-    </p>
-
-    {% if news.image %}
-    <img src="{{ news.image.url }}" class="img-fluid mb-4" alt="{{ news.title }}">
-    {% endif %}
-
-    <div class="news-content">
-        {{ news.content|linebreaks }}
-    </div>
-
-    <hr class="my-4">
-
-    <div class="d-flex justify-content-between">
-        <a href="{% url 'news' %}" class="btn btn-secondary">Назад к новостям</a>
-        <div>
-            <button class="btn btn-outline-primary" onclick="window.print()">Печать</button>
+<div class="page-header">
+    <div class="container">
+        <h1>{{ article.title }}</h1>
+        <div class="article-meta">
+            <span class="me-4">
+                <i class="fas fa-calendar-alt"></i>
+                {{ article.published_at|date:"d.m.Y H:i" }}
+            </span>
+            {% if article.author %}
+            <span>
+                <i class="fas fa-user"></i>
+                {{ article.author.get_full_name|default:article.author.username }}
+            </span>
+            {% endif %}
         </div>
     </div>
-</article>
+</div>
+
+<div class="container mb-5">
+    {% if article.image %}
+    <img src="{{ article.image.url }}" class="article-image" alt="{{ article.title }}">
+    {% endif %}
+
+    <p class="lead text-light mb-4">{{ article.short_description }}</p>
+
+    <div class="article-content">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <div class="article-actions d-flex justify-content-between flex-wrap gap-2">
+        <a href="{% url 'news' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Назад к новостям
+        </a>
+        <button class="btn btn-outline-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Печать
+        </button>
+    </div>
+</div>
 {% endblock %}

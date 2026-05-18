@@ -189,81 +189,65 @@
     <div class="row">
         <div class="col-lg-8">
             <div class="about-section">
-                <h2>FitLife Gym - Ваш путь к здоровью и силе</h2>
-                <p class="lead">Мы - современный фитнес-центр, который помогает людям достигать своих целей в области здоровья и фитнеса с 2015 года.</p>
+                {% if company %}
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="mb-4" style="max-height: 80px;">
+                {% endif %}
+                <h2>{{ company.name }}</h2>
+                <p class="lead">Работаем с {{ company.founding_year }} года</p>
 
-                <h3><i class="fas fa-bullseye"></i> Наша миссия</h3>
-                <p>Создать комфортную и мотивирующую среду, где каждый человек может улучшить свое физическое и ментальное здоровье, независимо от уровня подготовки. Мы верим, что здоровый образ жизни должен быть доступен каждому.</p>
+                <h3><i class="fas fa-history"></i> История компании</h3>
+                <div>{{ company.history|linebreaks }}</div>
 
-                <h3><i class="fas fa-heart"></i> Наши ценности</h3>
-                <ul>
-                    <li>
-                        <strong>Профессионализм</strong> - все наши тренеры имеют международные сертификаты и постоянно повышают квалификацию
-                    </li>
-                    <li>
-                        <strong>Индивидуальный подход</strong> - мы учитываем особенности и цели каждого клиента
-                    </li>
-                    <li>
-                        <strong>Современное оборудование</strong> - регулярно обновляем тренажеры и инвентарь от ведущих производителей
-                    </li>
-                    <li>
-                        <strong>Атмосфера поддержки</strong> - создаем дружелюбное сообщество единомышленников
-                    </li>
-                </ul>
+                {% if company.requisites %}
+                <h3><i class="fas fa-file-alt"></i> Реквизиты</h3>
+                <div>{{ company.requisites|linebreaks }}</div>
+                {% endif %}
 
-                <h3><i class="fas fa-trophy"></i> Наши достижения</h3>
+                <h3><i class="fas fa-chart-line"></i> О нас в цифрах</h3>
                 <div class="stats-section">
                     <div class="row">
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-6 col-12">
                             <div class="stat-item">
-                                <h2>5000+</h2>
-                                <p>Довольных клиентов</p>
+                                <h2>{{ company.founding_year }}</h2>
+                                <p>Год основания</p>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
+                        {% if years_on_market %}
+                        <div class="col-md-6 col-12">
                             <div class="stat-item">
-                                <h2>50+</h2>
-                                <p>Профессиональных тренеров</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <div class="stat-item">
-                                <h2>200+</h2>
-                                <p>Единиц оборудования</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <div class="stat-item">
-                                <h2>11</h2>
+                                <h2>{{ years_on_market }}</h2>
                                 <p>Лет на рынке</p>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
+                {% else %}
+                <h2>О компании</h2>
+                <p class="lead text-muted">Информация о компании пока не добавлена в базу данных.</p>
+                {% endif %}
             </div>
         </div>
 
         <div class="col-lg-4">
+            {% if company %}
             <div class="contact-card mb-4">
                 <h5><i class="fas fa-map-marker-alt"></i> Контактная информация</h5>
                 <p>
                     <strong>Адрес:</strong>
-                    г. Минск, ул. Спортивная, 15
+                    {{ company.address }}
                 </p>
                 <p>
                     <strong>Телефон:</strong>
-                    +375 29 123-45-67
+                    <a href="tel:{{ company.phone }}" class="text-decoration-none">{{ company.phone }}</a>
                 </p>
                 <p>
                     <strong>Email:</strong>
-                    info@fitlifegym.by
-                </p>
-                <p>
-                    <strong>Режим работы:</strong>
-                    Пн-Пт: 6:00 - 23:00<br>
-                    Сб-Вс: 8:00 - 22:00
+                    <a href="mailto:{{ company.email }}" class="text-decoration-none">{{ company.email }}</a>
                 </p>
             </div>
+            {% endif %}
 
             <div class="contact-card">
                 <h5><i class="fas fa-share-alt"></i> Социальные сети</h5>

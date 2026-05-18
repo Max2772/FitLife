@@ -332,7 +332,7 @@
                     <div class="card-body p-5">
                         <h3 class="card-title mb-4">{{ latest_article.title }}</h3>
                         <p class="card-text mb-2">{{ latest_article.short_description }}</p>
-                        <p class="text-muted small mb-4">Опубликовано: {{ latest_article.published_at|date:"d/m/Y H:i" }}</p>
+                        <p class="text-secondary small mb-4">Опубликовано: {{ latest_article.published_at|date:"d/m/Y H:i" }}</p>
                         <a href="{% url 'news_detail' latest_article.pk %}" class="btn btn-primary">Читать далее</a>
                     </div>
                 </div>

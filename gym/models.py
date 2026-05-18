@@ -35,6 +35,16 @@ class Trainer(models.Model):
     bio = models.TextField(verbose_name="Биография", blank=True)
     birth_date = models.DateField(verbose_name="Дата рождения")
 
+    @property
+    def full_name(self):
+        name = f"{self.last_name} {self.first_name}".strip()
+        if name:
+            return name
+        if self.user_id:
+            user_name = self.user.get_full_name()
+            return user_name.strip() or self.user.username
+        return ""
+
     def __str__(self):
         return f"{self.last_name} {self.first_name} ({self.specialization})"
 

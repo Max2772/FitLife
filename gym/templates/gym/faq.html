@@ -2,117 +2,122 @@
 
 {% block title %}FAQ - FitLife Gym{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .accordion-item {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.15);
+        margin-bottom: 1rem;
+        border-radius: 10px !important;
+        overflow: hidden;
+    }
+
+    .accordion-button {
+        background: var(--dark-card);
+        color: var(--text-light);
+        font-weight: 600;
+        font-size: 1.05rem;
+        padding: 1.25rem 1.5rem;
+        box-shadow: none !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: rgba(255, 69, 0, 0.1);
+        color: var(--primary-color);
+    }
+
+    .accordion-button::after {
+        filter: invert(1);
+    }
+
+    .accordion-body {
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-muted);
+        line-height: 1.8;
+        padding: 1.5rem;
+    }
+
+    .faq-footer {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 3rem;
+    }
+
+    .faq-footer h3 {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1 class="mb-4 ms-3 me-3">Часто задаваемые вопросы</h1>
-
-<div class="accordion" id="faqAccordion">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading1">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
-                Какие документы нужны для оформления абонемента?
-            </button>
-        </h2>
-        <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Для оформления абонемента необходим только паспорт. Если вы впервые посещаете наш зал, мы также попросим заполнить анкету о состоянии здоровья.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading2">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
-                Можно ли заморозить абонемент?
-            </button>
-        </h2>
-        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, вы можете заморозить абонемент на срок от 7 до 30 дней. Для этого необходимо обратиться на ресепшн с паспортом. Заморозка возможна не более 2 раз за период действия абонемента.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading3">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
-                Есть ли пробное занятие?
-            </button>
-        </h2>
-        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, мы предоставляем возможность бесплатного пробного посещения. Вы можете записаться на пробное занятие через наш сайт или по телефону.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading4">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
-                Нужна ли спортивная форма?
-            </button>
-        </h2>
-        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, для занятий необходима спортивная форма и чистая обувь. В зале запрещено заниматься в уличной обуви. Полотенце также обязательно.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading5">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
-                Есть ли душевые и раздевалки?
-            </button>
-        </h2>
-        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, в нашем зале есть современные раздевалки с душевыми кабинами, шкафчиками для хранения вещей и феном. Все удобства включены в стоимость абонемента.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading6">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">
-                Можно ли вернуть деньги за абонемент?
-            </button>
-        </h2>
-        <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Возврат средств возможен в течение 14 дней с момента покупки при условии, что абонемент не был активирован. После активации возврат не производится.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading7">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7">
-                Есть ли парковка?
-            </button>
-        </h2>
-        <div id="collapse7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, рядом с нашим фитнес-центром есть бесплатная парковка для клиентов. Также поблизости расположены остановки общественного транспорта.
-            </div>
-        </div>
-    </div>
-
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading8">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8">
-                Работает ли зал в праздничные дни?
-            </button>
-        </h2>
-        <div id="collapse8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">
-                Да, наш зал работает без выходных, включая праздничные дни. Режим работы может быть изменен в новогодние праздники - следите за объявлениями на сайте.
-            </div>
-        </div>
+<div class="page-header">
+    <div class="container">
+        <h1>FAQ</h1>
+        <p>Ответы на часто задаваемые вопросы</p>
     </div>
 </div>
 
-<div class="mt-5 ms-3 me-3">
-    <h3>Не нашли ответ на свой вопрос?</h3>
-    <p>Свяжитесь с нами по телефону <strong>+375 29 123-45-67</strong> или через <a href="{% url 'contacts' %}">форму обратной связи</a>.</p>
+<div class="container mb-5">
+    {% if faqs %}
+    <div class="accordion" id="faqAccordion">
+        {% for faq in faqs %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ faq.pk }}">
+                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse{{ faq.pk }}"
+                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                        aria-controls="collapse{{ faq.pk }}">
+                    {{ faq.question }}
+                </button>
+            </h2>
+            <div id="collapse{{ faq.pk }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                 data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    {{ faq.answer|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-question-circle fa-3x mb-3" style="color: var(--primary-color);"></i>
+        <h3>Вопросы пока не добавлены</h3>
+        <p>Загляните позже — мы скоро опубликуем ответы на популярные вопросы.</p>
+    </div>
+    {% endif %}
+
+    <div class="faq-footer">
+        <h3>Не нашли ответ на свой вопрос?</h3>
+        <p class="mb-0">Свяжитесь с нами через страницу <a href="{% url 'contacts' %}">контактов</a>{% if company %} или по телефону <strong>{{ company.phone }}</strong>{% endif %}.</p>
+    </div>
 </div>
 {% endblock %}

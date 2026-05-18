@@ -42,7 +42,6 @@
         height: 280px;
         object-fit: cover;
         transition: all 0.4s ease;
-        position: relative;
     }
 
     .news-card:hover .card-img-top {
@@ -69,6 +68,7 @@
     .news-meta {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 15px;
         color: var(--text-muted);
         font-size: 0.9rem;
@@ -115,31 +115,6 @@
         display: block;
     }
 
-    .pagination {
-        margin-top: 3rem;
-    }
-
-    .pagination .page-link {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        padding: 10px 20px;
-        margin: 0 5px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .pagination .page-link:hover {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-    }
-
-    .pagination .page-item.active .page-link {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
     .empty-state {
         text-align: center;
         padding: 80px 20px;
@@ -173,7 +148,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <div class="page-header">
     <div class="container">
         <h1>НОВОСТИ И СТАТЬИ</h1>
@@ -183,41 +157,47 @@
 
 <div class="container mb-5">
     <div class="row g-4">
-        {% for news_item in news %}
+        {% for article in articles %}
         <div class="col-lg-6">
             <div class="news-card">
                 <div style="position: relative; overflow: hidden;">
                     <div class="date-badge">
-                        <span class="day">{{ news_item.published_date|date:"d" }}</span>
-                        <span class="month">{{ news_item.published_date|date:"M" }}</span>
+                        <span class="day">{{ article.published_at|date:"d" }}</span>
+                        <span class="month">{{ article.published_at|date:"M" }}</span>
                     </div>
 
-                    {% if news_item.image %}
-                    <img src="{{ news_item.image.url }}" class="card-img-top" alt="{{ news_item.title }}">
+                    {% if article.image %}
+                    <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
                     {% else %}
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" class="card-img-top" alt="{{ news_item.title }}">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" class="card-img-top" alt="{{ article.title }}">
                     {% endif %}
                 </div>
 
                 <div class="card-body">
-                    <h5 class="card-title">{{ news_item.title }}</h5>
+                    <h5 class="card-title">{{ article.title }}</h5>
 
                     <div class="news-meta">
                         <span>
                             <i class="fas fa-calendar-alt"></i>
-                            {{ news_item.published_date|date:"d.m.Y" }}
+                            {{ article.published_at|date:"d.m.Y" }}
                         </span>
                         <span>
                             <i class="fas fa-clock"></i>
-                            {{ news_item.published_date|date:"H:i" }}
+                            {{ article.published_at|date:"H:i" }}
                         </span>
+                        {% if article.author %}
+                        <span>
+                            <i class="fas fa-user"></i>
+                            {{ article.author.get_full_name|default:article.author.username }}
+                        </span>
+                        {% endif %}
                     </div>
 
-                    <p class="card-text">{{ news_item.content|truncatewords:30 }}</p>
+                    <p class="card-text">{{ article.short_description }}</p>
                 </div>
 
                 <div class="card-footer">
-                    <a href="{% url 'news_detail' news_item.id %}" class="btn btn-primary">
+                    <a href="{% url 'news_detail' article.pk %}" class="btn btn-primary">
                         <i class="fas fa-arrow-right"></i> Читать полностью
                     </a>
                 </div>
@@ -228,38 +208,10 @@
             <div class="empty-state">
                 <i class="fas fa-newspaper"></i>
                 <h3>Новостей пока нет</h3>
-                <p class="text-secondary">Следите за обновлениями - скоро здесь появятся интересные статьи</p>
+                <p class="text-secondary">Следите за обновлениями — скоро здесь появятся интересные статьи</p>
             </div>
         </div>
         {% endfor %}
     </div>
-
-    {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                    <i class="fas fa-chevron-left"></i> Предыдущая
-                </a>
-            </li>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-            </li>
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                    Следующая <i class="fas fa-chevron-right"></i>
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
 </div>
 {% endblock %}

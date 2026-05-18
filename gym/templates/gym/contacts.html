@@ -135,6 +135,64 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
+    .staff-section {
+        margin-top: 4rem;
+    }
+
+    .staff-section h3 {
+        color: var(--text-light);
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .staff-card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+
+    .staff-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary-color);
+        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.25);
+    }
+
+    .staff-card .card-img-top {
+        height: 280px;
+        object-fit: cover;
+    }
+
+    .staff-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .staff-card .card-title {
+        color: var(--text-light);
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .staff-card .specialization {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .staff-card p {
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .staff-card p i {
+        color: var(--primary-color);
+        width: 20px;
+    }
+
     @media (max-width: 768px) {
         .page-header h1 {
             font-size: 2.5rem;
@@ -168,12 +226,13 @@
     <div class="row">
         <!-- Contact Info -->
         <div class="col-lg-6 mb-4">
+            {% if company %}
             <div class="contact-card">
                 <h5>
                     <i class="fas fa-map-marker-alt"></i>
                     Адрес
                 </h5>
-                <p>г. Минск, ул. Спортивная, 15</p>
+                <p>{{ company.address }}</p>
             </div>
 
             <div class="contact-card">
@@ -181,7 +240,7 @@
                     <i class="fas fa-phone"></i>
                     Телефон
                 </h5>
-                <p>+375 29 123-45-67</p>
+                <p><a href="tel:{{ company.phone }}" class="text-decoration-none">{{ company.phone }}</a></p>
             </div>
 
             <div class="contact-card">
@@ -189,19 +248,13 @@
                     <i class="fas fa-envelope"></i>
                     Email
                 </h5>
-                <p>info@fitlifegym.by</p>
+                <p><a href="mailto:{{ company.email }}" class="text-decoration-none">{{ company.email }}</a></p>
             </div>
-
+            {% else %}
             <div class="contact-card">
-                <h5>
-                    <i class="fas fa-clock"></i>
-                    Режим работы
-                </h5>
-                <p>
-                    Понедельник - Пятница: 6:00 - 23:00<br>
-                    Суббота - Воскресенье: 8:00 - 22:00
-                </p>
+                <p class="text-muted mb-0">Контактная информация компании пока не добавлена.</p>
             </div>
+            {% endif %}
 
             <div class="contact-card">
                 <h5>
@@ -249,6 +302,41 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Staff Section -->
+    <div class="staff-section">
+        <h3><i class="fas fa-users"></i> Наша команда</h3>
+        <div class="row g-4">
+            {% for trainer in trainers %}
+            <div class="col-lg-4 col-md-6">
+                <div class="staff-card">
+                    {% if trainer.photo %}
+                    <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.full_name }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80" class="card-img-top" alt="{{ trainer.full_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ trainer.full_name }}</h5>
+                        <p class="specialization">{{ trainer.specialization }}</p>
+                        {% if trainer.bio %}
+                        <p>{{ trainer.bio|truncatewords:30 }}</p>
+                        {% endif %}
+                        <p><i class="fas fa-briefcase"></i> Опыт: {{ trainer.experience_years }} лет</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:{{ trainer.phone }}" class="text-decoration-none">{{ trainer.phone }}</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:{{ trainer.email }}" class="text-decoration-none">{{ trainer.email }}</a></p>
+                        <a href="{% url 'trainer_detail' trainer.pk %}" class="btn btn-outline-primary btn-sm mt-2">
+                            <i class="fas fa-info-circle"></i> Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-4">
+                <p>Сотрудники пока не добавлены в базу данных.</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
 

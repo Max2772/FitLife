@@ -49,7 +49,11 @@ def main_view(request):
 
 def about_company_view(request):
     company = CompanyInfo.objects.first()
-    return render(request, 'gym/about_company.html', {'company': company})
+    years_on_market = date.today().year - company.founding_year if company else None
+    return render(request, 'gym/about_company.html', {
+        'company': company,
+        'years_on_market': years_on_market,
+    })
 
 
 def contacts_view(request):
@@ -63,7 +67,8 @@ def contacts_view(request):
 
 def faq_view(request):
     faqs = FAQ.objects.order_by('-created_at')
-    return render(request, 'gym/faq.html', {'faqs': faqs})
+    company = CompanyInfo.objects.first()
+    return render(request, 'gym/faq.html', {'faqs': faqs, 'company': company})
 
 
 def news_view(request):
@@ -82,7 +87,11 @@ def privacy_policy_view(request):
 
 def vacancies_view(request):
     vacancies = Vacancy.objects.filter(is_active=True).order_by('-created_at')
-    return render(request, 'gym/vacancies.html', {'vacancies': vacancies})
+    company = CompanyInfo.objects.first()
+    return render(request, 'gym/vacancies.html', {
+        'vacancies': vacancies,
+        'company': company,
+    })
 
 
 def promocodes_view(request):
