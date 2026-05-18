@@ -1,0 +1,155 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}{{ training.name }} - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'trainings' %}">Тренировки</a></li>
+        <li class="breadcrumb-item active">{{ training.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-3">{{ training.name }}</h1>
+
+        {% if training.image %}
+        <img src="{{ training.image.url }}" class="img-fluid mb-4 rounded" alt="{{ training.name }}">
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Описание</h5>
+                <p class="card-text">{{ training.description }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Что вас ждет</h5>
+                <ul>
+                    <li>Профессиональный подход к тренировкам</li>
+                    <li>Индивидуальная программа упражнений</li>
+                    <li>Контроль техники выполнения</li>
+                    <li>Мотивация и поддержка тренера</li>
+                    <li>Достижение ваших фитнес-целей</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if training.equipment_needed %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Необходимое оборудование</h5>
+                <p class="card-text">{{ training.equipment_needed }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if training.schedule_info %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Расписание</h5>
+                <p class="card-text">{{ training.schedule_info }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Отзывы</h5>
+                {% for review in reviews %}
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ review.user.get_full_name }}</strong>
+                        <div>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                <span class="text-warning">★</span>
+                                {% else %}
+                                <span class="text-muted">☆</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="mb-1">{{ review.text }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                </div>
+                {% empty %}
+                <p class="text-muted">Отзывов пока нет</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3 sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <h5 class="card-title">Информация о тренировке</h5>
+
+                <div class="mb-3">
+                    <strong>Тип:</strong>
+                    <span class="badge bg-primary">{{ training.get_type_display }}</span>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Сложность:</strong>
+                    <span class="badge bg-info">{{ training.get_difficulty_display }}</span>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Длительность:</strong>
+                    <p class="mb-0">{{ training.duration }} минут</p>
+                </div>
+
+                {% if training.calories_burned %}
+                <div class="mb-3">
+                    <strong>Сжигаемые калории:</strong>
+                    <p class="mb-0">~{{ training.calories_burned }} ккал</p>
+                </div>
+                {% endif %}
+
+                {% if training.max_participants > 1 %}
+                <div class="mb-3">
+                    <strong>Максимум участников:</strong>
+                    <p class="mb-0">{{ training.max_participants }} человек</p>
+                </div>
+                {% endif %}
+
+                {% if training.trainers.exists %}
+                <div class="mb-3">
+                    <strong>Тренеры:</strong>
+                    <p class="mb-0">
+                        {% for trainer in training.trainers.all %}
+                        <a href="{% url 'trainer_detail' trainer.id %}">
+                            {{ trainer.first_name }} {{ trainer.last_name }}
+                        </a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="text-center mb-3">
+                    <h3 class="text-primary">{{ training.price }} BYN</h3>
+                </div>
+
+                {% if user.is_authenticated %}
+                    {% if training.is_active %}
+                    <a href="{% url 'book_training' training.id %}" class="btn btn-success btn-lg w-100 mb-2">Записаться</a>
+                    {% else %}
+                    <button class="btn btn-secondary btn-lg w-100 mb-2" disabled>Недоступно</button>
+                    {% endif %}
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100 mb-2">Войти для записи</a>
+                {% endif %}
+
+                <a href="{% url 'trainings' %}" class="btn btn-outline-secondary w-100">Назад к списку</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Вакансии - FitLife Gym{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Вакансии</h1>
+
+<p class="lead">Присоединяйтесь к нашей команде профессионалов!</p>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Фитнес-тренер</h5>
+                <p class="card-text"><strong>Требования:</strong></p>
+                <ul>
+                    <li>Высшее образование в области физической культуры и спорта</li>
+                    <li>Опыт работы от 1 года</li>
+                    <li>Сертификаты по фитнесу</li>
+                    <li>Коммуникабельность и ответственность</li>
+                </ul>
+                <p class="card-text"><strong>Обязанности:</strong></p>
+                <ul>
+                    <li>Проведение персональных тренировок</li>
+                    <li>Составление программ тренировок</li>
+                    <li>Консультирование клиентов</li>
+                </ul>
+                <p class="card-text"><strong>Зарплата:</strong> от 1500 BYN</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contacts' %}" class="btn btn-primary">Откликнуться</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Инструктор групповых программ</h5>
+                <p class="card-text"><strong>Требования:</strong></p>
+                <ul>
+                    <li>Опыт проведения групповых занятий от 6 месяцев</li>
+                    <li>Сертификаты по направлениям (йога, пилатес, аэробика)</li>
+                    <li>Энергичность и харизма</li>
+                    <li>Умение работать с группой</li>
+                </ul>
+                <p class="card-text"><strong>Обязанности:</strong></p>
+                <ul>
+                    <li>Проведение групповых занятий</li>
+                    <li>Мотивация участников</li>
+                    <li>Контроль техники выполнения упражнений</li>
+                </ul>
+                <p class="card-text"><strong>Зарплата:</strong> от 1200 BYN</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contacts' %}" class="btn btn-primary">Откликнуться</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Администратор</h5>
+                <p class="card-text"><strong>Требования:</strong></p>
+                <ul>
+                    <li>Опыт работы в сфере услуг</li>
+                    <li>Грамотная речь</li>
+                    <li>Знание ПК</li>
+                    <li>Стрессоустойчивость</li>
+                </ul>
+                <p class="card-text"><strong>Обязанности:</strong></p>
+                <ul>
+                    <li>Встреча и консультирование клиентов</li>
+                    <li>Оформление абонементов</li>
+                    <li>Ведение базы клиентов</li>
+                    <li>Контроль чистоты в зале</li>
+                </ul>
+                <p class="card-text"><strong>Зарплата:</strong> от 1000 BYN</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contacts' %}" class="btn btn-primary">Откликнуться</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Массажист</h5>
+                <p class="card-text"><strong>Требования:</strong></p>
+                <ul>
+                    <li>Медицинское образование</li>
+                    <li>Сертификат массажиста</li>
+                    <li>Опыт работы от 1 года</li>
+                    <li>Знание различных техник массажа</li>
+                </ul>
+                <p class="card-text"><strong>Обязанности:</strong></p>
+                <ul>
+                    <li>Проведение массажных сеансов</li>
+                    <li>Консультирование клиентов</li>
+                    <li>Ведение записи клиентов</li>
+                </ul>
+                <p class="card-text"><strong>Зарплата:</strong> от 1400 BYN</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contacts' %}" class="btn btn-primary">Откликнуться</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Почему стоит работать у нас?</h3>
+    <ul>
+        <li>Конкурентная заработная плата</li>
+        <li>Бесплатный абонемент в зал</li>
+        <li>Обучение и повышение квалификации</li>
+        <li>Дружный коллектив</li>
+        <li>Карьерный рост</li>
+        <li>Современное оборудование</li>
+    </ul>
+</div>
+
+<div class="alert alert-info mt-4">
+    <h5>Как откликнуться?</h5>
+    <p>Отправьте ваше резюме на email: <strong>hr@fitlifegym.by</strong> или заполните форму на странице <a href="{% url 'contacts' %}">контактов</a>.</p>
+</div>
+{% endblock %}

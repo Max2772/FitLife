@@ -1,0 +1,131 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Добавить тренировку - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'trainer_dashboard' %}">Панель тренера</a></li>
+        <li class="breadcrumb-item active">Добавить тренировку</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">Добавление новой тренировки</h1>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Название тренировки</label>
+                        <input type="text" class="form-control" id="name" name="name" required maxlength="200">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Тип тренировки</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="">Выберите тип</option>
+                                <option value="cardio">Кардио</option>
+                                <option value="strength">Силовая</option>
+                                <option value="yoga">Йога</option>
+                                <option value="pilates">Пилатес</option>
+                                <option value="crossfit">Кроссфит</option>
+                                <option value="group">Групповая</option>
+                                <option value="personal">Персональная</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="difficulty" class="form-label">Уровень сложности</label>
+                            <select class="form-select" id="difficulty" name="difficulty" required>
+                                <option value="">Выберите уровень</option>
+                                <option value="beginner">Начальный</option>
+                                <option value="intermediate">Средний</option>
+                                <option value="advanced">Продвинутый</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="duration" class="form-label">Длительность (минут)</label>
+                            <input type="number" class="form-control" id="duration" name="duration" required min="15" max="180" step="15">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Цена (BYN)</label>
+                            <input type="number" class="form-control" id="price" name="price" required min="0" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="max_participants" class="form-label">Максимум участников</label>
+                            <input type="number" class="form-control" id="max_participants" name="max_participants" min="1" max="50" value="1">
+                            <small class="form-text text-muted">Для групповых тренировок</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="calories_burned" class="form-label">Сжигаемые калории (примерно)</label>
+                            <input type="number" class="form-control" id="calories_burned" name="calories_burned" min="0">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="equipment_needed" class="form-label">Необходимое оборудование</label>
+                        <input type="text" class="form-control" id="equipment_needed" name="equipment_needed" placeholder="Например: гантели, коврик, скакалка">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="trainer" class="form-label">Тренер</label>
+                        <select class="form-select" id="trainer" name="trainer" required>
+                            <option value="">Выберите тренера</option>
+                            {% for trainer in trainers %}
+                            <option value="{{ trainer.id }}" {% if trainer.id == current_trainer_id %}selected{% endif %}>
+                                {{ trainer.user.get_full_name }} - {{ trainer.specialization }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Изображение (необязательно)</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                            <label class="form-check-label" for="is_active">
+                                Активна (доступна для записи)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="schedule_info" class="form-label">Информация о расписании</label>
+                        <textarea class="form-control" id="schedule_info" name="schedule_info" rows="2" placeholder="Например: Понедельник, Среда, Пятница в 18:00"></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Примечание:</strong> После создания тренировка будет доступна для записи клиентов.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">Создать тренировку</button>
+                    <a href="{% url 'trainer_dashboard' %}" class="btn btn-secondary btn-lg">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

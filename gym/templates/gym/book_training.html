@@ -1,0 +1,334 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Запись на тренировку - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .breadcrumb {
+        background: var(--dark-card);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--secondary-color);
+    }
+
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--text-muted);
+    }
+
+    h1 {
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        color: var(--text-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        padding: 12px 20px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-text, .text-muted {
+        color: #9ca3af !important;
+        font-size: 0.85rem;
+    }
+
+    small.text-muted {
+        color: #9ca3af !important;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .card.bg-light {
+        background: rgba(255, 69, 0, 0.1) !important;
+        border: 2px solid var(--primary-color);
+    }
+
+    .card.bg-light h6 {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card.bg-light h3 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.3);
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-check-label {
+        color: var(--text-light);
+        margin-left: 0.5rem;
+    }
+
+    .form-check-label a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .form-check-label a:hover {
+        color: var(--secondary-color);
+        text-decoration: underline;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .alert-info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-left: 4px solid #3b82f6;
+        color: var(--text-light);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .alert-info h6 {
+        color: #3b82f6;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .alert-info ul {
+        color: var(--text-muted);
+        line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-success, .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'trainings' %}">Тренировки</a></li>
+            <li class="breadcrumb-item active">Запись</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">Запись на тренировку</h1>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Выберите дату и время</h5>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Дата тренировки</label>
+                            <input type="date" class="form-control" id="date" name="date" required min="{{ today|date:'Y-m-d' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="time" class="form-label">Время начала</label>
+                            <select class="form-select" id="time" name="time" required>
+                                <option value="">Выберите время</option>
+                                <option value="06:00">06:00</option>
+                                <option value="07:00">07:00</option>
+                                <option value="08:00">08:00</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                                <option value="19:00">19:00</option>
+                                <option value="20:00">20:00</option>
+                                <option value="21:00">21:00</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="trainer" class="form-label">Выбор тренера (необязательно)</label>
+                            <select class="form-select" id="trainer" name="trainer">
+                                <option value="">Без предпочтений</option>
+                                {% for trainer in trainers %}
+                                <option value="{{ trainer.id }}">{{ trainer.user.get_full_name }} - {{ trainer.specialization }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Если не выбрать тренера, он будет назначен автоматически</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="participants" class="form-label">Количество участников</label>
+                            <input type="number" class="form-control" id="participants" name="participants" value="1" min="1" max="10" required>
+                            <small class="form-text text-muted">Для групповых тренировок</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Комментарий (необязательно)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Укажите особые пожелания или информацию о здоровье"></textarea>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                            <label class="form-check-label" for="agree">
+                                Я ознакомлен с правилами посещения и <a href="{% url 'privacy_policy' %}" target="_blank">политикой конфиденциальности</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg me-2">Записаться</button>
+                        <a href="{% url 'trainings' %}" class="btn btn-secondary btn-lg">Отмена</a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <h6>Важная информация:</h6>
+                <ul class="mb-0">
+                    <li>Запись подтверждается автоматически</li>
+                    <li>Отменить запись можно за 24 часа до начала</li>
+                    <li>При опоздании более 15 минут тренировка считается пропущенной</li>
+                    <li>Необходимо иметь при себе спортивную форму и полотенце</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    });
+</script>
+{% endblock %}

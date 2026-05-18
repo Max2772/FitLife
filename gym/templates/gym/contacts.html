@@ -1,0 +1,265 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Контакты - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .contact-card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .contact-card h5 {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .contact-card h5 i {
+        font-size: 1.5rem;
+    }
+
+    .contact-card p {
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    .social-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .social-buttons .btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px;
+        font-weight: 600;
+    }
+
+    .contact-form {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        padding: 2.5rem;
+    }
+
+    .contact-form h3 {
+        color: var(--text-light);
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        color: var(--text-light);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        padding: 12px 20px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .map-section {
+        margin-top: 4rem;
+    }
+
+    .map-section h3 {
+        color: var(--text-light);
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .map-container {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 69, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .contact-form {
+            padding: 1.5rem;
+        }
+
+        .social-buttons {
+            flex-direction: column;
+        }
+
+        .social-buttons .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>КОНТАКТЫ</h1>
+        <p>Свяжитесь с нами удобным способом</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <!-- Contact Info -->
+        <div class="col-lg-6 mb-4">
+            <div class="contact-card">
+                <h5>
+                    <i class="fas fa-map-marker-alt"></i>
+                    Адрес
+                </h5>
+                <p>г. Минск, ул. Спортивная, 15</p>
+            </div>
+
+            <div class="contact-card">
+                <h5>
+                    <i class="fas fa-phone"></i>
+                    Телефон
+                </h5>
+                <p>+375 29 123-45-67</p>
+            </div>
+
+            <div class="contact-card">
+                <h5>
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </h5>
+                <p>info@fitlifegym.by</p>
+            </div>
+
+            <div class="contact-card">
+                <h5>
+                    <i class="fas fa-clock"></i>
+                    Режим работы
+                </h5>
+                <p>
+                    Понедельник - Пятница: 6:00 - 23:00<br>
+                    Суббота - Воскресенье: 8:00 - 22:00
+                </p>
+            </div>
+
+            <div class="contact-card">
+                <h5>
+                    <i class="fas fa-share-alt"></i>
+                    Социальные сети
+                </h5>
+                <div class="social-buttons">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-vk"></i> VK
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-6">
+            <div class="contact-form">
+                <h3><i class="fas fa-paper-plane"></i> Напишите нам</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Ваше имя</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Иван Иванов" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@mail.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+375 29 123-45-67">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Сообщение</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" placeholder="Ваше сообщение..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-paper-plane"></i> Отправить сообщение
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="map-section">
+        <h3><i class="fas fa-map"></i> Как нас найти</h3>
+        <div class="map-container">
+            <div class="ratio ratio-16x9">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.5!2d27.5615!3d53.9045!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTPCsDU0JzE2LjIiTiAyN8KwMzMnNDEuNCJF!5e0!3m2!1sru!2sby!4v1234567890" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

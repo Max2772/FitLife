@@ -1,0 +1,124 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Количество занятий по группам - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .filter-form {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .results-table {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        color: var(--text-color);
+    }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .form-control, .btn {
+        border-radius: 8px;
+    }
+
+    h1, h2 {
+        color: var(--text-color);
+    }
+
+    .summary-card {
+        background: linear-gradient(135deg, var(--primary-color), #0056b3);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <h1 class="mb-4"><i class="fas fa-chart-bar"></i> Количество занятий по группам</h1>
+
+    <div class="filter-form">
+        <form method="get">
+            <div class="row">
+                <div class="col-md-5">
+                    <label for="start_date" class="form-label">Дата начала:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="end_date" class="form-label">Дата окончания:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Показать
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if training_stats %}
+    <div class="summary-card">
+        <h3>Всего типов тренировок: {{ training_stats|length }}</h3>
+        <p>За период с {{ start_date|date:"d.m.Y" }} по {{ end_date|date:"d.m.Y" }}</p>
+    </div>
+
+    <div class="results-table">
+        <h2 class="mb-3">Статистика по типам тренировок</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Тип тренировки</th>
+                    <th>Количество занятий</th>
+                    <th>Всего участников</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in training_stats %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ stat.training_type__name }}</td>
+                    <td><span class="badge bg-primary">{{ stat.count }}</span></td>
+                    <td><span class="badge bg-success">{{ stat.total_participants }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif start_date and end_date %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> За выбранный период занятий не найдено.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

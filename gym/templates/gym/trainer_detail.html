@@ -1,0 +1,160 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}{{ trainer.user.get_full_name }} - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'trainers' %}">Тренеры</a></li>
+        <li class="breadcrumb-item active">{{ trainer.user.get_full_name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            {% if trainer.photo %}
+            <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.user.get_full_name }}">
+            {% endif %}
+            <div class="card-body text-center">
+                <h4 class="card-title">{{ trainer.user.get_full_name }}</h4>
+                <p class="text-muted">{{ trainer.specialization }}</p>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h3 class="mb-0 me-2">{{ trainer.rating|floatformat:1 }}</h3>
+                        <div>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= trainer.rating %}
+                                <span class="text-warning fs-5">★</span>
+                                {% else %}
+                                <span class="text-muted fs-5">☆</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ reviews_count }} отзывов</small>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Опыт работы:</strong>
+                    <p class="mb-0">{{ trainer.experience }} лет</p>
+                </div>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'select_trainer' trainer.id %}" class="btn btn-success btn-lg w-100">Записаться</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100">Войти для записи</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Контакты</h5>
+                {% if trainer.phone %}
+                <p><strong>Телефон:</strong><br>{{ trainer.phone }}</p>
+                {% endif %}
+                <p><strong>Email:</strong><br>{{ trainer.user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">О тренере</h5>
+                <p class="card-text">{{ trainer.bio|linebreaks }}</p>
+            </div>
+        </div>
+
+        {% if trainer.certifications %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Сертификаты и достижения</h5>
+                <p class="card-text">{{ trainer.certifications|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Специализация</h5>
+                <p class="card-text">{{ trainer.specialization }}</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary">Персональные тренировки</span>
+                    <span class="badge bg-success">Групповые занятия</span>
+                    <span class="badge bg-info">Консультации по питанию</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Доступные тренировки</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for training in trainer_trainings %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ training.name }}</h6>
+                                <p class="card-text small">{{ training.description|truncatewords:15 }}</p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        {{ training.duration }} мин | {{ training.price }} BYN
+                                    </small>
+                                </p>
+                                <a href="{% url 'training_detail' training.id %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted">Нет доступных тренировок</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Отзывы клиентов</h5>
+            </div>
+            <div class="card-body">
+                {% for review in reviews %}
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ review.user.get_full_name }}</strong>
+                            <div>
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                    <span class="text-warning">★</span>
+                                    {% else %}
+                                    <span class="text-muted">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                    </div>
+                    <p class="mt-2 mb-0">{{ review.text }}</p>
+                </div>
+                {% empty %}
+                <p class="text-muted">Отзывов пока нет. Будьте первым!</p>
+                {% endfor %}
+
+                {% if user.is_authenticated %}
+                <div class="mt-3">
+                    <a href="{% url 'add_review' %}?trainer={{ trainer.id }}" class="btn btn-primary">Оставить отзыв</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Добавить отзыв - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .breadcrumb {
+        background: var(--dark-card);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--secondary-color);
+    }
+
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--text-muted);
+    }
+
+    h1 {
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        color: var(--text-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        padding: 12px 20px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-text, .text-muted, small.text-muted {
+        color: #9ca3af !important;
+        font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        font-size: 2.5rem;
+        gap: 5px;
+    }
+
+    .rating-input input {
+        display: none;
+    }
+
+    .rating-input label {
+        color: rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .rating-input label:hover,
+    .rating-input label:hover ~ label,
+    .rating-input input:checked ~ label {
+        color: #fbbf24;
+        transform: scale(1.1);
+    }
+
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.3);
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-check-label {
+        color: var(--text-light);
+        margin-left: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255, 69, 0, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .alert-info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-left: 4px solid #3b82f6;
+        color: var(--text-light);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .alert-info strong {
+        color: #3b82f6;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-input {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'reviews' %}">Отзывы</a></li>
+        <li class="breadcrumb-item active">Добавить отзыв</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">Оставить отзыв</h1>
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Оценка</label>
+                        <div class="rating-input">
+                            <input type="radio" name="rating" id="star5" value="5" required>
+                            <label for="star5" title="5 звезд">★</label>
+                            <input type="radio" name="rating" id="star4" value="4">
+                            <label for="star4" title="4 звезды">★</label>
+                            <input type="radio" name="rating" id="star3" value="3">
+                            <label for="star3" title="3 звезды">★</label>
+                            <input type="radio" name="rating" id="star2" value="2">
+                            <label for="star2" title="2 звезды">★</label>
+                            <input type="radio" name="rating" id="star1" value="1">
+                            <label for="star1" title="1 звезда">★</label>
+                        </div>
+                        <small class="form-text text-muted">Выберите количество звезд</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="trainer" class="form-label">Тренер (необязательно)</label>
+                        <select class="form-select" id="trainer" name="trainer">
+                            <option value="">Общий отзыв о зале</option>
+                            {% for trainer in trainers %}
+                            <option value="{{ trainer.id }}">{{ trainer.user.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Ваш отзыв</label>
+                        <textarea class="form-control" id="text" name="text" rows="6" required placeholder="Расскажите о вашем опыте посещения нашего фитнес-центра..."></textarea>
+                        <small class="form-text text-muted">Минимум 20 символов</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous">
+                            <label class="form-check-label" for="anonymous">
+                                Опубликовать анонимно
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Обратите внимание:</strong> Отзывы проходят модерацию перед публикацией. Мы оставляем за собой право не публиковать отзывы, содержащие ненормативную лексику или оскорбления.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg me-2">Отправить отзыв</button>
+                    <a href="{% url 'reviews' %}" class="btn btn-secondary btn-lg">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: fitlife_gym
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./db.sqlite3:/app/db.sqlite3
+      - ./media:/app/media
+      - ./logs:/app/logs
+    environment:
+      - DJANGO_SETTINGS_MODULE=LB5.settings
+      - DEBUG=1
+    restart: unless-stopped

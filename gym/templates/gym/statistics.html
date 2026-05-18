@@ -1,0 +1,320 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Статистика - FitLife Gym{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<h1 class="mb-4">Статистика</h1>
+
+<!-- Статистические показатели: среднее, медиана, мода -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calculator"></i> Статистические показатели — время на сайте (мин.)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Среднее</h6>
+                        <h3 class="text-primary">{{ average }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Медиана</h6>
+                        <h3 class="text-success">{{ median_val }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Мода</h6>
+                        <h3 class="text-warning">{{ mode_val }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calculator"></i> Статистические показатели — стоимость абонементов (BYN)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Среднее</h6>
+                        <h3 class="text-primary">{{ price_mean }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Медиана</h6>
+                        <h3 class="text-success">{{ price_median }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Мода</h6>
+                        <h3 class="text-warning">{{ price_mode }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-file-alt"></i> Отчеты</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'training_group_report' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-users"></i> Список клиентов в группе
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'training_count_report' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-chart-bar"></i> Количество занятий по группам
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'client_cost_report' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-dollar-sign"></i> Стоимость услуг по клиентам
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Всего клиентов</h5>
+                <h2 class="text-primary">{{ total_clients }}</h2>
+                <small class="text-success">+{{ new_clients_month }} в этом месяце</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Активных абонементов</h5>
+                <h2 class="text-success">{{ active_memberships }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Тренировок в месяц</h5>
+                <h2 class="text-warning">{{ trainings_month }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Доход за месяц</h5>
+                <h2 class="text-info">{{ revenue_month }} BYN</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Популярные тренировки</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Тренировка</th>
+                                <th>Записей</th>
+                                <th>Доход</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for training in popular_trainings %}
+                            <tr>
+                                <td>{{ training.name }}</td>
+                                <td>{{ training.bookings_count }}</td>
+                                <td>{{ training.revenue }} BYN</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Нет данных</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Топ тренеров</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Тренер</th>
+                                <th>Клиентов</th>
+                                <th>Рейтинг</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for trainer in top_trainers %}
+                            <tr>
+                                <td>{{ trainer.user.get_full_name }}</td>
+                                <td>{{ trainer.clients_count }}</td>
+                                <td>{{ trainer.rating|floatformat:1 }} ★</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Нет данных</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Посещаемость по дням недели</h5>
+                <a href="{% url 'membership_chart' %}" class="btn btn-sm btn-primary">Диаграмма абонементов</a>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Продажи абонементов</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Тип абонемента</th>
+                                <th>Продано</th>
+                                <th>Доход</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in membership_sales %}
+                            <tr>
+                                <td>{{ membership.name }}</td>
+                                <td>{{ membership.sold_count }}</td>
+                                <td>{{ membership.revenue }} BYN</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Нет данных</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Последние отзывы</h5>
+            </div>
+            <div class="card-body">
+                {% for review in recent_reviews %}
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ review.user.get_full_name }}</strong>
+                        <div>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                <span class="text-warning">★</span>
+                                {% else %}
+                                <span class="text-muted">☆</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="mb-1 small">{{ review.text|truncatewords:15 }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                </div>
+                {% empty %}
+                <p class="text-muted">Отзывов пока нет</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Session chart from matplotlib -->
+{% if chart_data %}
+<div class="container mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-chart-bar"></i> График времени на сайте (среднее / медиана / мода)</h5>
+        </div>
+        <div class="card-body text-center">
+            <img src="data:image/png;base64,{{ chart_data }}" class="img-fluid" alt="Статистика сессий">
+        </div>
+    </div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    const attendanceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
+            datasets: [{
+                label: 'Посещений',
+                data: {{ attendance_data|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

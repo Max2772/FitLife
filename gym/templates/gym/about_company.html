@@ -1,0 +1,288 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}О компании - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .about-section {
+        padding: 40px 0;
+    }
+
+    .about-section h2 {
+        font-size: 2.5rem;
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .about-section h3 {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-section p, .about-section li {
+        color: var(--text-muted);
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+
+    .about-section .lead {
+        font-size: 1.3rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+
+    .about-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .about-section ul li {
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 69, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .about-section ul li:hover {
+        padding-left: 10px;
+        color: var(--primary-color);
+    }
+
+    .about-section ul li strong {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .stats-section {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        padding: 3rem;
+        margin: 3rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 2rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        transform: translateY(-10px);
+    }
+
+    .stat-item h2 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .contact-card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+    }
+
+    .contact-card h5 {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-card p {
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .contact-card strong {
+        color: var(--text-light);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .social-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .social-buttons .btn {
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .social-buttons .btn:hover {
+        transform: translateX(5px);
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .about-section h2 {
+            font-size: 2rem;
+        }
+
+        .stat-item h2 {
+            font-size: 2.5rem;
+        }
+
+        .stats-section {
+            padding: 2rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>О КОМПАНИИ</h1>
+        <p>Узнайте больше о FitLife Gym</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="about-section">
+                <h2>FitLife Gym - Ваш путь к здоровью и силе</h2>
+                <p class="lead">Мы - современный фитнес-центр, который помогает людям достигать своих целей в области здоровья и фитнеса с 2015 года.</p>
+
+                <h3><i class="fas fa-bullseye"></i> Наша миссия</h3>
+                <p>Создать комфортную и мотивирующую среду, где каждый человек может улучшить свое физическое и ментальное здоровье, независимо от уровня подготовки. Мы верим, что здоровый образ жизни должен быть доступен каждому.</p>
+
+                <h3><i class="fas fa-heart"></i> Наши ценности</h3>
+                <ul>
+                    <li>
+                        <strong>Профессионализм</strong> - все наши тренеры имеют международные сертификаты и постоянно повышают квалификацию
+                    </li>
+                    <li>
+                        <strong>Индивидуальный подход</strong> - мы учитываем особенности и цели каждого клиента
+                    </li>
+                    <li>
+                        <strong>Современное оборудование</strong> - регулярно обновляем тренажеры и инвентарь от ведущих производителей
+                    </li>
+                    <li>
+                        <strong>Атмосфера поддержки</strong> - создаем дружелюбное сообщество единомышленников
+                    </li>
+                </ul>
+
+                <h3><i class="fas fa-trophy"></i> Наши достижения</h3>
+                <div class="stats-section">
+                    <div class="row">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <h2>5000+</h2>
+                                <p>Довольных клиентов</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <h2>50+</h2>
+                                <p>Профессиональных тренеров</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <h2>200+</h2>
+                                <p>Единиц оборудования</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-item">
+                                <h2>11</h2>
+                                <p>Лет на рынке</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="contact-card mb-4">
+                <h5><i class="fas fa-map-marker-alt"></i> Контактная информация</h5>
+                <p>
+                    <strong>Адрес:</strong>
+                    г. Минск, ул. Спортивная, 15
+                </p>
+                <p>
+                    <strong>Телефон:</strong>
+                    +375 29 123-45-67
+                </p>
+                <p>
+                    <strong>Email:</strong>
+                    info@fitlifegym.by
+                </p>
+                <p>
+                    <strong>Режим работы:</strong>
+                    Пн-Пт: 6:00 - 23:00<br>
+                    Сб-Вс: 8:00 - 22:00
+                </p>
+            </div>
+
+            <div class="contact-card">
+                <h5><i class="fas fa-share-alt"></i> Социальные сети</h5>
+                <div class="social-buttons">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-vk"></i> VKontakte
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

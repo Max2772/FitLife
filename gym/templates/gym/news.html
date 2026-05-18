@@ -1,0 +1,265 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Новости - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .news-card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+
+    .news-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--primary-color);
+        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.3);
+    }
+
+    .news-card .card-img-top {
+        height: 280px;
+        object-fit: cover;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .news-card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+
+    .news-card .card-body {
+        padding: 2rem;
+    }
+
+    .news-card .card-title {
+        font-size: 1.5rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+
+    .news-card .card-text {
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .news-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-meta i {
+        color: var(--primary-color);
+    }
+
+    .news-card .card-footer {
+        background: rgba(255, 69, 0, 0.05);
+        border-top: 1px solid rgba(255, 69, 0, 0.1);
+        padding: 1.5rem 2rem;
+    }
+
+    .news-card .btn {
+        width: 100%;
+    }
+
+    .date-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 69, 0, 0.95);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        z-index: 2;
+    }
+
+    .date-badge .day {
+        font-size: 1.5rem;
+        display: block;
+        line-height: 1;
+    }
+
+    .date-badge .month {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .pagination {
+        margin-top: 3rem;
+    }
+
+    .pagination .page-link {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        padding: 10px 20px;
+        margin: 0 5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-link:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    .empty-state h3 {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .news-card .card-img-top {
+            height: 220px;
+        }
+
+        .news-card .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>НОВОСТИ И СТАТЬИ</h1>
+        <p>Будьте в курсе последних событий и полезных советов</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        {% for news_item in news %}
+        <div class="col-lg-6">
+            <div class="news-card">
+                <div style="position: relative; overflow: hidden;">
+                    <div class="date-badge">
+                        <span class="day">{{ news_item.published_date|date:"d" }}</span>
+                        <span class="month">{{ news_item.published_date|date:"M" }}</span>
+                    </div>
+
+                    {% if news_item.image %}
+                    <img src="{{ news_item.image.url }}" class="card-img-top" alt="{{ news_item.title }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" class="card-img-top" alt="{{ news_item.title }}">
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ news_item.title }}</h5>
+
+                    <div class="news-meta">
+                        <span>
+                            <i class="fas fa-calendar-alt"></i>
+                            {{ news_item.published_date|date:"d.m.Y" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-clock"></i>
+                            {{ news_item.published_date|date:"H:i" }}
+                        </span>
+                    </div>
+
+                    <p class="card-text">{{ news_item.content|truncatewords:30 }}</p>
+                </div>
+
+                <div class="card-footer">
+                    <a href="{% url 'news_detail' news_item.id %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Читать полностью
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h3>Новостей пока нет</h3>
+                <p class="text-muted">Следите за обновлениями - скоро здесь появятся интересные статьи</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <i class="fas fa-chevron-left"></i> Предыдущая
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    Следующая <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

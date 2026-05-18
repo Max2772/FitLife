@@ -1,0 +1,172 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Диаграмма абонементов - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'statistics' %}">Статистика</a></li>
+        <li class="breadcrumb-item active">Диаграмма абонементов</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">Диаграмма продаж абонементов</h1>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Распределение продаж по типам абонементов</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="membershipPieChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Продажи абонементов по месяцам</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="membershipLineChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Статистика по абонементам</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Тип абонемента</th>
+                                <th>Активных</th>
+                                <th>Всего продано</th>
+                                <th>Доход</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in memberships_stats %}
+                            <tr>
+                                <td>{{ membership.name }}</td>
+                                <td><span class="badge bg-success">{{ membership.active_count }}</span></td>
+                                <td>{{ membership.total_sold }}</td>
+                                <td>{{ membership.total_revenue }} BYN</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">Нет данных</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Ключевые показатели</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h3 class="text-primary">{{ total_active }}</h3>
+                        <p class="text-muted">Активных абонементов</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h3 class="text-success">{{ total_revenue }} BYN</h3>
+                        <p class="text-muted">Общий доход</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h3 class="text-warning">{{ avg_duration }}</h3>
+                        <p class="text-muted">Средняя длительность (дней)</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h3 class="text-info">{{ renewal_rate }}%</h3>
+                        <p class="text-muted">Процент продлений</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'statistics' %}" class="btn btn-secondary">Назад к статистике</a>
+    {% if user.is_staff %}
+    <a href="{% url 'add_promocode' %}" class="btn btn-primary">Добавить промокод</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    // Pie Chart
+    const pieCtx = document.getElementById('membershipPieChart').getContext('2d');
+    const membershipPieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ membership_labels|safe }},
+            datasets: [{
+                data: {{ membership_data|safe }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                }
+            }
+        }
+    });
+
+    // Line Chart
+    const lineCtx = document.getElementById('membershipLineChart').getContext('2d');
+    const membershipLineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: {{ months_labels|safe }},
+            datasets: [{
+                label: 'Продажи абонементов',
+                data: {{ monthly_sales|safe }},
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

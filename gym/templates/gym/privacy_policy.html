@@ -1,0 +1,200 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Политика конфиденциальности - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .container {
+        max-width: 1200px;
+        padding: 2rem 1.5rem;
+    }
+
+    h1 {
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 5px 15px rgba(255, 69, 0, 0.15);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .card-title {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .card-body p {
+        color: var(--text-light);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .card-body ul {
+        color: var(--text-light);
+        line-height: 1.8;
+        padding-left: 1.5rem;
+    }
+
+    .card-body ul li {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+
+    .card-body strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .alert-info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-left: 4px solid #3b82f6;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .alert-info p {
+        color: var(--text-light);
+        margin-bottom: 0;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Политика конфиденциальности</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">1. Общие положения</h5>
+        <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта FitLife Gym.</p>
+        <p>Используя наш сайт, вы соглашаетесь с условиями данной Политики конфиденциальности.</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">2. Собираемая информация</h5>
+        <p>Мы можем собирать следующую информацию:</p>
+        <ul>
+            <li>Имя и фамилия</li>
+            <li>Контактная информация (email, телефон)</li>
+            <li>Дата рождения</li>
+            <li>Информация о состоянии здоровья (при необходимости)</li>
+            <li>История посещений и покупок</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">3. Использование информации</h5>
+        <p>Собранная информация используется для:</p>
+        <ul>
+            <li>Предоставления услуг фитнес-центра</li>
+            <li>Улучшения качества обслуживания</li>
+            <li>Отправки информационных сообщений и новостей</li>
+            <li>Обработки платежей</li>
+            <li>Ведения статистики</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">4. Защита информации</h5>
+        <p>Мы принимаем все необходимые меры для защиты ваших персональных данных:</p>
+        <ul>
+            <li>Использование защищенных серверов</li>
+            <li>Шифрование данных при передаче</li>
+            <li>Ограничение доступа к персональным данным</li>
+            <li>Регулярное обновление систем безопасности</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">5. Передача данных третьим лицам</h5>
+        <p>Мы не передаем ваши персональные данные третьим лицам без вашего согласия, за исключением случаев:</p>
+        <ul>
+            <li>Требования законодательства</li>
+            <li>Необходимости для предоставления услуг (например, платежные системы)</li>
+            <li>Защиты прав и безопасности компании</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">6. Cookies</h5>
+        <p>Наш сайт использует cookies для улучшения работы и анализа посещаемости. Вы можете отключить cookies в настройках браузера, но это может ограничить функциональность сайта.</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">7. Ваши права</h5>
+        <p>Вы имеете право:</p>
+        <ul>
+            <li>Получить информацию о хранящихся данных</li>
+            <li>Исправить неточные данные</li>
+            <li>Удалить свои персональные данные</li>
+            <li>Отозвать согласие на обработку данных</li>
+            <li>Отказаться от рассылок</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">8. Изменения в Политике</h5>
+        <p>Мы оставляем за собой право вносить изменения в данную Политику конфиденциальности. Актуальная версия всегда доступна на этой странице.</p>
+        <p><strong>Дата последнего обновления:</strong> 14.05.2026</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">9. Контакты</h5>
+        <p>По вопросам, связанным с обработкой персональных данных, обращайтесь:</p>
+        <p>
+            Email: <strong>privacy@fitlifegym.by</strong><br>
+            Телефон: <strong>+375 29 123-45-67</strong>
+        </p>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    <p class="mb-0">Продолжая использовать наш сайт, вы подтверждаете, что ознакомились с Политикой конфиденциальности и согласны с ее условиями.</p>
+</div>
+</div>
+{% endblock %}

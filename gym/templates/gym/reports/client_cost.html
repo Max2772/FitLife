@@ -1,0 +1,110 @@
+{% extends 'gym/base.html' %}
+{% load gym_filters %}
+
+{% block title %}Стоимость услуг по клиентам - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .results-table {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        color: var(--text-color);
+    }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--hover-bg);
+    }
+
+    h1, h2 {
+        color: var(--text-color);
+    }
+
+    .summary-card {
+        background: linear-gradient(135deg, var(--primary-color), #0056b3);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .total-row {
+        font-weight: bold;
+        background-color: var(--secondary-bg) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <h1 class="mb-4"><i class="fas fa-dollar-sign"></i> Стоимость услуг по клиентам</h1>
+
+    {% if client_costs %}
+    <div class="summary-card">
+        <h3>Всего клиентов: {{ client_costs|length }}</h3>
+        <p>Общая выручка: {{ client_costs|sum_attr:"total_cost" }} BYN</p>
+    </div>
+
+    <div class="results-table">
+        <h2 class="mb-3">Детализация по клиентам</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Клиент</th>
+                    <th>Телефон</th>
+                    <th>Стоимость абонементов</th>
+                    <th>Количество тренировок</th>
+                    <th>Общая стоимость</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in client_costs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.client.last_name }} {{ item.client.first_name }}</td>
+                    <td>{{ item.client.phone }}</td>
+                    <td>{{ item.membership_cost }} BYN</td>
+                    <td><span class="badge bg-info">{{ item.training_count }}</span></td>
+                    <td><strong>{{ item.total_cost }} BYN</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3">ИТОГО:</td>
+                    <td>{{ client_costs|sum_attr:"membership_cost" }} BYN</td>
+                    <td><span class="badge bg-info">{{ client_costs|sum_attr:"training_count" }}</span></td>
+                    <td><strong>{{ client_costs|sum_attr:"total_cost" }} BYN</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Клиентов не найдено.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

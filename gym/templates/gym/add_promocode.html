@@ -1,0 +1,181 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Добавить промокод - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'statistics' %}">Статистика</a></li>
+        <li class="breadcrumb-item active">Добавить промокод</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">Создание промокода</h1>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Код промокода</label>
+                        <input type="text" class="form-control" id="code" name="code" required placeholder="Например: WELCOME10" pattern="[A-Z0-9]+" maxlength="20">
+                        <small class="form-text text-muted">Только заглавные буквы и цифры, до 20 символов</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="discount_type" class="form-label">Тип скидки</label>
+                        <select class="form-select" id="discount_type" name="discount_type" required onchange="updateDiscountLabel()">
+                            <option value="percent">Процент</option>
+                            <option value="fixed">Фиксированная сумма</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="discount_value" class="form-label">Размер скидки</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="discount_value" name="discount_value" required min="1" step="0.01">
+                            <span class="input-group-text" id="discount-unit">%</span>
+                        </div>
+                        <small class="form-text text-muted" id="discount-hint">Укажите процент скидки (1-100)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="valid_from" class="form-label">Действителен с</label>
+                        <input type="date" class="form-control" id="valid_from" name="valid_from" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="valid_until" class="form-label">Действителен до</label>
+                        <input type="date" class="form-control" id="valid_until" name="valid_until" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="usage_limit" class="form-label">Лимит использований</label>
+                        <input type="number" class="form-control" id="usage_limit" name="usage_limit" min="1" placeholder="Оставьте пустым для неограниченного">
+                        <small class="form-text text-muted">Максимальное количество использований промокода</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="min_purchase" class="form-label">Минимальная сумма покупки (BYN)</label>
+                        <input type="number" class="form-control" id="min_purchase" name="min_purchase" min="0" step="0.01" placeholder="0">
+                        <small class="form-text text-muted">Минимальная сумма для применения промокода</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="applicable_to" class="form-label">Применяется к</label>
+                        <select class="form-select" id="applicable_to" name="applicable_to" required>
+                            <option value="all">Все товары и услуги</option>
+                            <option value="memberships">Только абонементы</option>
+                            <option value="trainings">Только тренировки</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                            <label class="form-check-label" for="is_active">
+                                Активен
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание (необязательно)</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Краткое описание промокода для внутреннего использования"></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Примечание:</strong> После создания промокод будет доступен для использования клиентами в указанный период.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">Создать промокод</button>
+                    <a href="{% url 'statistics' %}" class="btn btn-secondary btn-lg">Отмена</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Активные промокоды</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Скидка</th>
+                                <th>Использований</th>
+                                <th>Действителен до</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for promo in active_promocodes %}
+                            <tr>
+                                <td><strong>{{ promo.code }}</strong></td>
+                                <td>
+                                    {% if promo.discount_type == 'percent' %}
+                                    {{ promo.discount_value }}%
+                                    {% else %}
+                                    {{ promo.discount_value }} BYN
+                                    {% endif %}
+                                </td>
+                                <td>{{ promo.used_count }}/{{ promo.usage_limit|default:"∞" }}</td>
+                                <td>{{ promo.valid_until|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if promo.is_active %}
+                                    <span class="badge bg-success">Активен</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Неактивен</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">Нет активных промокодов</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateDiscountLabel() {
+        const discountType = document.getElementById('discount_type').value;
+        const unit = document.getElementById('discount-unit');
+        const hint = document.getElementById('discount-hint');
+        const input = document.getElementById('discount_value');
+
+        if (discountType === 'percent') {
+            unit.textContent = '%';
+            hint.textContent = 'Укажите процент скидки (1-100)';
+            input.setAttribute('max', '100');
+        } else {
+            unit.textContent = 'BYN';
+            hint.textContent = 'Укажите фиксированную сумму скидки';
+            input.removeAttribute('max');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('valid_from').setAttribute('min', today);
+        document.getElementById('valid_from').value = today;
+
+        document.getElementById('valid_from').addEventListener('change', function() {
+            document.getElementById('valid_until').setAttribute('min', this.value);
+        });
+    });
+</script>
+{% endblock %}

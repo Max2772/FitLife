@@ -1,0 +1,517 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Покупка абонемента - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .breadcrumb {
+        background: var(--dark-card);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--secondary-color);
+    }
+
+    .breadcrumb-item.active {
+        color: var(--text-muted);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--text-muted);
+    }
+
+    h1 {
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: var(--dark-card);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+    }
+
+    .membership-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .membership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(255, 69, 0, 0.3);
+    }
+
+    .membership-card:active {
+        transform: scale(0.98);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        border-bottom: none;
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1.5rem;
+    }
+
+    .card-header h5 {
+        color: white !important;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .card-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .card h3 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .card p, .card ul {
+        color: var(--text-muted);
+        line-height: 1.8;
+    }
+
+    .list-unstyled li {
+        color: var(--text-light);
+        padding: 0.5rem 0;
+    }
+
+    .form-label {
+        color: var(--text-light);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        padding: 12px 20px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-text, .text-muted, small.text-muted {
+        color: #9ca3af !important;
+        font-size: 0.85rem;
+    }
+
+    .input-group .btn-outline-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+        transition: all 0.3s ease;
+    }
+
+    .input-group .btn-outline-secondary:hover {
+        background: rgba(255, 69, 0, 0.1);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .card.bg-light {
+        background: rgba(255, 69, 0, 0.1) !important;
+        border: 2px solid var(--primary-color);
+    }
+
+    .card.bg-light h6 {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card.bg-light h3 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .text-success {
+        color: #10b981 !important;
+    }
+
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 69, 0, 0.3);
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+    }
+
+    .form-check-label {
+        color: var(--text-light);
+        margin-left: 0.5rem;
+    }
+
+    .form-check-label a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .form-check-label a:hover {
+        color: var(--secondary-color);
+        text-decoration: underline;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .alert-info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-left: 4px solid #3b82f6;
+        color: var(--text-light);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .alert-info h6 {
+        color: #3b82f6;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .alert-info ul {
+        color: #9ca3af;
+        line-height: 1.8;
+    }
+
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-left: 4px solid #f59e0b;
+        color: var(--text-light);
+    }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-left: 4px solid #10b981;
+        color: var(--text-light);
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-left: 4px solid #ef4444;
+        color: var(--text-light);
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-success, .btn-secondary {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'memberships' %}">Абонементы</a></li>
+        <li class="breadcrumb-item active">Покупка</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4">Покупка абонемента</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <h5 class="mb-3" style="color: var(--text-light);">Доступные абонементы</h5>
+        {% for membership_type in membership_types %}
+        <div class="card mb-3 membership-card" data-id="{{ membership_type.id }}" data-price="{{ membership_type.price }}" onclick="selectMembership({{ membership_type.id }}, '{{ membership_type.name }}', {{ membership_type.price }}, {{ membership_type.duration_months }})">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ membership_type.name }}</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center mb-3">{{ membership_type.price }} BYN</h3>
+                <p class="text-center text-muted">{{ membership_type.duration_months }} месяц(ев)</p>
+                <p>{{ membership_type.description }}</p>
+                <ul class="list-unstyled">
+                    {% if membership_type.includes_trainer %}
+                    <li>✓ Персональный тренер</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Оформление покупки</h5>
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="membership_type" class="form-label">Выберите тип абонемента</label>
+                        {{ form.membership_type }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label">Дата начала действия</label>
+                        {{ form.start_date }}
+                        <small class="form-text text-muted">Абонемент будет активен с выбранной даты</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="promo_code_input" class="form-label">Промокод (необязательно)</label>
+                        <div class="input-group">
+                            {{ form.promo_code_input }}
+                            <button class="btn btn-outline-secondary" type="button" onclick="applyPromocode()">Применить</button>
+                        </div>
+                        <div id="promocode-message" class="mt-2"></div>
+                    </div>
+
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h6>Итого к оплате:</h6>
+                            <h3 id="total-price">0.00 BYN</h3>
+                            <div id="discount-info" class="text-success" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Способ оплаты</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="card" value="card" checked>
+                            <label class="form-check-label" for="card">
+                                Банковская карта
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash">
+                            <label class="form-check-label" for="cash">
+                                Наличные (оплата на ресепшн)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                        <label class="form-check-label" for="agree">
+                            Я согласен с <a href="{% url 'privacy_policy' %}" target="_blank">политикой конфиденциальности</a> и условиями использования
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg me-2">Оплатить</button>
+                    <a href="{% url 'memberships' %}" class="btn btn-secondary btn-lg">Отмена</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-3">
+            <h6>Важная информация:</h6>
+            <ul class="mb-0">
+                <li>После оплаты абонемент будет активирован автоматически</li>
+                <li>Вы получите подтверждение на email</li>
+                <li>Абонемент можно заморозить на срок до 30 дней</li>
+                <li>Возврат возможен в течение 14 дней при условии неактивации</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let originalPrice = 0;
+    let discountPercent = 0;
+    let selectedMembershipId = null;
+
+    function selectMembership(id, name, price, duration) {
+        // Remove selection from all cards
+        document.querySelectorAll('.membership-card').forEach(card => {
+            card.style.border = '1px solid rgba(255, 69, 0, 0.2)';
+            card.style.transform = 'none';
+        });
+
+        // Highlight selected card
+        const selectedCard = document.querySelector(`.membership-card[data-id="${id}"]`);
+        if (selectedCard) {
+            selectedCard.style.border = '2px solid var(--primary-color)';
+            selectedCard.style.transform = 'scale(1.02)';
+        }
+
+        // Update form
+        const membershipSelect = document.getElementById('id_membership_type');
+        if (membershipSelect) {
+            membershipSelect.value = id;
+        }
+
+        // Update price
+        originalPrice = parseFloat(price);
+        selectedMembershipId = id;
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        if (originalPrice === 0) {
+            document.getElementById('total-price').textContent = '0.00 BYN';
+            return;
+        }
+
+        const discount = originalPrice * (discountPercent / 100);
+        const newPrice = originalPrice - discount;
+
+        document.getElementById('total-price').textContent = newPrice.toFixed(2) + ' BYN';
+
+        if (discountPercent > 0) {
+            document.getElementById('discount-info').style.display = 'block';
+            document.getElementById('discount-info').textContent = `Скидка ${discountPercent}%: -${discount.toFixed(2)} BYN`;
+        } else {
+            document.getElementById('discount-info').style.display = 'none';
+        }
+    }
+
+    function applyPromocode() {
+        const promocodeInput = document.getElementById('id_promo_code_input');
+        const promocode = promocodeInput ? promocodeInput.value : '';
+        const messageDiv = document.getElementById('promocode-message');
+
+        if (!promocode) {
+            messageDiv.innerHTML = '<div class="alert alert-warning">Введите промокод</div>';
+            return;
+        }
+
+        if (originalPrice === 0) {
+            messageDiv.innerHTML = '<div class="alert alert-warning">Сначала выберите абонемент</div>';
+            return;
+        }
+
+        // Simulate promocode validation (in real app, this would be an AJAX call)
+        // For demo purposes, accept "WELCOME10" for 10% discount
+        if (promocode.toUpperCase() === 'WELCOME10') {
+            discountPercent = 10;
+            updateTotalPrice();
+            messageDiv.innerHTML = '<div class="alert alert-success">Промокод применен!</div>';
+        } else {
+            messageDiv.innerHTML = '<div class="alert alert-danger">Неверный промокод</div>';
+        }
+    }
+
+    // Set minimum date to today and update price when membership type changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('id_start_date');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            dateInput.value = today;
+        }
+
+        // Listen for membership type changes
+        const membershipSelect = document.getElementById('id_membership_type');
+        if (membershipSelect) {
+            membershipSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const card = document.querySelector(`.membership-card[data-id="${this.value}"]`);
+                if (card) {
+                    const price = parseFloat(card.dataset.price);
+                    originalPrice = price;
+                    discountPercent = 0;
+                    updateTotalPrice();
+
+                    // Highlight selected card
+                    document.querySelectorAll('.membership-card').forEach(c => {
+                        c.style.border = '1px solid rgba(255, 69, 0, 0.2)';
+                        c.style.transform = 'none';
+                    });
+                    card.style.border = '2px solid var(--primary-color)';
+                    card.style.transform = 'scale(1.02)';
+                }
+            });
+
+            // Trigger initial selection if there's a value
+            if (membershipSelect.value) {
+                membershipSelect.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}

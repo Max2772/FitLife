@@ -1,0 +1,121 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Список клиентов в группе - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .filter-form {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .results-table {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        color: var(--text-color);
+    }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .form-select, .btn {
+        border-radius: 8px;
+    }
+
+    h1, h2 {
+        color: var(--text-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <h1 class="mb-4"><i class="fas fa-users"></i> Список клиентов в группе</h1>
+
+    <div class="filter-form">
+        <form method="get">
+            <div class="mb-3">
+                <label for="training_id" class="form-label">Выберите тренировку:</label>
+                <select name="training_id" id="training_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Выберите тренировку --</option>
+                    {% for training in trainings %}
+                    <option value="{{ training.id }}" {% if selected_training and selected_training.id == training.id %}selected{% endif %}>
+                        {{ training.training_type }} - {{ training.date|date:"d.m.Y" }} {{ training.time }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if selected_training %}
+    <div class="results-table">
+        <h2 class="mb-3">Тренировка: {{ selected_training.training_type }}</h2>
+        <p><strong>Дата:</strong> {{ selected_training.date|date:"d.m.Y" }} в {{ selected_training.time }}</p>
+        <p><strong>Зал:</strong> {{ selected_training.hall|default:"Не указан" }}</p>
+        <p><strong>Тренеры:</strong>
+            {% for trainer in selected_training.trainers.all %}
+                {{ trainer }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                Не назначены
+            {% endfor %}
+        </p>
+
+        <hr>
+
+        <h3 class="mb-3">Участники ({{ participants.count }})</h3>
+
+        {% if participants %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participant in participants %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ participant.last_name }}</td>
+                    <td>{{ participant.first_name }}</td>
+                    <td>{{ participant.phone }}</td>
+                    <td>{{ participant.user.email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">На эту тренировку пока никто не записался.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

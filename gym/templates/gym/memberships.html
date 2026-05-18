@@ -1,0 +1,282 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Абонементы - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
+                    url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&q=80') center/cover;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .membership-card {
+        background: var(--dark-card);
+        border: 2px solid rgba(255, 69, 0, 0.2);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .membership-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+
+    .membership-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .membership-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        border-color: var(--primary-color);
+        box-shadow: 0 20px 50px rgba(255, 69, 0, 0.4);
+    }
+
+    .membership-card.featured {
+        border-color: var(--primary-color);
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.3);
+    }
+
+    .membership-card.featured::after {
+        content: 'ПОПУЛЯРНЫЙ';
+        position: absolute;
+        top: 20px;
+        right: -35px;
+        background: var(--primary-color);
+        color: white;
+        padding: 5px 40px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transform: rotate(45deg);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .membership-card .card-header {
+        background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 107, 53, 0.2));
+        border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .membership-card .card-header h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-light);
+        margin: 0;
+    }
+
+    .membership-card .card-body {
+        padding: 2.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-tag {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .price-tag h2 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        line-height: 1;
+    }
+
+    .price-tag .currency {
+        font-size: 1.5rem;
+        vertical-align: super;
+    }
+
+    .price-tag .duration {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .membership-description {
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0;
+    }
+
+    .features-list li {
+        padding: 0.8rem 0;
+        color: var(--text-light);
+        border-bottom: 1px solid rgba(255, 69, 0, 0.1);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .features-list li:last-child {
+        border-bottom: none;
+    }
+
+    .features-list li:hover {
+        padding-left: 10px;
+        color: var(--primary-color);
+    }
+
+    .features-list li i {
+        color: var(--primary-color);
+        margin-right: 15px;
+        font-size: 1.2rem;
+    }
+
+    .membership-card .card-footer {
+        background: rgba(255, 69, 0, 0.05);
+        border-top: 1px solid rgba(255, 69, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .membership-card .btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    .empty-state h3 {
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .price-tag h2 {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1>АБОНЕМЕНТЫ</h1>
+        <p>Выберите подходящий план и начните свой путь к идеальной форме</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4 justify-content-center">
+        {% for membership in membership_types %}
+        <div class="col-lg-3 col-md-6">
+            <div class="membership-card {% if forloop.counter == 3 %}featured{% endif %}">
+                <div class="card-header">
+                    <h4>{{ membership.name }}</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="price-tag">
+                        <h2>
+                            <span class="currency">BYN</span> {{ membership.price }}
+                        </h2>
+                        <p class="duration">{{ membership.duration_months }} {% if membership.duration_months == 1 %}месяц{% elif membership.duration_months < 5 %}месяца{% else %}месяцев{% endif %}</p>
+                    </div>
+
+                    <p class="membership-description">{{ membership.description }}</p>
+
+                    <ul class="features-list">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Доступ в тренажерный зал</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Групповые занятия</span>
+                        </li>
+                        {% if membership.includes_trainer %}
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Персональный тренер</span>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Раздевалка и душевые</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Wi-Fi и парковка</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-footer">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'buy_membership' %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Купить абонемент
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt"></i> Войти для покупки
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-ticket-alt"></i>
+                <h3>Абонементы не найдены</h3>
+                <p class="text-muted">В данный момент список абонементов пуст</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

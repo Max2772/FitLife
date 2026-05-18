@@ -1,0 +1,38 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}{{ news.title }} - FitLife Gym{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'news' %}">Новости</a></li>
+        <li class="breadcrumb-item active">{{ news.title }}</li>
+    </ol>
+</nav>
+
+<article>
+    <h1 class="mb-3">{{ news.title }}</h1>
+
+    <p class="text-muted mb-4">
+        <small>Опубликовано: {{ news.published_date|date:"d.m.Y H:i" }}</small>
+    </p>
+
+    {% if news.image %}
+    <img src="{{ news.image.url }}" class="img-fluid mb-4" alt="{{ news.title }}">
+    {% endif %}
+
+    <div class="news-content">
+        {{ news.content|linebreaks }}
+    </div>
+
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'news' %}" class="btn btn-secondary">Назад к новостям</a>
+        <div>
+            <button class="btn btn-outline-primary" onclick="window.print()">Печать</button>
+        </div>
+    </div>
+</article>
+{% endblock %}
