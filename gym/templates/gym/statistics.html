@@ -3,7 +3,7 @@
 {% block title %}Статистика - FitLife Gym{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container dark-page">
 <h1 class="mb-4">Статистика</h1>
 
 <!-- Статистические показатели: среднее, медиана, мода -->
@@ -319,7 +319,7 @@
 
 <!-- Session chart from matplotlib -->
 {% if chart_data %}
-<div class="container mb-4">
+<div class="container mb-4 dark-page">
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0"><i class="fas fa-chart-bar"></i> График времени на сайте (среднее / медиана / мода)</h5>
@@ -352,9 +352,20 @@
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e0e0' }
+                }
+            },
             scales: {
+                x: {
+                    ticks: { color: '#e0e0e0' },
+                    grid: { color: 'rgba(224, 224, 224, 0.1)' }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { color: '#e0e0e0' },
+                    grid: { color: 'rgba(224, 224, 224, 0.1)' }
                 }
             }
         }

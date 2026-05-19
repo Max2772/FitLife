@@ -3,6 +3,7 @@
 {% block title %}Диаграмма абонементов - FitLife Gym{% endblock %}
 
 {% block content %}
+<div class="container dark-page">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
@@ -111,6 +112,7 @@
     <a href="{% url 'add_promocode' %}" class="btn btn-primary">Добавить промокод</a>
     {% endif %}
 </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -139,6 +141,7 @@
             plugins: {
                 legend: {
                     position: 'right',
+                    labels: { color: '#e0e0e0' }
                 }
             }
         }
@@ -161,9 +164,20 @@
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e0e0' }
+                }
+            },
             scales: {
+                x: {
+                    ticks: { color: '#e0e0e0' },
+                    grid: { color: 'rgba(224, 224, 224, 0.1)' }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { color: '#e0e0e0' },
+                    grid: { color: 'rgba(224, 224, 224, 0.1)' }
                 }
             }
         }

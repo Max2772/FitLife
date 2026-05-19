@@ -336,6 +336,241 @@
             animation: fadeInUp 0.6s ease-out;
         }
 
+        /* Dark content pages (statistics, charts, forms) */
+        .dark-page {
+            padding-top: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        .dark-page h1,
+        .dark-page h2 {
+            color: var(--text-light);
+        }
+
+        .dark-page .breadcrumb {
+            background: var(--dark-card);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .dark-page .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .dark-page .breadcrumb-item a:hover {
+            color: var(--secondary-color);
+        }
+
+        .dark-page .breadcrumb-item.active {
+            color: var(--text-muted);
+        }
+
+        .dark-page .breadcrumb-item + .breadcrumb-item::before {
+            color: var(--text-muted);
+        }
+
+        .dark-page .card-header {
+            background: rgba(255, 69, 0, 0.12);
+            border-bottom: 1px solid rgba(255, 69, 0, 0.2);
+            color: var(--text-light);
+        }
+
+        .dark-page .card-header h5,
+        .dark-page .card-header h6 {
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .dark-page .card-body,
+        .dark-page .card-body p,
+        .dark-page .card-text,
+        .dark-page .card-body ul li {
+            color: var(--text-light);
+        }
+
+        .dark-page .card-title {
+            color: var(--text-light);
+        }
+
+        .dark-page .card-body strong,
+        .dark-page strong {
+            color: var(--text-light);
+        }
+
+        .dark-page a:not(.btn):not(.nav-link):not(.navbar-brand) {
+            color: var(--primary-color);
+        }
+
+        .dark-page a:not(.btn):not(.nav-link):not(.navbar-brand):hover {
+            color: var(--secondary-color);
+        }
+
+        .dark-page .text-muted,
+        .dark-page small.text-muted,
+        .dark-page .form-text {
+            color: var(--text-muted) !important;
+        }
+
+        .dark-page .text-primary {
+            color: #ff6b35 !important;
+        }
+
+        .dark-page .text-success {
+            color: #4ade80 !important;
+        }
+
+        .dark-page .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        .dark-page .text-info {
+            color: #38bdf8 !important;
+        }
+
+        .dark-page .table {
+            color: var(--text-light);
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--text-light);
+            --bs-table-striped-color: var(--text-light);
+            --bs-table-hover-color: var(--text-light);
+        }
+
+        .dark-page .table thead th,
+        .dark-page .table tfoot th {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: rgba(255, 69, 0, 0.2);
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .dark-page .table tbody td {
+            border-color: rgba(255, 69, 0, 0.1);
+            color: var(--text-light);
+        }
+
+        .dark-page .table tbody tr:hover {
+            background: rgba(255, 69, 0, 0.05);
+        }
+
+        .dark-page .border-bottom {
+            border-color: rgba(255, 69, 0, 0.15) !important;
+        }
+
+        .dark-page hr {
+            border-color: rgba(255, 69, 0, 0.2);
+        }
+
+        .dark-page .form-label {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .dark-page .form-control,
+        .dark-page .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            color: var(--text-light);
+        }
+
+        .dark-page .form-control:focus,
+        .dark-page .form-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-color);
+            color: var(--text-light);
+            box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
+        }
+
+        .dark-page .form-select option {
+            background: var(--dark-card);
+            color: var(--text-light);
+        }
+
+        .dark-page .input-group-text {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: rgba(255, 69, 0, 0.2);
+            color: var(--text-light);
+        }
+
+        .dark-page .form-check-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .dark-page .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .dark-page .form-check-label {
+            color: var(--text-light);
+        }
+
+        .dark-page .btn-primary,
+        .dark-page .btn-outline-primary:hover {
+            color: var(--text-light);
+        }
+
+        .dark-page .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+        }
+
+        .dark-page .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text-light);
+        }
+
+        .dark-page .btn-outline-secondary {
+            border: 2px solid rgba(224, 224, 224, 0.4);
+            color: var(--text-light);
+            background: transparent;
+        }
+
+        .dark-page .btn-outline-secondary:hover {
+            background: rgba(224, 224, 224, 0.1);
+            border-color: var(--text-light);
+            color: var(--text-light);
+        }
+
+        .dark-page .btn-outline-success {
+            border: 2px solid #4ade80;
+            color: #4ade80;
+            background: transparent;
+        }
+
+        .dark-page .btn-outline-success:hover {
+            background: #4ade80;
+            color: var(--dark-bg);
+            border-color: #4ade80;
+        }
+
+        .dark-page .btn-outline-info {
+            border: 2px solid #38bdf8;
+            color: #38bdf8;
+            background: transparent;
+        }
+
+        .dark-page .btn-outline-info:hover {
+            background: #38bdf8;
+            color: var(--dark-bg);
+            border-color: #38bdf8;
+        }
+
+        .dark-page .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-left: 4px solid #3b82f6;
+            color: var(--text-light);
+        }
+
+        .dark-page .alert-info strong {
+            color: #38bdf8;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .navbar-brand {
