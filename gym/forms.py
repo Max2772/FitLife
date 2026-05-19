@@ -12,6 +12,21 @@ from .models import (
 from .utils import calculate_age, format_belarus_phone, validate_minimum_age
 
 
+def get_ordered_trainers():
+    return Trainer.objects.order_by('last_name', 'first_name')
+
+
+def setup_trainer_field(field, *, empty_label=None, required=None):
+    """Единые настройки выпадающего списка тренеров из БД."""
+    field.queryset = get_ordered_trainers()
+    field.label_from_instance = lambda trainer: trainer.full_name
+    if empty_label is not None:
+        field.empty_label = empty_label
+    if required is not None:
+        field.required = required
+    field.widget.attrs.setdefault('class', 'form-select')
+
+
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, label="Email")
     first_name = forms.CharField(label="Имя", max_length=100)
@@ -127,8 +142,11 @@ class ReviewForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['trainer'].widget.attrs.update({'class': 'form-select'})
-        self.fields['trainer'].required = False
+        setup_trainer_field(
+            self.fields['trainer'],
+            empty_label='Общий отзыв о зале',
+            required=False,
+        )
 
 
 class PromocodeForm(forms.ModelForm):
@@ -176,7 +194,8 @@ class TrainingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['training_type'].widget.attrs.update({'class': 'form-select'})
-        self.fields['trainers'].widget.attrs.update({'class': 'form-select', 'multiple': 'multiple'})
+        setup_trainer_field(self.fields['trainers'], required=True)
+        self.fields['trainers'].widget.attrs.update({'multiple': 'multiple'})
         self.fields['hall'].widget.attrs.update({'class': 'form-select'})
         self.fields['end_time'].required = False
 
@@ -195,8 +214,9 @@ class PersonalTrainingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for name in ('client', 'trainer', 'training_type'):
-            self.fields[name].widget.attrs.update({'class': 'form-select'})
+        self.fields['client'].widget.attrs.update({'class': 'form-select'})
+        setup_trainer_field(self.fields['trainer'], required=True)
+        self.fields['training_type'].widget.attrs.update({'class': 'form-select'})
 
 
 class TrainerForm(forms.ModelForm):

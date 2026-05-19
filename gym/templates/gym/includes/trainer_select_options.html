@@ -1,0 +1,3 @@
+{% for trainer in trainers %}
+<option value="{{ trainer.id }}"{% if selected_id and trainer.id == selected_id %} selected{% endif %}>{{ trainer.full_name }}{% if trainer.specialization %} — {{ trainer.specialization }}{% endif %}</option>
+{% endfor %}

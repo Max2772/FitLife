@@ -27,6 +27,7 @@ from django.utils import timezone
 from .forms import (
     RegisterForm, MembershipForm, TrainingBookingForm, ReviewForm,
     PromocodeForm, TrainingForm, PersonalTrainingForm, TrainerForm,
+    get_ordered_trainers,
 )
 from .models import (
     Client, Trainer, Membership, MembershipType, Training, TrainingType,
@@ -57,7 +58,7 @@ def about_company_view(request):
 
 
 def contacts_view(request):
-    trainers = Trainer.objects.all()
+    trainers = get_ordered_trainers()
     company = CompanyInfo.objects.first()
     return render(request, 'gym/contacts.html', {
         'trainers': trainers,
@@ -114,7 +115,7 @@ def halls_view(request):
 
 
 def trainers_view(request):
-    trainers = Trainer.objects.all()
+    trainers = get_ordered_trainers()
     return render(request, 'gym/trainers.html', {'trainers': trainers})
 
 
@@ -328,7 +329,11 @@ def book_training_view(request):
     else:
         form = TrainingBookingForm()
 
-    return render(request, 'gym/book_training.html', {'form': form})
+    return render(request, 'gym/book_training.html', {
+        'form': form,
+        'trainers': get_ordered_trainers(),
+        'today': date.today(),
+    })
 
 
 @login_required
@@ -379,6 +384,12 @@ def add_promocode_view(request):
 
 @staff_member_required
 def add_training_view(request):
+    current_trainer_id = None
+    try:
+        current_trainer_id = Trainer.objects.get(user=request.user).pk
+    except Trainer.DoesNotExist:
+        pass
+
     if request.method == 'POST':
         form = TrainingForm(request.POST)
         if form.is_valid():
@@ -386,7 +397,11 @@ def add_training_view(request):
             return redirect('trainer_dashboard')
     else:
         form = TrainingForm()
-    return render(request, 'gym/add_training.html', {'form': form})
+    return render(request, 'gym/add_training.html', {
+        'form': form,
+        'trainers': get_ordered_trainers(),
+        'current_trainer_id': current_trainer_id,
+    })
 
 
 @login_required

@@ -90,11 +90,7 @@
                         <label for="trainer" class="form-label">Тренер</label>
                         <select class="form-select" id="trainer" name="trainer" required>
                             <option value="">Выберите тренера</option>
-                            {% for trainer in trainers %}
-                            <option value="{{ trainer.id }}" {% if trainer.id == current_trainer_id %}selected{% endif %}>
-                                {{ trainer.user.get_full_name }} - {{ trainer.specialization }}
-                            </option>
-                            {% endfor %}
+                            {% include 'gym/includes/trainer_select_options.html' with selected_id=current_trainer_id %}
                         </select>
                     </div>
 

@@ -278,9 +278,7 @@
                             <label for="trainer" class="form-label">Выбор тренера (необязательно)</label>
                             <select class="form-select" id="trainer" name="trainer">
                                 <option value="">Без предпочтений</option>
-                                {% for trainer in trainers %}
-                                <option value="{{ trainer.id }}">{{ trainer.user.get_full_name }} - {{ trainer.specialization }}</option>
-                                {% endfor %}
+                                {% include 'gym/includes/trainer_select_options.html' %}
                             </select>
                             <small class="form-text text-muted">Если не выбрать тренера, он будет назначен автоматически</small>
                         </div>
