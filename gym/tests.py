@@ -533,6 +533,20 @@ class RegisterFormTests(TestCase):
 
 
 class UtilsTests(TestCase):
+    def test_build_text_calendar_has_grid(self):
+        from gym.utils import build_text_calendar
+        text = build_text_calendar(2026, 5, highlight_day=20)
+        self.assertIn('Май 2026', text)
+        self.assertIn('Пн  Вт  Ср', text)
+        self.assertIn('[20]', text)
+        self.assertIn('\n', text)
+
+    def test_text_calendar_on_main_page(self):
+        resp = TestClient().get(reverse('main'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Календарь месяца')
+        self.assertContains(resp, 'Пн  Вт  Ср')
+
     def test_format_phone(self):
         from gym.utils import format_belarus_phone
         self.assertEqual(format_belarus_phone('+375291234567'), '+375 (29) 123-45-67')

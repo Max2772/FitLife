@@ -1,0 +1,18 @@
+[run]
+source = gym,LB5
+omit =
+    */migrations/*
+    */management/*
+    */tests.py
+    manage.py
+    */wsgi.py
+    */asgi.py
+
+[report]
+show_missing = True
+skip_covered = False
+precision = 1
+fail_under = 80
+
+[html]
+directory = htmlcov

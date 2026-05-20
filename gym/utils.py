@@ -1,4 +1,5 @@
 """Вспомогательные функции для FitLife Gym."""
+import calendar
 import re
 from datetime import date
 from decimal import Decimal
@@ -84,6 +85,43 @@ def get_valid_promocode_for_membership(code, membership_type):
     if promo.valid_until and promo.valid_until < date.today():
         return None, 'Промокод истёк.'
     return promo, None
+
+
+MONTH_NAMES_RU = (
+    '',
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
+)
+
+
+def build_text_calendar(year=None, month=None, *, highlight_day=None):
+    """
+    Текстовая сетка календаря на месяц (понедельник — первый день недели).
+    Текущий день отмечается в квадратных скобках, например [20].
+    """
+    today = date.today()
+    year = year or today.year
+    month = month or today.month
+    if highlight_day is None and today.year == year and today.month == month:
+        highlight_day = today.day
+
+    cal = calendar.Calendar(firstweekday=0)
+    title = f"{MONTH_NAMES_RU[month]} {year}".center(28)
+    header = "Пн  Вт  Ср  Чт  Пт  Сб  Вс"
+    lines = [title, header]
+
+    for week in cal.monthdayscalendar(year, month):
+        row = []
+        for day in week:
+            if day == 0:
+                row.append("    ")
+            elif day == highlight_day:
+                row.append(f"[{day:2d}]")
+            else:
+                row.append(f" {day:2d} ")
+        lines.append("".join(row))
+
+    return "\n".join(lines)
 
 
 def dual_datetime_display(dt):
