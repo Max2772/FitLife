@@ -307,6 +307,22 @@ class AuthenticatedUserTests(BaseTestCase):
         self.training.refresh_from_db()
         self.assertTrue(self.training.participants.filter(pk=self.client_obj.pk).exists())
 
+    def test_book_training_post_by_session(self):
+        resp = self.client.post(reverse('book_training'), {
+            'session': self.training.pk,
+            'agree': True,
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(self.training.participants.filter(pk=self.client_obj.pk).exists())
+
+    def test_book_training_with_type_filter(self):
+        resp = self.client.get(
+            reverse('book_training') + f'?type={self.training_type.pk}'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, self.training_type.name)
+        self.assertContains(resp, 'session')
+
     def test_book_training_post_personal(self):
         personal_date = date.today() + timedelta(days=5)
         resp = self.client.post(reverse('book_training'), {

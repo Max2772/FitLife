@@ -335,7 +335,7 @@
                         <i class="fas fa-info-circle"></i> Подробнее
                     </a>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'book_training' %}" class="btn btn-primary btn-sm">
+                    <a href="{% url 'book_training' %}?type={{ training.id }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-calendar-check"></i> Записаться
                     </a>
                     {% endif %}

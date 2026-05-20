@@ -197,8 +197,8 @@ def training_detail_view(request, pk):
             date__gte=date.today(),
         )
         .select_related('hall')
-        .prefetch_related('trainers')
-        .order_by('date', 'time')[:5]
+        .prefetch_related('trainers', 'participants')
+        .order_by('date', 'time')[:10]
     )
     type_trainers = (
         Trainer.objects.filter(trainings__training_type=training_type)
@@ -427,6 +427,38 @@ def _create_personal_training_from_booking(client, cleaned_data):
     )
 
 
+def _booking_form_kwargs_from_request(request):
+    """Параметры GET для формы записи: type, training, trainer."""
+    kwargs = {}
+    training_type = None
+    type_id = request.GET.get('type')
+    if type_id:
+        try:
+            training_type = TrainingType.objects.get(pk=int(type_id))
+            kwargs['training_type_id'] = training_type.pk
+        except (TypeError, ValueError, TrainingType.DoesNotExist):
+            training_type = None
+    training_id = request.GET.get('training')
+    if training_id:
+        try:
+            kwargs['initial_training_id'] = int(training_id)
+            if training_type is None:
+                slot = Training.objects.filter(pk=kwargs['initial_training_id']).first()
+                if slot:
+                    kwargs['training_type_id'] = slot.training_type_id
+                    training_type = slot.training_type
+        except (TypeError, ValueError):
+            pass
+    trainer_id = request.GET.get('trainer')
+    trainer_initial = None
+    if trainer_id:
+        try:
+            trainer_initial = int(trainer_id)
+        except (TypeError, ValueError):
+            pass
+    return kwargs, training_type, trainer_initial
+
+
 @login_required
 def book_training_view(request):
     try:
@@ -434,8 +466,10 @@ def book_training_view(request):
     except Client.DoesNotExist:
         return HttpResponseForbidden("Вы не зарегистрированы как клиент.")
 
+    form_kwargs, training_type, trainer_initial = _booking_form_kwargs_from_request(request)
+
     if request.method == 'POST':
-        form = TrainingBookingForm(request.POST)
+        form = TrainingBookingForm(request.POST, **form_kwargs)
         form.client = client
         if form.is_valid():
             if form.cleaned_data.get('book_personal'):
@@ -444,23 +478,26 @@ def book_training_view(request):
             else:
                 training = form.cleaned_data['training']
                 training.participants.add(client)
-                messages.success(request, 'Вы успешно записаны на тренировку.')
+                messages.success(
+                    request,
+                    f'Вы записаны на «{training.training_type}» '
+                    f'({training.date:%d.%m.%Y} в {training.time:%H:%M}).',
+                )
             return redirect('profile')
     else:
-        form = TrainingBookingForm()
-        trainer_id = request.GET.get('trainer')
-        if trainer_id:
-            try:
-                form.fields['trainer'].initial = int(trainer_id)
-            except (TypeError, ValueError):
-                pass
+        form = TrainingBookingForm(**form_kwargs)
+        if trainer_initial:
+            form.fields['trainer'].initial = trainer_initial
 
-    trainer_initial = form['trainer'].value() if form.is_bound else form.fields['trainer'].initial
+    has_sessions = form.fields['session'].queryset.exists()
+    trainer_value = form['trainer'].value() if form.is_bound else form.fields['trainer'].initial
     return render(request, 'gym/book_training.html', {
         'form': form,
         'trainers': get_ordered_trainers(),
         'today': date.today(),
-        'selected_trainer_id': trainer_initial,
+        'selected_trainer_id': trainer_value,
+        'training_type': training_type,
+        'has_sessions': has_sessions,
     })
 
 

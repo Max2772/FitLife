@@ -45,25 +45,37 @@
                 {% if upcoming_trainings %}
                 <ul class="list-unstyled mb-0">
                     {% for session in upcoming_trainings %}
-                    <li class="mb-3 pb-3 border-bottom">
-                        <strong>{{ session.date|date:"d.m.Y" }}</strong>
-                        {% if session.end_time %}
-                        — {{ session.time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}
-                        {% else %}
-                        — с {{ session.time|time:"H:i" }}
+                    <li class="mb-3 pb-3 border-bottom d-flex flex-wrap justify-content-between align-items-start gap-2">
+                        <div>
+                            <strong>{{ session.date|date:"d.m.Y" }}</strong>
+                            {% if session.end_time %}
+                            — {{ session.time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}
+                            {% else %}
+                            — с {{ session.time|time:"H:i" }}
+                            {% endif %}
+                            {% if session.hall %}
+                            <br><span class="text-muted">Зал: {{ session.hall.name }}</span>
+                            {% endif %}
+                            {% with tlist=session.trainers.all %}
+                            {% if tlist %}
+                            <br><span class="text-muted">Тренеры:
+                                {% for tr in tlist %}
+                                <a href="{% url 'trainer_detail' tr.id %}">{{ tr.first_name }} {{ tr.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                            {% endwith %}
+                            <br><span class="text-muted">Мест: {{ session.participants.count }} / {{ session.training_type.max_participants }}</span>
+                        </div>
+                        {% if user.is_authenticated %}
+                            {% if session.participants.count < session.training_type.max_participants %}
+                            <a href="{% url 'book_training' %}?training={{ session.pk }}" class="btn btn-success btn-sm flex-shrink-0">
+                                <i class="fas fa-calendar-check"></i> Записаться
+                            </a>
+                            {% else %}
+                            <span class="badge bg-secondary flex-shrink-0">Мест нет</span>
+                            {% endif %}
                         {% endif %}
-                        {% if session.hall %}
-                        <br><span class="text-muted">Зал: {{ session.hall.name }}</span>
-                        {% endif %}
-                        {% with tlist=session.trainers.all %}
-                        {% if tlist %}
-                        <br><span class="text-muted">Тренеры:
-                            {% for tr in tlist %}
-                            <a href="{% url 'trainer_detail' tr.id %}">{{ tr.first_name }} {{ tr.last_name }}</a>{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </span>
-                        {% endif %}
-                        {% endwith %}
                     </li>
                     {% endfor %}
                 </ul>
@@ -144,7 +156,7 @@
                 <hr>
 
                 {% if user.is_authenticated %}
-                    <a href="{% url 'book_training' %}" class="btn btn-success btn-lg w-100 mb-2">Записаться на занятие</a>
+                    <a href="{% url 'book_training' %}?type={{ training.id }}" class="btn btn-success btn-lg w-100 mb-2">Записаться на занятие</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100 mb-2">Войти для записи</a>
                 {% endif %}

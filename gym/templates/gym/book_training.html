@@ -109,24 +109,6 @@
         resize: vertical;
     }
 
-    .card.bg-light {
-        background: rgba(255, 69, 0, 0.1) !important;
-        border: 2px solid var(--primary-color);
-    }
-
-    .card.bg-light h6 {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .card.bg-light h3 {
-        color: var(--primary-color);
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-    }
-
     .form-check-input {
         background-color: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 69, 0, 0.3);
@@ -209,15 +191,37 @@
         line-height: 1.8;
     }
 
+    .booking-type-banner {
+        background: rgba(255, 69, 0, 0.12);
+        border: 1px solid rgba(255, 69, 0, 0.35);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-light);
+    }
+
+    .booking-type-banner a {
+        color: var(--primary-color);
+    }
+
+    .booking-section-title {
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .manual-booking-block {
+        border-top: 1px solid rgba(255, 69, 0, 0.2);
+        padding-top: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .manual-booking-block.is-disabled {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
     @media (max-width: 768px) {
-        .page-header h1 {
-            font-size: 2.5rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
         .btn-success, .btn-secondary {
             width: 100%;
             margin-bottom: 0.5rem;
@@ -242,8 +246,15 @@
         <div class="col-md-8 offset-md-2">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Выберите дату и время</h5>
-                    <form method="post">
+                    {% if training_type %}
+                    <div class="booking-type-banner">
+                        <i class="fas fa-dumbbell"></i>
+                        Направление: <strong>{{ training_type.name }}</strong>
+                        <a href="{% url 'training_detail' training_type.pk %}" class="ms-2">Подробнее о формате</a>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{{ request.get_full_path }}" id="booking-form">
                         {% csrf_token %}
 
                         {% if form.errors %}
@@ -261,36 +272,61 @@
                         </div>
                         {% endif %}
 
-                        <div class="mb-3">
-                            <label for="date" class="form-label">Дата тренировки</label>
-                            <input type="date" class="form-control{% if form.date.errors %} is-invalid{% endif %}" id="date" name="date" required min="{{ today|date:'Y-m-d' }}" value="{{ form.date.value|default:'' }}">
-                        </div>
+                        <h5 class="booking-section-title"><i class="fas fa-users"></i> Групповое занятие</h5>
 
+                        {% if has_sessions %}
                         <div class="mb-3">
-                            <label for="time" class="form-label">Время начала</label>
-                            <select class="form-select{% if form.time.errors %} is-invalid{% endif %}" id="time" name="time" required>
-                                <option value="">Выберите время</option>
-                                {% for value, label in form.fields.time.widget.choices %}
-                                {% if value %}
-                                <option value="{{ value }}"{% if form.time.value == value %} selected{% endif %}>{{ label }}</option>
-                                {% endif %}
+                            <label for="session" class="form-label">Занятие из расписания</label>
+                            <select class="form-select{% if form.session.errors %} is-invalid{% endif %}" id="session" name="session">
+                                <option value="">— Выберите занятие —</option>
+                                {% for option in form.fields.session.queryset %}
+                                <option value="{{ option.pk }}"{% if form.session.value|stringformat:"s" == option.pk|stringformat:"s" %} selected{% endif %}>
+                                    {{ option.date|date:"d.m.Y" }} {{ option.time|time:"H:i" }} — {{ option.training_type }}{% with tlist=option.trainers.all %}{% if tlist %}, {% for tr in tlist %}{{ tr.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% endwith %}{% if option.hall %}, {{ option.hall.name }}{% endif %} ({{ option.participants.count }}/{{ option.training_type.max_participants }} мест)
+                                </option>
                                 {% endfor %}
                             </select>
+                            <small class="form-text text-muted">Выберите конкретный слот — дату и время подставятся автоматически</small>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="trainer" class="form-label">Выбор тренера (необязательно)</label>
-                            <select class="form-select{% if form.trainer.errors %} is-invalid{% endif %}" id="trainer" name="trainer">
-                                <option value="">Без предпочтений</option>
-                                {% include 'gym/includes/trainer_select_options.html' with selected_id=selected_trainer_id %}
-                            </select>
-                            <small class="form-text text-muted">Если группового занятия нет, выберите тренера для индивидуальной записи</small>
+                        {% else %}
+                        <div class="alert alert-warning mb-3">
+                            {% if training_type %}
+                            Сейчас нет свободных групповых занятий по направлению «{{ training_type.name }}».
+                            <a href="{% url 'training_detail' training_type.pk %}">Посмотреть расписание</a> или запишитесь на индивидуальное занятие ниже.
+                            {% else %}
+                            Сейчас нет свободных мест в групповом расписании. Выберите направление на странице
+                            <a href="{% url 'trainings' %}">тренировок</a> или запишитесь индивидуально ниже.
+                            {% endif %}
                         </div>
+                        {% endif %}
 
-                        <div class="mb-3">
-                            <label for="participants" class="form-label">Количество участников</label>
-                            <input type="number" class="form-control{% if form.participants.errors %} is-invalid{% endif %}" id="participants" name="participants" value="{{ form.participants.value|default:'1' }}" min="1" max="10">
-                            <small class="form-text text-muted">Для групповых тренировок</small>
+                        <div class="manual-booking-block" id="manual-booking">
+                            <h5 class="booking-section-title"><i class="fas fa-user-clock"></i> Индивидуальная запись</h5>
+                            <p class="form-text text-muted mb-3">Укажите дату, время и тренера, если записываетесь на персональное занятие</p>
+
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Дата</label>
+                                <input type="date" class="form-control{% if form.date.errors %} is-invalid{% endif %}" id="date" name="date" min="{{ today|date:'Y-m-d' }}" value="{{ form.date.value|default:'' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="time" class="form-label">Время начала</label>
+                                <select class="form-select{% if form.time.errors %} is-invalid{% endif %}" id="time" name="time">
+                                    <option value="">Выберите время</option>
+                                    {% for value, label in form.fields.time.widget.choices %}
+                                    {% if value %}
+                                    <option value="{{ value }}"{% if form.time.value == value %} selected{% endif %}>{{ label }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="trainer" class="form-label">Тренер <span class="text-danger">*</span> для индивидуальной записи</label>
+                                <select class="form-select{% if form.trainer.errors %} is-invalid{% endif %}" id="trainer" name="trainer">
+                                    <option value="">Без предпочтений</option>
+                                    {% include 'gym/includes/trainer_select_options.html' with selected_id=selected_trainer_id %}
+                                </select>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -312,12 +348,11 @@
             </div>
 
             <div class="alert alert-info mt-3">
-                <h6>Важная информация:</h6>
+                <h6>Как записаться на групповую тренировку</h6>
                 <ul class="mb-0">
+                    <li>На странице направления выберите слот в расписании и нажмите «Записаться»</li>
+                    <li>Или на этой форме выберите занятие из списка «Занятие из расписания»</li>
                     <li>Запись подтверждается автоматически</li>
-                    <li>Отменить запись можно за 24 часа до начала</li>
-                    <li>При опоздании более 15 минут тренировка считается пропущенной</li>
-                    <li>Необходимо иметь при себе спортивную форму и полотенце</li>
                 </ul>
             </div>
         </div>
@@ -328,18 +363,33 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const sessionSelect = document.getElementById('session');
+        const manualBlock = document.getElementById('manual-booking');
         const dateInput = document.getElementById('date');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
-
-        const params = new URLSearchParams(window.location.search);
-        const trainerId = params.get('trainer');
+        const timeSelect = document.getElementById('time');
         const trainerSelect = document.getElementById('trainer');
-        if (trainerId && trainerSelect) {
-            const opt = trainerSelect.querySelector('option[value="' + trainerId + '"]');
-            if (opt) {
-                trainerSelect.value = trainerId;
+
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+        }
+
+        function toggleManualBlock() {
+            if (!sessionSelect || !manualBlock) return;
+            const hasSession = sessionSelect.value !== '';
+            manualBlock.classList.toggle('is-disabled', hasSession);
+            if (hasSession) {
+                if (dateInput) dateInput.removeAttribute('required');
+                if (timeSelect) timeSelect.removeAttribute('required');
+            } else {
+                if (dateInput) dateInput.removeAttribute('required');
+                if (timeSelect) timeSelect.removeAttribute('required');
             }
+        }
+
+        if (sessionSelect) {
+            sessionSelect.addEventListener('change', toggleManualBlock);
+            toggleManualBlock();
         }
     });
 </script>

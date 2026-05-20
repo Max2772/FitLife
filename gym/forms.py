@@ -22,6 +22,38 @@ def get_ordered_trainers():
     return Trainer.objects.order_by('last_name', 'first_name')
 
 
+def get_available_trainings_queryset(training_type_id=None):
+    """Групповые занятия с свободными местами (не отменены, дата в будущем)."""
+    qs = (
+        Training.objects.filter(is_cancelled=False, date__gte=date.today())
+        .select_related('training_type', 'hall')
+        .prefetch_related('trainers', 'participants')
+        .order_by('date', 'time')
+    )
+    if training_type_id:
+        qs = qs.filter(training_type_id=training_type_id)
+    available_ids = [
+        t.pk for t in qs
+        if t.participants.count() < t.training_type.max_participants
+    ]
+    return Training.objects.filter(pk__in=available_ids).select_related(
+        'training_type', 'hall'
+    ).prefetch_related('trainers', 'participants').order_by('date', 'time')
+
+
+def format_training_session_label(training):
+    taken = training.participants.count()
+    total = training.training_type.max_participants
+    trainers = ', '.join(tr.full_name for tr in training.trainers.all()[:2])
+    hall = f', {training.hall.name}' if training.hall else ''
+    trainer_part = f' — {trainers}' if trainers else ''
+    return (
+        f'{training.date:%d.%m.%Y} {training.time:%H:%M} — '
+        f'{training.training_type}{trainer_part}{hall} '
+        f'({taken}/{total} мест)'
+    )
+
+
 def setup_trainer_field(field, *, empty_label=None, required=None):
     """Единые настройки выпадающего списка тренеров из БД."""
     field.queryset = get_ordered_trainers()
@@ -107,12 +139,21 @@ class MembershipForm(forms.ModelForm):
 
 
 class TrainingBookingForm(forms.Form):
+    session = forms.ModelChoiceField(
+        queryset=Training.objects.none(),
+        required=False,
+        label="Занятие из расписания",
+        empty_label="— Выберите занятие —",
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
     date = forms.DateField(
         label="Дата тренировки",
+        required=False,
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
     )
     time = forms.TimeField(
         label="Время начала",
+        required=False,
         widget=forms.Select(attrs={'class': 'form-select'}),
     )
     trainer = forms.ModelChoiceField(
@@ -139,8 +180,13 @@ class TrainingBookingForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, training_type_id=None, initial_training_id=None, **kwargs):
         super().__init__(*args, **kwargs)
+        session_qs = get_available_trainings_queryset(training_type_id)
+        self.fields['session'].queryset = session_qs
+        self.fields['session'].label_from_instance = format_training_session_label
+        if initial_training_id and session_qs.filter(pk=initial_training_id).exists():
+            self.fields['session'].initial = initial_training_id
         setup_trainer_field(
             self.fields['trainer'],
             empty_label='Без предпочтений',
@@ -155,8 +201,8 @@ class TrainingBookingForm(forms.Form):
         )
 
     def clean_date(self):
-        booking_date = self.cleaned_data['date']
-        if booking_date < date.today():
+        booking_date = self.cleaned_data.get('date')
+        if booking_date and booking_date < date.today():
             raise ValidationError('Дата не может быть в прошлом.')
         return booking_date
 
@@ -165,10 +211,26 @@ class TrainingBookingForm(forms.Form):
         if self.errors:
             return cleaned_data
 
-        booking_date = cleaned_data['date']
-        booking_time = cleaned_data['time']
-        trainer = cleaned_data.get('trainer')
+        session = cleaned_data.get('session')
         client = getattr(self, 'client', None)
+
+        if session:
+            if client and session.participants.filter(pk=client.pk).exists():
+                raise ValidationError('Вы уже записаны на это занятие.')
+            if session.participants.count() >= session.training_type.max_participants:
+                raise ValidationError('На выбранное занятие нет свободных мест.')
+            cleaned_data['training'] = session
+            cleaned_data['book_personal'] = False
+            return cleaned_data
+
+        booking_date = cleaned_data.get('date')
+        booking_time = cleaned_data.get('time')
+        trainer = cleaned_data.get('trainer')
+
+        if not booking_date or not booking_time:
+            raise ValidationError(
+                'Выберите занятие из расписания или укажите дату и время для индивидуальной записи.'
+            )
 
         trainings = Training.objects.filter(
             is_cancelled=False,
