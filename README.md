@@ -45,7 +45,7 @@ FitLife Gym - это полнофункциональный веб-сайт тр
 
 - **Backend**: Django 5.2, Python 3.11
 - **Frontend**: Bootstrap 5, HTML5, CSS3
-- **База данных**: SQLite3
+- **База данных**: PostgreSQL (Docker) / SQLite только для автотестов
 - **Визуализация**: Matplotlib, Pandas
 - **Дополнительно**: Django Signals для логирования сессий
 
@@ -82,8 +82,20 @@ python manage.py createsuperuser
 python manage.py load_test_data
 ```
 
-### 7. Запуск сервера
+### 7. Запуск через Docker (PostgreSQL)
 ```bash
+docker compose up --build
+```
+
+Миграции применяются автоматически. Сайт: http://127.0.0.1:8000/
+
+Переменные БД — в `.env.example` (можно скопировать в `.env`).
+
+### 8. Локальный запуск (без Docker)
+Поднимите PostgreSQL (или `docker compose up db -d`) и задайте переменные из `.env.example`, затем:
+```bash
+pip install -r requirements.txt
+python manage.py migrate
 python manage.py runserver
 ```
 
@@ -121,7 +133,7 @@ LB5/
 │   ├── urls.py                 # Главные URL
 │   └── wsgi.py
 ├── media/                       # Загруженные файлы
-├── db.sqlite3                   # База данных
+├── docker-compose.yml           # Web + PostgreSQL
 ├── manage.py                    # Утилита управления Django
 └── README.md                    # Этот файл
 ```
