@@ -246,56 +246,60 @@
                     <form method="post">
                         {% csrf_token %}
 
+                        {% if form.errors %}
+                        <div class="alert alert-danger mb-3">
+                            {% if form.non_field_errors %}
+                                {% for error in form.non_field_errors %}
+                                <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            {% endif %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                <p class="mb-0">{{ field.label }}: {{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
                         <div class="mb-3">
                             <label for="date" class="form-label">Дата тренировки</label>
-                            <input type="date" class="form-control" id="date" name="date" required min="{{ today|date:'Y-m-d' }}">
+                            <input type="date" class="form-control{% if form.date.errors %} is-invalid{% endif %}" id="date" name="date" required min="{{ today|date:'Y-m-d' }}" value="{{ form.date.value|default:'' }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="time" class="form-label">Время начала</label>
-                            <select class="form-select" id="time" name="time" required>
+                            <select class="form-select{% if form.time.errors %} is-invalid{% endif %}" id="time" name="time" required>
                                 <option value="">Выберите время</option>
-                                <option value="06:00">06:00</option>
-                                <option value="07:00">07:00</option>
-                                <option value="08:00">08:00</option>
-                                <option value="09:00">09:00</option>
-                                <option value="10:00">10:00</option>
-                                <option value="11:00">11:00</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="15:00">15:00</option>
-                                <option value="16:00">16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                                <option value="19:00">19:00</option>
-                                <option value="20:00">20:00</option>
-                                <option value="21:00">21:00</option>
+                                {% for value, label in form.fields.time.widget.choices %}
+                                {% if value %}
+                                <option value="{{ value }}"{% if form.time.value == value %} selected{% endif %}>{{ label }}</option>
+                                {% endif %}
+                                {% endfor %}
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="trainer" class="form-label">Выбор тренера (необязательно)</label>
-                            <select class="form-select" id="trainer" name="trainer">
+                            <select class="form-select{% if form.trainer.errors %} is-invalid{% endif %}" id="trainer" name="trainer">
                                 <option value="">Без предпочтений</option>
-                                {% include 'gym/includes/trainer_select_options.html' %}
+                                {% include 'gym/includes/trainer_select_options.html' with selected_id=selected_trainer_id %}
                             </select>
-                            <small class="form-text text-muted">Если не выбрать тренера, он будет назначен автоматически</small>
+                            <small class="form-text text-muted">Если группового занятия нет, выберите тренера для индивидуальной записи</small>
                         </div>
 
                         <div class="mb-3">
                             <label for="participants" class="form-label">Количество участников</label>
-                            <input type="number" class="form-control" id="participants" name="participants" value="1" min="1" max="10" required>
+                            <input type="number" class="form-control{% if form.participants.errors %} is-invalid{% endif %}" id="participants" name="participants" value="{{ form.participants.value|default:'1' }}" min="1" max="10">
                             <small class="form-text text-muted">Для групповых тренировок</small>
                         </div>
 
                         <div class="mb-3">
                             <label for="notes" class="form-label">Комментарий (необязательно)</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Укажите особые пожелания или информацию о здоровье"></textarea>
+                            <textarea class="form-control{% if form.notes.errors %} is-invalid{% endif %}" id="notes" name="notes" rows="3" placeholder="Укажите особые пожелания или информацию о здоровье">{{ form.notes.value|default:'' }}</textarea>
                         </div>
 
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                            <input class="form-check-input{% if form.agree.errors %} is-invalid{% endif %}" type="checkbox" id="agree" name="agree"{% if form.agree.value %} checked{% endif %} required>
                             <label class="form-check-label" for="agree">
                                 Я ознакомлен с правилами посещения и <a href="{% url 'privacy_policy' %}" target="_blank">политикой конфиденциальности</a>
                             </label>

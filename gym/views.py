@@ -4,7 +4,7 @@ import json
 import logging
 import statistics as stats_module
 from collections import Counter
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 import matplotlib
@@ -292,11 +292,18 @@ def profile_view(request):
         memberships = Membership.objects.filter(client=client).select_related(
             'membership_type', 'promocode'
         ).order_by('-purchase_date')
-        trainings = Training.objects.filter(
-            participants=client, date__gte=date.today()
-        ).order_by('date', 'time')
+        trainings = (
+            Training.objects.filter(participants=client, date__gte=date.today())
+            .select_related('training_type')
+            .prefetch_related('trainers')
+            .order_by('date', 'time')
+        )
         reviews = Review.objects.filter(client=client).order_by('-created_at')
-        personal_trainings = PersonalTraining.objects.filter(client=client).order_by('-date')[:10]
+        personal_trainings = (
+            PersonalTraining.objects.filter(client=client, date__gte=date.today())
+            .select_related('trainer', 'training_type')
+            .order_by('date', 'start_time')
+        )
         promocodes = Promocode.objects.filter(is_active=True)[:5]
     except Client.DoesNotExist:
         client = None
@@ -391,6 +398,35 @@ def validate_membership_promocode_view(request):
     })
 
 
+def _create_personal_training_from_booking(client, cleaned_data):
+    """Создаёт индивидуальное занятие по данным формы записи."""
+    booking_date = cleaned_data['date']
+    start_time = cleaned_data['time']
+    trainer = cleaned_data['trainer']
+    notes = cleaned_data.get('notes', '')
+    training_type = (
+        TrainingType.objects.filter(training__trainers=trainer).distinct().first()
+        or TrainingType.objects.first()
+    )
+    duration_minutes = training_type.duration_minutes if training_type else 60
+    end_dt = datetime.combine(booking_date, start_time) + timedelta(minutes=duration_minutes)
+    price = (
+        MembershipType.objects.order_by('pk')
+        .values_list('individual_session_price', flat=True)
+        .first()
+    ) or Decimal('30.00')
+    return PersonalTraining.objects.create(
+        client=client,
+        trainer=trainer,
+        training_type=training_type,
+        date=booking_date,
+        start_time=start_time,
+        end_time=end_dt.time(),
+        price=price,
+        notes=notes,
+    )
+
+
 @login_required
 def book_training_view(request):
     try:
@@ -400,19 +436,31 @@ def book_training_view(request):
 
     if request.method == 'POST':
         form = TrainingBookingForm(request.POST)
+        form.client = client
         if form.is_valid():
-            training = form.cleaned_data['training']
-            if training.participants.count() < training.training_type.max_participants:
+            if form.cleaned_data.get('book_personal'):
+                _create_personal_training_from_booking(client, form.cleaned_data)
+                messages.success(request, 'Вы записаны на индивидуальное занятие.')
+            else:
+                training = form.cleaned_data['training']
                 training.participants.add(client)
-                return redirect('profile')
-            form.add_error('training', 'Тренировка заполнена.')
+                messages.success(request, 'Вы успешно записаны на тренировку.')
+            return redirect('profile')
     else:
         form = TrainingBookingForm()
+        trainer_id = request.GET.get('trainer')
+        if trainer_id:
+            try:
+                form.fields['trainer'].initial = int(trainer_id)
+            except (TypeError, ValueError):
+                pass
 
+    trainer_initial = form['trainer'].value() if form.is_bound else form.fields['trainer'].initial
     return render(request, 'gym/book_training.html', {
         'form': form,
         'trainers': get_ordered_trainers(),
         'today': date.today(),
+        'selected_trainer_id': trainer_initial,
     })
 
 

@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -106,18 +107,100 @@ class MembershipForm(forms.ModelForm):
 
 
 class TrainingBookingForm(forms.Form):
-    training = forms.ModelChoiceField(
-        queryset=Training.objects.filter(is_cancelled=False),
-        label="Выберите тренировку",
+    date = forms.DateField(
+        label="Дата тренировки",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+    )
+    time = forms.TimeField(
+        label="Время начала",
         widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+    trainer = forms.ModelChoiceField(
+        queryset=Trainer.objects.none(),
+        required=False,
+        label="Тренер",
+    )
+    participants = forms.IntegerField(
+        min_value=1,
+        max_value=10,
+        initial=1,
+        required=False,
+        label="Количество участников",
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+    )
+    notes = forms.CharField(
+        required=False,
+        label="Комментарий",
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+    )
+    agree = forms.BooleanField(
+        required=True,
+        label="Согласие с правилами",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['training'].queryset = Training.objects.filter(
+        setup_trainer_field(
+            self.fields['trainer'],
+            empty_label='Без предпочтений',
+            required=False,
+        )
+        self.fields['time'].widget = forms.Select(
+            choices=[
+                ('', 'Выберите время'),
+                *((f'{h:02d}:00', f'{h:02d}:00') for h in range(6, 22)),
+            ],
+            attrs={'class': 'form-select'},
+        )
+
+    def clean_date(self):
+        booking_date = self.cleaned_data['date']
+        if booking_date < date.today():
+            raise ValidationError('Дата не может быть в прошлом.')
+        return booking_date
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.errors:
+            return cleaned_data
+
+        booking_date = cleaned_data['date']
+        booking_time = cleaned_data['time']
+        trainer = cleaned_data.get('trainer')
+        client = getattr(self, 'client', None)
+
+        trainings = Training.objects.filter(
             is_cancelled=False,
-            date__gte=date.today(),
-        ).order_by('date', 'time')
+            date=booking_date,
+            time=booking_time,
+        ).select_related('training_type').prefetch_related('participants')
+        if trainer:
+            trainings = trainings.filter(trainers=trainer)
+
+        for training in trainings:
+            if client and training.participants.filter(pk=client.pk).exists():
+                raise ValidationError('Вы уже записаны на эту тренировку.')
+            if training.participants.count() < training.training_type.max_participants:
+                cleaned_data['training'] = training
+                cleaned_data['book_personal'] = False
+                return cleaned_data
+
+        if trainings.exists():
+            raise ValidationError('На выбранное время все места заняты.')
+
+        if trainer:
+            if PersonalTraining.objects.filter(
+                trainer=trainer, date=booking_date, start_time=booking_time,
+            ).exists():
+                raise ValidationError('У выбранного тренера это время уже занято.')
+            cleaned_data['book_personal'] = True
+            return cleaned_data
+
+        raise ValidationError(
+            'На выбранную дату и время нет групповых тренировок. '
+            'Выберите тренера для записи на индивидуальное занятие.'
+        )
 
 
 class ReviewForm(forms.ModelForm):

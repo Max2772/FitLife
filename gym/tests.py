@@ -299,9 +299,32 @@ class AuthenticatedUserTests(BaseTestCase):
 
     def test_book_training_post(self):
         resp = self.client.post(reverse('book_training'), {
-            'training': self.training.pk,
+            'date': self.training.date.isoformat(),
+            'time': self.training.time.strftime('%H:%M'),
+            'agree': True,
         })
         self.assertEqual(resp.status_code, 302)
+        self.training.refresh_from_db()
+        self.assertTrue(self.training.participants.filter(pk=self.client_obj.pk).exists())
+
+    def test_book_training_post_personal(self):
+        personal_date = date.today() + timedelta(days=5)
+        resp = self.client.post(reverse('book_training'), {
+            'date': personal_date.isoformat(),
+            'time': '14:00',
+            'trainer': self.trainer.pk,
+            'agree': True,
+        })
+        self.assertEqual(resp.status_code, 302)
+        from .models import PersonalTraining
+        self.assertTrue(
+            PersonalTraining.objects.filter(
+                client=self.client_obj,
+                trainer=self.trainer,
+                date=personal_date,
+                start_time=time(14, 0),
+            ).exists()
+        )
 
     def test_add_review_page(self):
         resp = self.client.get(reverse('add_review'))
