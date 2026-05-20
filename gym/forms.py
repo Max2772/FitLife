@@ -354,11 +354,15 @@ class PersonalTrainingForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, locked_trainer=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['client'].widget.attrs.update({'class': 'form-select'})
         setup_trainer_field(self.fields['trainer'], required=True)
         self.fields['training_type'].widget.attrs.update({'class': 'form-select'})
+        if locked_trainer is not None:
+            self.fields['trainer'].queryset = Trainer.objects.filter(pk=locked_trainer.pk)
+            self.fields['trainer'].initial = locked_trainer.pk
+            self.fields['trainer'].widget = forms.HiddenInput()
 
 
 class TrainerForm(forms.ModelForm):

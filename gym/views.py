@@ -569,6 +569,38 @@ def add_training_view(request):
     })
 
 
+def _get_linked_trainer(user):
+    try:
+        return Trainer.objects.get(user=user)
+    except Trainer.DoesNotExist:
+        return None
+
+
+def _is_gym_manager(user):
+    """Администратор зала: superuser или staff без привязки к Trainer."""
+    return user.is_superuser or (user.is_staff and _get_linked_trainer(user) is None)
+
+
+def _personal_trainings_queryset_for_user(user):
+    qs = PersonalTraining.objects.select_related('client', 'trainer', 'training_type')
+    if _is_gym_manager(user):
+        return qs.order_by('-date', '-start_time')
+    trainer = _get_linked_trainer(user)
+    if trainer:
+        return qs.filter(trainer=trainer).order_by('-date', '-start_time')
+    return qs.none()
+
+
+def _get_personal_training_for_user(user, pk):
+    session = get_object_or_404(PersonalTraining, pk=pk)
+    if _is_gym_manager(user):
+        return session
+    trainer = _get_linked_trainer(user)
+    if trainer and session.trainer_id == trainer.pk:
+        return session
+    return None
+
+
 @login_required
 def trainer_dashboard_view(request):
     try:
@@ -578,49 +610,98 @@ def trainer_dashboard_view(request):
             return redirect('statistics')
         return HttpResponseForbidden("Вы не являетесь тренером.")
 
-    trainings = Training.objects.filter(trainers=trainer).order_by('-date', '-time')
-    clients = Client.objects.filter(trainings__trainers=trainer).distinct()
-    personal_trainings = PersonalTraining.objects.filter(trainer=trainer).order_by('-date')[:10]
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_end = week_start + timedelta(days=6)
+
+    trainings = (
+        Training.objects.filter(trainers=trainer, is_cancelled=False)
+        .select_related('training_type', 'hall')
+        .prefetch_related('participants')
+        .order_by('date', 'time')
+    )
+    upcoming_trainings = trainings.filter(date__gte=today)[:10]
+    personal_trainings = (
+        PersonalTraining.objects.filter(trainer=trainer, date__gte=today)
+        .select_related('client', 'training_type')
+        .order_by('date', 'start_time')[:10]
+    )
+    clients_qs = Client.objects.filter(
+        Q(trainings__trainers=trainer) | Q(personal_trainings__trainer=trainer)
+    ).distinct()
+    total_clients = clients_qs.count()
+    clients_preview = list(clients_qs[:12])
+    recent_reviews = (
+        Review.objects.filter(trainer=trainer)
+        .select_related('client')
+        .order_by('-created_at')[:5]
+    )
+    avg_rating = (
+        Review.objects.filter(trainer=trainer).aggregate(avg=Avg('rating'))['avg'] or 0
+    )
+    today_group_count = trainings.filter(date=today).count()
+    today_personal_count = PersonalTraining.objects.filter(trainer=trainer, date=today).count()
+    week_trainings_count = trainings.filter(
+        date__gte=week_start, date__lte=week_end
+    ).count()
 
     return render(request, 'gym/trainer_dashboard.html', {
         'trainer': trainer,
-        'trainings': trainings,
-        'clients': clients,
-        'total_clients': clients.count(),
+        'upcoming_trainings': upcoming_trainings,
         'personal_trainings': personal_trainings,
+        'clients': clients_preview,
+        'total_clients': total_clients,
+        'more_clients_count': max(0, total_clients - len(clients_preview)),
+        'recent_reviews': recent_reviews,
+        'avg_rating': avg_rating,
+        'today_sessions': today_group_count + today_personal_count,
+        'week_trainings_count': week_trainings_count,
     })
 
 
 @staff_member_required
 def personal_training_list_view(request):
-    sessions = PersonalTraining.objects.select_related('client', 'trainer', 'training_type')
-    return render(request, 'gym/personal_training_list.html', {'sessions': sessions})
+    sessions = _personal_trainings_queryset_for_user(request.user)
+    return render(request, 'gym/personal_training_list.html', {
+        'sessions': sessions,
+        'is_gym_manager': _is_gym_manager(request.user),
+        'linked_trainer': _get_linked_trainer(request.user),
+    })
 
 
 @staff_member_required
 def personal_training_create_view(request):
+    linked_trainer = _get_linked_trainer(request.user)
+    lock_trainer = linked_trainer if not _is_gym_manager(request.user) else None
+
     if request.method == 'POST':
-        form = PersonalTrainingForm(request.POST)
+        form = PersonalTrainingForm(request.POST, locked_trainer=lock_trainer)
         if form.is_valid():
             form.save()
             messages.success(request, 'Индивидуальное занятие создано.')
             return redirect('personal_training_list')
     else:
-        form = PersonalTrainingForm()
+        form = PersonalTrainingForm(locked_trainer=lock_trainer)
     return render(request, 'gym/personal_training_form.html', {'form': form, 'title': 'Создать занятие'})
 
 
 @staff_member_required
 def personal_training_update_view(request, pk):
-    session = get_object_or_404(PersonalTraining, pk=pk)
+    session = _get_personal_training_for_user(request.user, pk)
+    if session is None:
+        return HttpResponseForbidden("Вы можете редактировать только свои занятия.")
+
+    linked_trainer = _get_linked_trainer(request.user)
+    lock_trainer = linked_trainer if not _is_gym_manager(request.user) else None
+
     if request.method == 'POST':
-        form = PersonalTrainingForm(request.POST, instance=session)
+        form = PersonalTrainingForm(request.POST, instance=session, locked_trainer=lock_trainer)
         if form.is_valid():
             form.save()
             messages.success(request, 'Занятие обновлено.')
             return redirect('personal_training_list')
     else:
-        form = PersonalTrainingForm(instance=session)
+        form = PersonalTrainingForm(instance=session, locked_trainer=lock_trainer)
     return render(request, 'gym/personal_training_form.html', {
         'form': form, 'title': 'Редактировать занятие', 'session': session,
     })
@@ -628,7 +709,10 @@ def personal_training_update_view(request, pk):
 
 @staff_member_required
 def personal_training_delete_view(request, pk):
-    session = get_object_or_404(PersonalTraining, pk=pk)
+    session = _get_personal_training_for_user(request.user, pk)
+    if session is None:
+        return HttpResponseForbidden("Вы можете удалять только свои занятия.")
+
     if request.method == 'POST':
         session.delete()
         messages.success(request, 'Занятие удалено.')
@@ -650,6 +734,8 @@ def client_delete_view(request, pk):
 
 @staff_member_required
 def increase_individual_price_view(request):
+    if not _is_gym_manager(request.user):
+        return HttpResponseForbidden("Изменение цен доступно только администратору.")
     if request.method == 'POST':
         type_id = request.POST.get('membership_type_id')
         new_price = request.POST.get('new_price')

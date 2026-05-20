@@ -532,9 +532,57 @@ class StaffExtraTests(BaseTestCase):
         resp = self.client.get(reverse('personal_training_list'))
         self.assertEqual(resp.status_code, 200)
 
-    def test_increase_individual_price(self):
+    def test_trainer_sees_only_own_personal_trainings(self):
+        from .models import PersonalTraining
+        other_trainer = Trainer.objects.create(
+            first_name='Другой', last_name='Тренер',
+            specialization='Йога', experience_years=3,
+            phone='+375292222222', email='other@test.com',
+            birth_date=date(1988, 5, 5),
+        )
+        PersonalTraining.objects.create(
+            client=self.client_obj,
+            trainer=other_trainer,
+            date=date.today() + timedelta(days=3),
+            start_time=time(12, 0),
+            end_time=time(13, 0),
+            price=Decimal('50.00'),
+        )
+        own = PersonalTraining.objects.create(
+            client=self.client_obj,
+            trainer=self.trainer,
+            date=date.today() + timedelta(days=4),
+            start_time=time(14, 0),
+            end_time=time(15, 0),
+            price=Decimal('50.00'),
+        )
+        resp = self.client.get(reverse('personal_training_list'))
+        self.assertContains(resp, str(own.trainer))
+        self.assertNotContains(resp, str(other_trainer))
+
+    def test_trainer_cannot_delete_others_personal_training(self):
+        from .models import PersonalTraining
+        other_trainer = Trainer.objects.create(
+            first_name='Чужой', last_name='Коллега',
+            specialization='Бокс', experience_years=4,
+            phone='+375293333333', email='peer@test.com',
+            birth_date=date(1989, 6, 6),
+        )
+        foreign = PersonalTraining.objects.create(
+            client=self.client_obj,
+            trainer=other_trainer,
+            date=date.today() + timedelta(days=2),
+            start_time=time(10, 0),
+            end_time=time(11, 0),
+            price=Decimal('40.00'),
+        )
+        resp = self.client.post(reverse('personal_training_delete', args=[foreign.pk]))
+        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(PersonalTraining.objects.filter(pk=foreign.pk).exists())
+
+    def test_increase_individual_price_forbidden_for_trainer(self):
         resp = self.client.get(reverse('increase_individual_price'))
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 403)
 
     def test_promocodes_public(self):
         resp = self.client.get(reverse('promocodes'))
