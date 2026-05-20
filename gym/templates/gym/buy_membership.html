@@ -328,6 +328,10 @@
                 <form method="post">
                     {% csrf_token %}
 
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
                     <div class="mb-3">
                         <label for="membership_type" class="form-label">Выберите тип абонемента</label>
                         {{ form.membership_type }}
@@ -345,6 +349,9 @@
                             {{ form.promo_code_input }}
                             <button class="btn btn-outline-secondary" type="button" onclick="applyPromocode()">Применить</button>
                         </div>
+                        {% if form.promo_code_input.errors %}
+                        <div class="text-danger small mt-1">{{ form.promo_code_input.errors }}</div>
+                        {% endif %}
                         <div id="promocode-message" class="mt-2"></div>
                     </div>
 
@@ -401,9 +408,16 @@
 
 {% block extra_js %}
 <script>
+    const validatePromocodeUrl = "{% url 'validate_membership_promocode' %}";
+
     let originalPrice = 0;
     let discountPercent = 0;
-    let selectedMembershipId = null;
+    let serverFinalPrice = null;
+
+    function getCsrfToken() {
+        const input = document.querySelector('[name=csrfmiddlewaretoken]');
+        return input ? input.value : '';
+    }
 
     function selectMembership(id, name, price, duration) {
         // Remove selection from all cards
@@ -427,7 +441,10 @@
 
         // Update price
         originalPrice = parseFloat(price);
-        selectedMembershipId = id;
+        discountPercent = 0;
+        serverFinalPrice = null;
+        const msg = document.getElementById('promocode-message');
+        if (msg) msg.innerHTML = '';
         updateTotalPrice();
     }
 
@@ -437,14 +454,21 @@
             return;
         }
 
-        const discount = originalPrice * (discountPercent / 100);
-        const newPrice = originalPrice - discount;
+        let newPrice;
+        if (serverFinalPrice !== null) {
+            newPrice = serverFinalPrice;
+        } else {
+            const discount = originalPrice * (discountPercent / 100);
+            newPrice = originalPrice - discount;
+        }
 
         document.getElementById('total-price').textContent = newPrice.toFixed(2) + ' BYN';
 
         if (discountPercent > 0) {
+            const discountAmount = originalPrice - newPrice;
             document.getElementById('discount-info').style.display = 'block';
-            document.getElementById('discount-info').textContent = `Скидка ${discountPercent}%: -${discount.toFixed(2)} BYN`;
+            document.getElementById('discount-info').textContent =
+                `Скидка ${discountPercent}%: -${discountAmount.toFixed(2)} BYN`;
         } else {
             document.getElementById('discount-info').style.display = 'none';
         }
@@ -452,28 +476,64 @@
 
     function applyPromocode() {
         const promocodeInput = document.getElementById('id_promo_code_input');
-        const promocode = promocodeInput ? promocodeInput.value : '';
+        const promocode = promocodeInput ? promocodeInput.value.trim() : '';
         const messageDiv = document.getElementById('promocode-message');
-
-        if (!promocode) {
-            messageDiv.innerHTML = '<div class="alert alert-warning">Введите промокод</div>';
-            return;
-        }
+        const membershipSelect = document.getElementById('id_membership_type');
+        const membershipTypeId = membershipSelect ? membershipSelect.value : '';
 
         if (originalPrice === 0) {
             messageDiv.innerHTML = '<div class="alert alert-warning">Сначала выберите абонемент</div>';
             return;
         }
 
-        // Simulate promocode validation (in real app, this would be an AJAX call)
-        // For demo purposes, accept "WELCOME10" for 10% discount
-        if (promocode.toUpperCase() === 'WELCOME10') {
-            discountPercent = 10;
+        if (!promocode) {
+            discountPercent = 0;
+            serverFinalPrice = null;
             updateTotalPrice();
-            messageDiv.innerHTML = '<div class="alert alert-success">Промокод применен!</div>';
-        } else {
-            messageDiv.innerHTML = '<div class="alert alert-danger">Неверный промокод</div>';
+            messageDiv.innerHTML = '<div class="alert alert-secondary">Промокод сброшен</div>';
+            return;
         }
+
+        const body = new URLSearchParams();
+        body.append('csrfmiddlewaretoken', getCsrfToken());
+        body.append('code', promocode);
+        body.append('membership_type', membershipTypeId);
+
+        messageDiv.innerHTML = '<div class="alert alert-info mb-0">Проверка…</div>';
+
+        fetch(validatePromocodeUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: body,
+        })
+            .then((r) => r.json().then((data) => ({ ok: r.ok, status: r.status, data })))
+            .then(({ ok, data }) => {
+                if (!ok) {
+                    discountPercent = 0;
+                    serverFinalPrice = null;
+                    updateTotalPrice();
+                    const err = (data && data.error) ? data.error : 'Не удалось проверить промокод';
+                    messageDiv.innerHTML = '<div class="alert alert-danger">' + err + '</div>';
+                    return;
+                }
+                if (data.cleared) {
+                    discountPercent = 0;
+                    serverFinalPrice = null;
+                    updateTotalPrice();
+                    messageDiv.innerHTML = '';
+                    return;
+                }
+                discountPercent = data.discount_percent;
+                serverFinalPrice = parseFloat(data.price_final);
+                updateTotalPrice();
+                messageDiv.innerHTML = '<div class="alert alert-success">Промокод применён</div>';
+            })
+            .catch(() => {
+                messageDiv.innerHTML = '<div class="alert alert-danger">Ошибка сети. Попробуйте ещё раз.</div>';
+            });
     }
 
     // Set minimum date to today and update price when membership type changes
@@ -489,12 +549,14 @@
         const membershipSelect = document.getElementById('id_membership_type');
         if (membershipSelect) {
             membershipSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
                 const card = document.querySelector(`.membership-card[data-id="${this.value}"]`);
                 if (card) {
                     const price = parseFloat(card.dataset.price);
                     originalPrice = price;
                     discountPercent = 0;
+                    serverFinalPrice = null;
+                    const pm = document.getElementById('promocode-message');
+                    if (pm) pm.innerHTML = '';
                     updateTotalPrice();
 
                     // Highlight selected card

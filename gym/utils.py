@@ -5,6 +5,8 @@ from decimal import Decimal
 
 from django.utils import timezone
 
+from .models import Promocode
+
 
 VALID_OPERATOR_CODES = ('29', '33', '44', '25')
 
@@ -53,6 +55,35 @@ def apply_promocode_discount(base_price, promocode):
         return Decimal(base_price)
     discount = Decimal(promocode.discount_percent) / Decimal('100')
     return (Decimal(base_price) * (Decimal('1') - discount)).quantize(Decimal('0.01'))
+
+
+def get_valid_promocode_for_membership(code, membership_type):
+    """
+    Проверяет промокод для выбранного типа абонемента.
+
+    Returns:
+        (Promocode | None, str | None): промокод и текст ошибки.
+        Пустой код — (None, None) без ошибки.
+    """
+    if code is None:
+        return None, None
+    code = str(code).strip()
+    if not code:
+        return None, None
+    if membership_type is None:
+        return None, 'Сначала выберите тип абонемента.'
+    try:
+        promo = Promocode.objects.get(
+            code__iexact=code,
+            is_active=True,
+        )
+    except Promocode.DoesNotExist:
+        return None, 'Неверный или неактивный промокод.'
+    if promo.membership_type_id and promo.membership_type_id != membership_type.pk:
+        return None, 'Промокод не подходит к выбранному абонементу.'
+    if promo.valid_until and promo.valid_until < date.today():
+        return None, 'Промокод истёк.'
+    return promo, None
 
 
 def dual_datetime_display(dt):

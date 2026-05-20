@@ -23,6 +23,7 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from .forms import (
     RegisterForm, MembershipForm, TrainingBookingForm, ReviewForm,
@@ -34,7 +35,12 @@ from .models import (
     Review, Equipment, FAQ, Article, Vacancy, CompanyInfo, UserSessionLog,
     Hall, Promocode, PersonalTraining,
 )
-from .utils import apply_promocode_discount, calculate_age, dual_datetime_display
+from .utils import (
+    apply_promocode_discount,
+    calculate_age,
+    dual_datetime_display,
+    get_valid_promocode_for_membership,
+)
 
 logger = logging.getLogger('gym')
 
@@ -341,6 +347,47 @@ def buy_membership_view(request):
     return render(request, 'gym/buy_membership.html', {
         'form': form,
         'membership_types': membership_types,
+    })
+
+
+@login_required
+@require_POST
+def validate_membership_promocode_view(request):
+    """Проверка промокода для страницы покупки абонемента (AJAX)."""
+    try:
+        Client.objects.get(user=request.user)
+    except Client.DoesNotExist:
+        return JsonResponse({'ok': False, 'error': 'Вы не зарегистрированы как клиент.'}, status=403)
+
+    code = request.POST.get('code', '')
+    membership_type_id = request.POST.get('membership_type', '').strip()
+    membership_type = None
+    if membership_type_id:
+        try:
+            membership_type = MembershipType.objects.get(pk=int(membership_type_id))
+        except (ValueError, MembershipType.DoesNotExist):
+            return JsonResponse({'ok': False, 'error': 'Некорректный тип абонемента.'}, status=400)
+
+    promo, err = get_valid_promocode_for_membership(code, membership_type)
+    if err:
+        return JsonResponse({'ok': False, 'error': err}, status=400)
+
+    if not code or not str(code).strip():
+        return JsonResponse({
+            'ok': True,
+            'cleared': True,
+            'discount_percent': 0,
+            'price_final': None,
+        })
+
+    base_price = membership_type.price
+    final = apply_promocode_discount(base_price, promo)
+    return JsonResponse({
+        'ok': True,
+        'cleared': False,
+        'discount_percent': promo.discount_percent,
+        'price_final': str(final),
+        'base_price': str(base_price),
     })
 
 

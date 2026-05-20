@@ -28,6 +28,11 @@ urlpatterns = [
 
     path('profile/', views.profile_view, name='profile'),
     path('buy-membership/', views.buy_membership_view, name='buy_membership'),
+    path(
+        'buy-membership/validate-promocode/',
+        views.validate_membership_promocode_view,
+        name='validate_membership_promocode',
+    ),
     path('book-training/', views.book_training_view, name='book_training'),
 
     path('reviews/', views.reviews_view, name='reviews'),

@@ -9,7 +9,12 @@ from .models import (
     Client, Trainer, Membership, MembershipType, Training,
     Review, Promocode, PersonalTraining,
 )
-from .utils import calculate_age, format_belarus_phone, validate_minimum_age
+from .utils import (
+    calculate_age,
+    format_belarus_phone,
+    get_valid_promocode_for_membership,
+    validate_minimum_age,
+)
 
 
 def get_ordered_trainers():
@@ -92,19 +97,11 @@ class MembershipForm(forms.ModelForm):
         cleaned_data = super().clean()
         code = cleaned_data.get("promo_code_input")
         membership_type = cleaned_data.get("membership_type")
-        if code:
-            try:
-                promo = Promocode.objects.get(
-                    code__iexact=code.strip(),
-                    is_active=True,
-                )
-                if promo.membership_type and promo.membership_type != membership_type:
-                    raise forms.ValidationError("Промокод не подходит к выбранному абонементу.")
-                if promo.valid_until and promo.valid_until < date.today():
-                    raise forms.ValidationError("Промокод истек.")
-                cleaned_data["promo_code"] = promo
-            except Promocode.DoesNotExist:
-                raise forms.ValidationError("Неверный или неактивный промокод.")
+        promo, err = get_valid_promocode_for_membership(code, membership_type)
+        if err:
+            self.add_error("promo_code_input", err)
+        elif promo:
+            cleaned_data["promo_code"] = promo
         return cleaned_data
 
 
