@@ -29,34 +29,49 @@
 
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Что вас ждет</h5>
-                <ul>
-                    <li>Профессиональный подход к тренировкам</li>
-                    <li>Индивидуальная программа упражнений</li>
-                    <li>Контроль техники выполнения</li>
-                    <li>Мотивация и поддержка тренера</li>
-                    <li>Достижение ваших фитнес-целей</li>
+                <h5 class="card-title">Кратко о формате</h5>
+                <ul class="mb-0">
+                    <li>Длительность занятия: {{ training.duration_minutes }} мин.</li>
+                    <li>Категория: {{ training.get_type_display }}</li>
+                    <li>Уровень: {{ training.get_difficulty_level_display }}</li>
+                    <li>До {{ training.max_participants }} участников в группе</li>
                 </ul>
             </div>
         </div>
 
-        {% if training.equipment_needed %}
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Необходимое оборудование</h5>
-                <p class="card-text">{{ training.equipment_needed }}</p>
+                <h5 class="card-title">Ближайшие занятия в расписании</h5>
+                {% if upcoming_trainings %}
+                <ul class="list-unstyled mb-0">
+                    {% for session in upcoming_trainings %}
+                    <li class="mb-3 pb-3 border-bottom">
+                        <strong>{{ session.date|date:"d.m.Y" }}</strong>
+                        {% if session.end_time %}
+                        — {{ session.time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}
+                        {% else %}
+                        — с {{ session.time|time:"H:i" }}
+                        {% endif %}
+                        {% if session.hall %}
+                        <br><span class="text-muted">Зал: {{ session.hall.name }}</span>
+                        {% endif %}
+                        {% with tlist=session.trainers.all %}
+                        {% if tlist %}
+                        <br><span class="text-muted">Тренеры:
+                            {% for tr in tlist %}
+                            <a href="{% url 'trainer_detail' tr.id %}">{{ tr.first_name }} {{ tr.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </span>
+                        {% endif %}
+                        {% endwith %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">Пока нет запланированных занятий этого типа. Загляните позже или запишитесь через общую форму записи.</p>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
-
-        {% if training.schedule_info %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Расписание</h5>
-                <p class="card-text">{{ training.schedule_info }}</p>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="card">
             <div class="card-body">
@@ -75,11 +90,14 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% if review.trainer %}
+                    <small class="text-muted d-block mb-1">О тренере: {{ review.trainer.first_name }} {{ review.trainer.last_name }}</small>
+                    {% endif %}
                     <p class="mb-1">{{ review.text }}</p>
                     <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
                 </div>
                 {% empty %}
-                <p class="text-muted">Отзывов пока нет</p>
+                <p class="text-muted">Отзывов по тренерам этого направления пока нет</p>
                 {% endfor %}
             </div>
         </div>
@@ -97,33 +115,24 @@
 
                 <div class="mb-3">
                     <strong>Сложность:</strong>
-                    <span class="badge bg-info">{{ training.get_difficulty_display }}</span>
+                    <span class="badge bg-info">{{ training.get_difficulty_level_display }}</span>
                 </div>
 
                 <div class="mb-3">
                     <strong>Длительность:</strong>
-                    <p class="mb-0">{{ training.duration }} минут</p>
+                    <p class="mb-0">{{ training.duration_minutes }} минут</p>
                 </div>
 
-                {% if training.calories_burned %}
-                <div class="mb-3">
-                    <strong>Сжигаемые калории:</strong>
-                    <p class="mb-0">~{{ training.calories_burned }} ккал</p>
-                </div>
-                {% endif %}
-
-                {% if training.max_participants > 1 %}
                 <div class="mb-3">
                     <strong>Максимум участников:</strong>
                     <p class="mb-0">{{ training.max_participants }} человек</p>
                 </div>
-                {% endif %}
 
-                {% if training.trainers.exists %}
+                {% if type_trainers %}
                 <div class="mb-3">
-                    <strong>Тренеры:</strong>
+                    <strong>Тренеры по этому направлению:</strong>
                     <p class="mb-0">
-                        {% for trainer in training.trainers.all %}
+                        {% for trainer in type_trainers %}
                         <a href="{% url 'trainer_detail' trainer.id %}">
                             {{ trainer.first_name }} {{ trainer.last_name }}
                         </a>{% if not forloop.last %}, {% endif %}
@@ -134,16 +143,8 @@
 
                 <hr>
 
-                <div class="text-center mb-3">
-                    <h3 class="text-primary">{{ training.price }} BYN</h3>
-                </div>
-
                 {% if user.is_authenticated %}
-                    {% if training.is_active %}
-                    <a href="{% url 'book_training' training.id %}" class="btn btn-success btn-lg w-100 mb-2">Записаться</a>
-                    {% else %}
-                    <button class="btn btn-secondary btn-lg w-100 mb-2" disabled>Недоступно</button>
-                    {% endif %}
+                    <a href="{% url 'book_training' %}" class="btn btn-success btn-lg w-100 mb-2">Записаться на занятие</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100 mb-2">Войти для записи</a>
                 {% endif %}

@@ -171,14 +171,34 @@ def trainings_view(request):
 
 def training_detail_view(request, pk):
     training_type = get_object_or_404(TrainingType, pk=pk)
-    upcoming_trainings = Training.objects.filter(
-        training_type=training_type,
-        is_cancelled=False,
-        date__gte=date.today(),
-    ).order_by('date', 'time')[:5]
+    upcoming_trainings = (
+        Training.objects.filter(
+            training_type=training_type,
+            is_cancelled=False,
+            date__gte=date.today(),
+        )
+        .select_related('hall')
+        .prefetch_related('trainers')
+        .order_by('date', 'time')[:5]
+    )
+    type_trainers = (
+        Trainer.objects.filter(trainings__training_type=training_type)
+        .distinct()
+        .order_by('last_name', 'first_name')
+    )
+    trainer_ids = list(type_trainers.values_list('id', flat=True))
+    reviews = (
+        Review.objects.filter(trainer_id__in=trainer_ids)
+        .select_related('client', 'trainer')
+        .order_by('-created_at')[:10]
+        if trainer_ids
+        else Review.objects.none()
+    )
     return render(request, 'gym/training_detail.html', {
-        'training_type': training_type,
+        'training': training_type,
         'upcoming_trainings': upcoming_trainings,
+        'type_trainers': type_trainers,
+        'reviews': reviews,
     })
 
 
