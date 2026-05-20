@@ -1,13 +1,42 @@
 {% extends 'gym/base.html' %}
 
-{% block title %}{{ trainer.user.get_full_name }} - FitLife Gym{% endblock %}
+{% block title %}{{ trainer.full_name }} - FitLife Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Карточки Bootstrap по умолчанию светлые — выравниваем под тёмную тему */
+    .trainer-detail-page.dark-page .card {
+        background-color: var(--dark-card) !important;
+        border: 1px solid rgba(255, 69, 0, 0.2);
+        color: var(--text-light);
+    }
+    .trainer-detail-page.dark-page .card .card {
+        background-color: rgba(0, 0, 0, 0.35) !important;
+        border-color: rgba(255, 69, 0, 0.15);
+    }
+    .trainer-detail-page.dark-page .card h4,
+    .trainer-detail-page.dark-page .card h5,
+    .trainer-detail-page.dark-page .card h6 {
+        color: var(--text-light);
+    }
+    .trainer-detail-page.dark-page .card .card-title,
+    .trainer-detail-page.dark-page .card .card-text {
+        color: var(--text-light);
+    }
+    .trainer-detail-page.dark-page .card .small,
+    .trainer-detail-page.dark-page .card small {
+        color: var(--text-muted) !important;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="container dark-page trainer-detail-page">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'main' %}">Главная</a></li>
         <li class="breadcrumb-item"><a href="{% url 'trainers' %}">Тренеры</a></li>
-        <li class="breadcrumb-item active">{{ trainer.user.get_full_name }}</li>
+        <li class="breadcrumb-item active">{{ trainer.full_name }}</li>
     </ol>
 </nav>
 
@@ -15,23 +44,29 @@
     <div class="col-md-4">
         <div class="card mb-3">
             {% if trainer.photo %}
-            <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.user.get_full_name }}">
+            <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.full_name }}">
             {% endif %}
             <div class="card-body text-center">
-                <h4 class="card-title">{{ trainer.user.get_full_name }}</h4>
+                <h4 class="card-title">{{ trainer.full_name }}</h4>
                 <p class="text-muted">{{ trainer.specialization }}</p>
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-center align-items-center">
-                        <h3 class="mb-0 me-2">{{ trainer.rating|floatformat:1 }}</h3>
+                        {% if rating_avg is not None %}
+                        <h3 class="mb-0 me-2 text-light">{{ rating_avg|floatformat:1 }}</h3>
+                        {% else %}
+                        <h3 class="mb-0 me-2 text-muted">—</h3>
+                        {% endif %}
                         <div>
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= trainer.rating %}
-                                <span class="text-warning fs-5">★</span>
-                                {% else %}
-                                <span class="text-muted fs-5">☆</span>
-                                {% endif %}
-                            {% endfor %}
+                            {% if rating_avg is not None %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= rating_avg %}
+                                    <span class="text-warning fs-5">★</span>
+                                    {% else %}
+                                    <span class="text-muted fs-5">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                     <small class="text-muted">{{ reviews_count }} отзывов</small>
@@ -39,11 +74,11 @@
 
                 <div class="mb-3">
                     <strong>Опыт работы:</strong>
-                    <p class="mb-0">{{ trainer.experience }} лет</p>
+                    <p class="mb-0">{{ trainer.experience_years }} лет</p>
                 </div>
 
                 {% if user.is_authenticated %}
-                <a href="{% url 'select_trainer' trainer.id %}" class="btn btn-success btn-lg w-100">Записаться</a>
+                <a href="{% url 'book_training' %}?trainer={{ trainer.pk }}" class="btn btn-success btn-lg w-100">Записаться</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary btn-lg w-100">Войти для записи</a>
                 {% endif %}
@@ -54,9 +89,9 @@
             <div class="card-body">
                 <h5 class="card-title">Контакты</h5>
                 {% if trainer.phone %}
-                <p><strong>Телефон:</strong><br>{{ trainer.phone }}</p>
+                <p class="mb-2"><strong>Телефон:</strong><br>{{ trainer.phone }}</p>
                 {% endif %}
-                <p><strong>Email:</strong><br>{{ trainer.user.email }}</p>
+                <p class="mb-0"><strong>Email:</strong><br>{{ trainer.email }}</p>
             </div>
         </div>
     </div>
@@ -65,18 +100,9 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">О тренере</h5>
-                <p class="card-text">{{ trainer.bio|linebreaks }}</p>
+                <p class="card-text">{{ trainer.bio|default:"Информация скоро появится."|linebreaks }}</p>
             </div>
         </div>
-
-        {% if trainer.certifications %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Сертификаты и достижения</h5>
-                <p class="card-text">{{ trainer.certifications|linebreaks }}</p>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="card mb-4">
             <div class="card-body">
@@ -92,7 +118,7 @@
 
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Доступные тренировки</h5>
+                <h5 class="mb-0">Направления в расписании</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -102,9 +128,9 @@
                             <div class="card-body">
                                 <h6 class="card-title">{{ training.name }}</h6>
                                 <p class="card-text small">{{ training.description|truncatewords:15 }}</p>
-                                <p class="card-text">
+                                <p class="card-text mb-2">
                                     <small class="text-muted">
-                                        {{ training.duration }} мин | {{ training.price }} BYN
+                                        {{ training.duration_minutes }} мин · до {{ training.max_participants }} чел.
                                     </small>
                                 </p>
                                 <a href="{% url 'training_detail' training.id %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
@@ -113,7 +139,7 @@
                     </div>
                     {% empty %}
                     <div class="col-12">
-                        <p class="text-muted">Нет доступных тренировок</p>
+                        <p class="text-muted mb-0">Пока нет типов тренировок с этим тренером в расписании</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -156,5 +182,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

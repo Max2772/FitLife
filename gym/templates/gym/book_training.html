@@ -327,6 +327,16 @@
         const dateInput = document.getElementById('date');
         const today = new Date().toISOString().split('T')[0];
         dateInput.setAttribute('min', today);
+
+        const params = new URLSearchParams(window.location.search);
+        const trainerId = params.get('trainer');
+        const trainerSelect = document.getElementById('trainer');
+        if (trainerId && trainerSelect) {
+            const opt = trainerSelect.querySelector('option[value="' + trainerId + '"]');
+            if (opt) {
+                trainerSelect.value = trainerId;
+            }
+        }
     });
 </script>
 {% endblock %}

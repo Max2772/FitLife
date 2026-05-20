@@ -18,7 +18,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db.models import Count, Q, Sum
+from django.db.models import Avg, Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -121,10 +121,23 @@ def trainers_view(request):
 
 def trainer_detail_view(request, pk):
     trainer = get_object_or_404(Trainer, pk=pk)
-    reviews = Review.objects.filter(trainer=trainer).select_related('client').order_by('-created_at')
+    review_base = Review.objects.filter(trainer=trainer)
+    stats = review_base.aggregate(avg=Avg('rating'), cnt=Count('id'))
+    rating_avg = stats['avg']
+    reviews_count = stats['cnt']
+    reviews = review_base.select_related('client').order_by('-created_at')
+    training_type_ids = (
+        Training.objects.filter(trainers=trainer)
+        .values_list('training_type_id', flat=True)
+        .distinct()
+    )
+    trainer_trainings = TrainingType.objects.filter(pk__in=list(training_type_ids)).order_by('name')
     return render(request, 'gym/trainer_detail.html', {
         'trainer': trainer,
         'reviews': reviews,
+        'reviews_count': reviews_count,
+        'trainer_trainings': trainer_trainings,
+        'rating_avg': rating_avg,
     })
 
 
