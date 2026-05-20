@@ -329,9 +329,12 @@ class UserSessionLog(models.Model):
     logout_time = models.DateTimeField(null=True, blank=True)
 
     def duration_minutes(self):
-        if self.logout_time:
-            return (self.logout_time - self.login_time).total_seconds() / 60
-        return None
+        if not self.logout_time:
+            return None
+        minutes = (self.logout_time - self.login_time).total_seconds() / 60
+        if minutes < 0:
+            return None
+        return minutes
 
     def __str__(self):
         return f"{self.user.username} — {self.login_time.strftime('%Y-%m-%d %H:%M')}"

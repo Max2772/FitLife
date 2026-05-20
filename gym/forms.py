@@ -313,6 +313,13 @@ class PromocodeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['membership_type'].widget.attrs.update({'class': 'form-select'})
         self.fields['membership_type'].required = False
+        self.fields['valid_until'].required = False
+
+    def clean_discount_percent(self):
+        value = self.cleaned_data['discount_percent']
+        if value < 1 or value > 100:
+            raise ValidationError('Скидка должна быть от 1 до 100%.')
+        return value
 
 
 class TrainingForm(forms.ModelForm):

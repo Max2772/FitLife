@@ -534,6 +534,7 @@ def add_promocode_view(request):
             promo = form.save(commit=False)
             promo.created_by = request.user
             promo.save()
+            messages.success(request, f'Промокод «{promo.code}» создан.')
             return redirect('add_promocode')
     else:
         form = PromocodeForm()
@@ -544,6 +545,7 @@ def add_promocode_view(request):
     return render(request, 'gym/add_promocode.html', {
         'form': form,
         'active_promocodes': active_promocodes,
+        'today': today,
     })
 
 
@@ -755,7 +757,7 @@ def _build_session_chart(logs):
     data = []
     for log in logs:
         duration = log.duration_minutes()
-        if duration:
+        if duration is not None and duration > 0:
             data.append({'user': log.user.username, 'duration_minutes': duration})
 
     df = pd.DataFrame(data)
@@ -912,12 +914,52 @@ def statistics_view(request):
 
 @staff_member_required
 def membership_distribution_chart(request):
-    membership_stats = Membership.objects.values('membership_type__name').annotate(total=Count('id'))
-    labels = [item['membership_type__name'] for item in membership_stats]
+    membership_stats = list(
+        Membership.objects.values('membership_type__name').annotate(total=Count('id'))
+    )
+    labels = [item['membership_type__name'] or 'Без типа' for item in membership_stats]
     values = [item['total'] for item in membership_stats]
 
+    memberships_stats = list(
+        MembershipType.objects.annotate(
+            active_count=Count('membership', filter=Q(membership__is_active=True)),
+            total_sold=Count('membership'),
+            total_revenue=Coalesce(Sum('membership__price_paid'), Decimal('0')),
+        ).order_by('-total_sold')
+    )
+    total_active = Membership.objects.filter(is_active=True).count()
+    total_revenue = Membership.objects.aggregate(
+        total=Coalesce(Sum('price_paid'), Decimal('0'))
+    )['total'] or Decimal('0')
+
+    durations = [
+        (m.end_date - m.start_date).days
+        for m in Membership.objects.all()
+        if m.end_date and m.start_date
+    ]
+    avg_duration = round(stats_module.mean(durations), 1) if durations else 0
+
+    clients_with_repeat = Client.objects.annotate(
+        cnt=Count('membership')
+    ).filter(cnt__gt=1).count()
+    total_clients = Client.objects.count()
+    renewal_rate = round(100 * clients_with_repeat / total_clients, 1) if total_clients else 0
+
+    monthly_counts = {}
+    for membership in Membership.objects.dates('purchase_date', 'month', order='ASC'):
+        month_key = membership.strftime('%m.%Y')
+        monthly_counts[month_key] = Membership.objects.filter(
+            purchase_date__year=membership.year,
+            purchase_date__month=membership.month,
+        ).count()
+    if not monthly_counts:
+        monthly_counts = {date.today().strftime('%m.%Y'): 0}
+
+    months_labels = list(monthly_counts.keys())
+    monthly_sales = list(monthly_counts.values())
+
     graphic = None
-    if labels and values:
+    if labels and values and sum(values) > 0:
         fig, ax = plt.subplots(figsize=(8, 8))
         ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
         ax.axis('equal')
@@ -928,7 +970,19 @@ def membership_distribution_chart(request):
         buffer.close()
         plt.close()
 
-    return render(request, 'gym/membership_chart.html', {'chart': graphic})
+    return render(request, 'gym/membership_chart.html', {
+        'chart': graphic,
+        'membership_labels': json.dumps(labels, ensure_ascii=False),
+        'membership_data': json.dumps(values),
+        'months_labels': json.dumps(months_labels, ensure_ascii=False),
+        'monthly_sales': json.dumps(monthly_sales),
+        'memberships_stats': memberships_stats,
+        'total_active': total_active,
+        'total_revenue': total_revenue,
+        'avg_duration': avg_duration,
+        'renewal_rate': renewal_rate,
+        'has_chart_data': bool(labels and sum(values)),
+    })
 
 
 @staff_member_required

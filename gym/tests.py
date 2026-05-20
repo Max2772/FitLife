@@ -147,6 +147,12 @@ class UserSessionLogTest(BaseTestCase):
         log.save()
         self.assertAlmostEqual(log.duration_minutes(), 30, places=0)
 
+    def test_negative_duration_returns_none(self):
+        log = UserSessionLog.objects.create(user=self.user, session_key='bad')
+        log.logout_time = log.login_time - timedelta(minutes=10)
+        log.save()
+        self.assertIsNone(log.duration_minutes())
+
     def test_str(self):
         log = UserSessionLog.objects.create(user=self.user, session_key='abc')
         self.assertIn('testuser', str(log))
@@ -394,6 +400,24 @@ class StaffViewTests(BaseTestCase):
     def test_add_promocode_page(self):
         resp = self.client.get(reverse('add_promocode'))
         self.assertEqual(resp.status_code, 200)
+
+    def test_add_promocode_post(self):
+        self.client.login(username='staffuser', password='Staff1234!')
+        resp = self.client.post(reverse('add_promocode'), {
+            'code': 'NEWCODE99',
+            'discount_percent': 15,
+            'membership_type': '',
+            'valid_until': '',
+            'is_active': True,
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(Promocode.objects.filter(code='NEWCODE99').exists())
+
+    def test_membership_chart_has_chartjs_data(self):
+        self.client.login(username='staffuser', password='Staff1234!')
+        resp = self.client.get(reverse('membership_chart'))
+        self.assertContains(resp, 'membershipPieChart')
+        self.assertContains(resp, 'pieLabels')
 
     def test_add_training_page(self):
         resp = self.client.get(reverse('add_training'))
