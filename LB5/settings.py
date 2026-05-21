@@ -33,7 +33,7 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG').upper()
 SECRET_KEY = 'django-insecure-c+lq^+b(c5s+%m5ib)5m%vx6f3&7zn@9ocup=*nt^t)&vap2ue'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
