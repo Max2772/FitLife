@@ -2,135 +2,9 @@
 
 {% block title %}Панель тренера - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .trainer-dashboard h1 {
-        color: var(--text-light);
-        margin-bottom: 1.5rem;
-    }
-
-    .trainer-dashboard .stat-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        padding: 1.5rem;
-        text-align: center;
-        height: 100%;
-    }
-
-    .trainer-dashboard .stat-card h5 {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .trainer-dashboard .stat-card h2 {
-        color: var(--primary-color);
-        margin: 0;
-        font-size: 2rem;
-    }
-
-    .trainer-dashboard .panel-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-
-    .trainer-dashboard .panel-card .card-header {
-        background: rgba(255, 69, 0, 0.1);
-        border-bottom: 1px solid rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        padding: 1rem 1.25rem;
-    }
-
-    .trainer-dashboard .panel-card .card-header h5 {
-        margin: 0;
-        color: var(--text-light);
-    }
-
-    .trainer-dashboard .panel-card .card-body {
-        padding: 1.25rem;
-        color: var(--text-light);
-    }
-
-    .trainer-dashboard .table {
-        color: var(--text-light);
-        margin-bottom: 0;
-    }
-
-    .trainer-dashboard .table thead th {
-        background: rgba(255, 69, 0, 0.1);
-        border-color: rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        font-size: 0.8rem;
-        text-transform: uppercase;
-    }
-
-    .trainer-dashboard .table tbody td {
-        border-color: rgba(255, 69, 0, 0.1);
-        vertical-align: middle;
-    }
-
-    .trainer-dashboard .table tbody tr:hover {
-        background: rgba(255, 69, 0, 0.05);
-    }
-
-    .trainer-dashboard .text-muted,
-    .trainer-dashboard small.text-muted {
-        color: #9ca3af !important;
-    }
-
-    .trainer-dashboard .list-group-item {
-        background: transparent;
-        border-color: rgba(255, 69, 0, 0.15);
-        color: var(--text-light);
-        padding: 0.75rem 0;
-    }
-
-    .trainer-dashboard .review-item {
-        border-bottom: 1px solid rgba(255, 69, 0, 0.15);
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .trainer-dashboard .review-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .trainer-dashboard .review-item strong {
-        color: var(--text-light);
-    }
-
-    .trainer-dashboard .review-item p {
-        color: var(--text-muted);
-        margin-bottom: 0.25rem;
-    }
-
-    .trainer-dashboard .client-chip {
-        display: inline-block;
-        background: rgba(255, 69, 0, 0.1);
-        border: 1px solid rgba(255, 69, 0, 0.25);
-        border-radius: 20px;
-        padding: 0.35rem 0.85rem;
-        margin: 0.25rem;
-        color: var(--text-light);
-        font-size: 0.9rem;
-    }
-
-    .trainer-dashboard .empty-hint {
-        color: var(--text-muted);
-        margin: 0;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container trainer-dashboard my-4">
-    <h1><i class="fas fa-chart-line"></i> Панель тренера — {{ trainer.full_name }}</h1>
+    <h1>Панель тренера — {{ trainer.full_name }}</h1>
 
     <div class="row g-3 mb-4">
         <div class="col-md-3 col-6">
@@ -163,7 +37,7 @@
         <div class="col-lg-8">
             <div class="panel-card card">
                 <div class="card-header">
-                    <h5><i class="fas fa-calendar-alt"></i> Ближайшие групповые тренировки</h5>
+                    <h5>Ближайшие групповые тренировки</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -197,7 +71,7 @@
 
             <div class="panel-card card">
                 <div class="card-header">
-                    <h5><i class="fas fa-user-clock"></i> Индивидуальные занятия</h5>
+                    <h5>Индивидуальные занятия</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -232,7 +106,7 @@
 
             <div class="panel-card card">
                 <div class="card-header">
-                    <h5><i class="fas fa-star"></i> Последние отзывы</h5>
+                    <h5>Последние отзывы</h5>
                 </div>
                 <div class="card-body">
                     {% for review in recent_reviews %}
@@ -256,7 +130,7 @@
         <div class="col-lg-4">
             <div class="panel-card card">
                 <div class="card-header">
-                    <h5><i class="fas fa-bolt"></i> Быстрые действия</h5>
+                    <h5>Быстрые действия</h5>
                 </div>
                 <div class="card-body d-grid gap-2">
                     <a href="{% url 'add_training' %}" class="btn btn-primary">Добавить групповую тренировку</a>
@@ -268,7 +142,7 @@
 
             <div class="panel-card card">
                 <div class="card-header">
-                    <h5><i class="fas fa-users"></i> Клиенты</h5>
+                    <h5>Клиенты</h5>
                 </div>
                 <div class="card-body">
                     {% for client in clients %}

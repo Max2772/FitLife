@@ -2,94 +2,6 @@
 
 {% block title %}FAQ - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80') center/cover;
-        padding: 100px 0;
-        text-align: center;
-        margin-bottom: 60px;
-    }
-
-    .page-header h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .page-header p {
-        font-size: 1.2rem;
-        color: var(--text-muted);
-    }
-
-    .accordion-item {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.15);
-        margin-bottom: 1rem;
-        border-radius: 10px !important;
-        overflow: hidden;
-    }
-
-    .accordion-button {
-        background: var(--dark-card);
-        color: var(--text-light);
-        font-weight: 600;
-        font-size: 1.05rem;
-        padding: 1.25rem 1.5rem;
-        box-shadow: none !important;
-    }
-
-    .accordion-button:not(.collapsed) {
-        background: rgba(255, 69, 0, 0.1);
-        color: var(--primary-color);
-    }
-
-    .accordion-button::after {
-        filter: invert(1);
-    }
-
-    .accordion-body {
-        background: rgba(255, 255, 255, 0.02);
-        color: var(--text-muted);
-        line-height: 1.8;
-        padding: 1.5rem;
-    }
-
-    .faq-date {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        margin-top: 1.25rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 69, 0, 0.1);
-    }
-
-    .faq-date i {
-        color: var(--primary-color);
-        margin-right: 6px;
-    }
-
-    .faq-footer {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        padding: 2rem;
-        margin-top: 3rem;
-    }
-
-    .faq-footer h3 {
-        color: var(--text-light);
-        margin-bottom: 1rem;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--text-muted);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="page-header">
     <div class="container">
@@ -100,41 +12,29 @@
 
 <div class="container mb-5">
     {% if faqs %}
-    <div class="accordion" id="faqAccordion">
+    <div class="faq-list">
         {% for faq in faqs %}
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading{{ faq.pk }}">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapse{{ faq.pk }}"
-                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                        aria-controls="collapse{{ faq.pk }}">
-                    {{ faq.question }}
-                </button>
-            </h2>
-            <div id="collapse{{ faq.pk }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
-                 data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                    {{ faq.answer|linebreaks }}
-                    <p class="faq-date mb-0">
-                        <i class="fas fa-calendar-alt"></i>
-                        Дата добавления на сайт: {{ faq.created_at|date:"d.m.Y H:i" }}
-                    </p>
-                </div>
+        <details {% if forloop.first %}open{% endif %}>
+            <summary>{{ faq.question }}</summary>
+            <div class="faq-answer">
+                {{ faq.answer|linebreaks }}
+                <p class="faq-date mb-0">
+                    Дата добавления: {{ faq.created_at|date:"d.m.Y H:i" }}
+                </p>
             </div>
-        </div>
+        </details>
         {% endfor %}
     </div>
     {% else %}
     <div class="empty-state">
-        <i class="fas fa-question-circle fa-3x mb-3" style="color: var(--primary-color);"></i>
         <h3>Вопросы пока не добавлены</h3>
-        <p>Загляните позже — мы скоро опубликуем ответы на популярные вопросы.</p>
+        <p>Загляните позже.</p>
     </div>
     {% endif %}
 
     <div class="faq-footer">
-        <h3>Не нашли ответ на свой вопрос?</h3>
-        <p class="mb-0">Свяжитесь с нами через страницу <a href="{% url 'contacts' %}">контактов</a>{% if company %} или по телефону <strong>{{ company.phone }}</strong>{% endif %}.</p>
+        <h3>Не нашли ответ?</h3>
+        <p class="mb-0">Свяжитесь через <a href="{% url 'contacts' %}">контакты</a>{% if company %} или по телефону <strong>{{ company.phone }}</strong>{% endif %}.</p>
     </div>
 </div>
 {% endblock %}

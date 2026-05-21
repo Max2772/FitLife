@@ -70,7 +70,7 @@
                         {% if user.is_authenticated %}
                             {% if session.participants.count < session.training_type.max_participants %}
                             <a href="{% url 'book_training' %}?training={{ session.pk }}" class="btn btn-success btn-sm flex-shrink-0">
-                                <i class="fas fa-calendar-check"></i> Записаться
+                                Записаться
                             </a>
                             {% else %}
                             <span class="badge bg-secondary flex-shrink-0">Мест нет</span>

@@ -2,78 +2,6 @@
 
 {% block title %}{{ article.title }} - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
-        padding: 80px 0;
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .page-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-light);
-    }
-
-    .article-meta {
-        color: var(--text-muted);
-        font-size: 1rem;
-    }
-
-    .article-meta i {
-        color: var(--primary-color);
-        margin-right: 6px;
-    }
-
-    .article-content {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        padding: 2.5rem;
-        color: var(--text-muted);
-        line-height: 1.9;
-        font-size: 1.1rem;
-    }
-
-    .article-content p {
-        margin-bottom: 1rem;
-    }
-
-    .article-image {
-        border-radius: 15px;
-        border: 2px solid rgba(255, 69, 0, 0.2);
-        margin-bottom: 2rem;
-        max-height: 500px;
-        width: 100%;
-        object-fit: cover;
-    }
-
-    .breadcrumb {
-        background: transparent;
-        padding: 1.5rem 0 0;
-    }
-
-    .breadcrumb-item a {
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-
-    .breadcrumb-item.active {
-        color: var(--text-muted);
-    }
-
-    .article-actions {
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 1px solid rgba(255, 69, 0, 0.1);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -90,12 +18,10 @@
         <h1>{{ article.title }}</h1>
         <div class="article-meta">
             <span class="me-4">
-                <i class="fas fa-calendar-alt"></i>
                 {{ article.published_at|date:"d.m.Y H:i" }}
             </span>
             {% if article.author %}
             <span>
-                <i class="fas fa-user"></i>
                 {{ article.author.get_full_name|default:article.author.username }}
             </span>
             {% endif %}
@@ -116,10 +42,10 @@
 
     <div class="article-actions d-flex justify-content-between flex-wrap gap-2">
         <a href="{% url 'news' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Назад к новостям
+            Назад к новостям
         </a>
         <button class="btn btn-outline-primary" onclick="window.print()">
-            <i class="fas fa-print"></i> Печать
+            Печать
         </button>
     </div>
 </div>

@@ -3,202 +3,6 @@
 
 {% block title %}Отзывы - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80') center/cover;
-        padding: 100px 0;
-        text-align: center;
-        margin-bottom: 60px;
-    }
-
-    .page-header h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .page-header p {
-        font-size: 1.2rem;
-        color: var(--text-muted);
-    }
-
-    .add-review-section {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .review-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        padding: 2rem;
-        transition: all 0.4s ease;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .review-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
-        transform: scaleY(0);
-        transition: transform 0.4s ease;
-    }
-
-    .review-card:hover::before {
-        transform: scaleY(1);
-    }
-
-    .review-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--primary-color);
-        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
-    }
-
-    .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-    }
-
-    .review-author {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .author-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: white;
-    }
-
-    .author-info h5 {
-        color: var(--text-light);
-        margin: 0;
-        font-size: 1.2rem;
-    }
-
-    .author-info .date {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-    }
-
-    .rating-stars {
-        display: flex;
-        gap: 3px;
-    }
-
-    .rating-stars i {
-        font-size: 1.2rem;
-    }
-
-    .rating-stars .fa-star {
-        color: #fbbf24;
-    }
-
-    .rating-stars .fa-star.empty {
-        color: rgba(251, 191, 36, 0.3);
-    }
-
-    .review-text {
-        color: var(--text-muted);
-        line-height: 1.8;
-        margin-bottom: 1.5rem;
-        font-size: 1rem;
-    }
-
-    .review-trainer {
-        background: rgba(255, 69, 0, 0.1);
-        border-left: 3px solid var(--primary-color);
-        padding: 0.8rem 1rem;
-        border-radius: 5px;
-        margin-top: 1rem;
-    }
-
-    .review-trainer p {
-        margin: 0;
-        color: var(--text-muted);
-        font-size: 0.9rem;
-    }
-
-    .review-trainer strong {
-        color: var(--text-light);
-    }
-
-    .pagination {
-        margin-top: 3rem;
-    }
-
-    .pagination .page-link {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        padding: 10px 20px;
-        margin: 0 5px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .pagination .page-link:hover {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-    }
-
-    .pagination .page-item.active .page-link {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-    }
-
-    .empty-state i {
-        font-size: 5rem;
-        color: var(--text-muted);
-        margin-bottom: 2rem;
-    }
-
-    .empty-state h3 {
-        color: var(--text-light);
-        margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .page-header h1 {
-            font-size: 2.5rem;
-        }
-
-        .review-header {
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .review-card {
-            padding: 1.5rem;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <!-- Page Header -->
 <div class="page-header">
@@ -212,7 +16,7 @@
     <div class="add-review-section">
         {% if user.is_authenticated %}
         <a href="{% url 'add_review' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-pen"></i> Оставить отзыв
+            Оставить отзыв
         </a>
         {% else %}
         <a href="{% url 'login' %}?next={% url 'add_review' %}" class="btn btn-primary btn-lg me-2">Войти</a>
@@ -237,24 +41,19 @@
                     <div class="rating-stars">
                         {% for i in "12345" %}
                             {% if forloop.counter <= review.rating %}
-                            <i class="fas fa-star"></i>
                             {% else %}
-                            <i class="fas fa-star empty"></i>
                             {% endif %}
                         {% endfor %}
                     </div>
                 </div>
 
                 <div class="review-text">
-                    <i class="fas fa-quote-left" style="color: var(--primary-color); margin-right: 10px;"></i>
                     {{ review.text }}
-                    <i class="fas fa-quote-right" style="color: var(--primary-color); margin-left: 10px;"></i>
                 </div>
 
                 {% if review.trainer %}
                 <div class="review-trainer">
                     <p>
-                        <i class="fas fa-user-tie" style="color: var(--primary-color); margin-right: 8px;"></i>
                         <strong>Тренер:</strong> {{ review.trainer.full_name }}
                     </p>
                 </div>
@@ -264,12 +63,11 @@
         {% empty %}
         <div class="col-12">
             <div class="empty-state">
-                <i class="fas fa-comments"></i>
                 <h3>Отзывов пока нет</h3>
                 <p class="text-muted">Будьте первым, кто оставит отзыв о нашем зале!</p>
                 {% if user.is_authenticated %}
                 <a href="{% url 'add_review' %}" class="btn btn-primary mt-3">
-                    <i class="fas fa-pen"></i> Оставить первый отзыв
+                    Оставить первый отзыв
                 </a>
                 {% endif %}
             </div>
@@ -283,7 +81,7 @@
             {% if page_obj.has_previous %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                    <i class="fas fa-chevron-left"></i> Предыдущая
+                    Предыдущая
                 </a>
             </li>
             {% endif %}
@@ -297,8 +95,7 @@
             {% if page_obj.has_next %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                    Следующая <i class="fas fa-chevron-right"></i>
-                </a>
+                    Следующая </a>
             </li>
             {% endif %}
         </ul>

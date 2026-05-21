@@ -2,256 +2,6 @@
 
 {% block title %}Главная - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .hero-section {
-        position: relative;
-        height: 90vh;
-        min-height: 600px;
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(10, 10, 10, 0.8)),
-                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        overflow: hidden;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        max-width: 900px;
-        padding: 0 20px;
-        animation: fadeInUp 1s ease-out;
-    }
-
-    .hero-content span {
-        color: var(--primary-color);
-        font-size: 1.2rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        display: block;
-        margin-bottom: 1rem;
-    }
-
-    .hero-content h1 {
-        font-size: 4.5rem;
-        font-weight: 700;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .hero-content h1 strong {
-        color: var(--primary-color);
-        display: block;
-    }
-
-    .hero-content p {
-        font-size: 1.3rem;
-        color: var(--text-muted);
-        margin-bottom: 2.5rem;
-        line-height: 1.6;
-    }
-
-    .hero-buttons .btn {
-        margin: 0 10px 10px;
-        font-size: 1.1rem;
-        padding: 15px 40px;
-    }
-
-    .features-section {
-        padding: 80px 0;
-        background: var(--dark-bg);
-    }
-
-    .feature-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        padding: 2.5rem;
-        text-align: center;
-        transition: all 0.4s ease;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        transform: scaleX(0);
-        transition: transform 0.4s ease;
-    }
-
-    .feature-card:hover::before {
-        transform: scaleX(1);
-    }
-
-    .feature-card:hover {
-        transform: translateY(-10px);
-        border-color: var(--primary-color);
-        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.3);
-    }
-
-    .feature-icon {
-        font-size: 3.5rem;
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-        transition: all 0.4s ease;
-    }
-
-    .feature-card:hover .feature-icon {
-        transform: scale(1.1) rotateY(360deg);
-    }
-
-    .feature-card h5 {
-        font-size: 1.4rem;
-        margin-bottom: 1rem;
-        color: var(--text-light);
-    }
-
-    .feature-card p {
-        color: var(--text-muted);
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-        flex-grow: 1;
-    }
-
-    .section-title {
-        text-align: center;
-        margin-bottom: 4rem;
-    }
-
-    .section-title span {
-        color: var(--primary-color);
-        font-size: 1rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .section-title h2 {
-        font-size: 3rem;
-        font-weight: 700;
-        color: var(--text-light);
-    }
-
-    .training-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.4s ease;
-        position: relative;
-    }
-
-    .training-card::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 107, 53, 0.2));
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
-
-    .training-card:hover::after {
-        opacity: 1;
-    }
-
-    .training-card:hover {
-        transform: translateY(-10px);
-        border-color: var(--primary-color);
-        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.3);
-    }
-
-    .training-card .card-body {
-        position: relative;
-        z-index: 1;
-    }
-
-    .news-section {
-        padding: 80px 0;
-        background: linear-gradient(180deg, var(--dark-bg) 0%, #000 100%);
-    }
-
-    .news-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.4s ease;
-        height: 100%;
-    }
-
-    .news-card:hover {
-        transform: translateY(-10px);
-        border-color: var(--primary-color);
-        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.3);
-    }
-
-    .news-card img {
-        height: 220px;
-        object-fit: cover;
-        transition: all 0.4s ease;
-    }
-
-    .news-card:hover img {
-        transform: scale(1.1);
-    }
-
-    .cta-section {
-        padding: 100px 0;
-        background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(255, 107, 53, 0.1));
-        text-align: center;
-        margin: 80px 0;
-    }
-
-    .cta-section h2 {
-        font-size: 3rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .cta-section p {
-        font-size: 1.3rem;
-        color: var(--text-muted);
-        margin-bottom: 2.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .hero-content h1 {
-            font-size: 2.5rem;
-        }
-
-        .hero-content p {
-            font-size: 1.1rem;
-        }
-
-        .section-title h2 {
-            font-size: 2rem;
-        }
-
-        .hero-section {
-            height: 70vh;
-            min-height: 500px;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
@@ -277,8 +27,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
+                        </div>
                     <h5>Современное оборудование</h5>
                     <p>Новейшие тренажеры от ведущих мировых производителей для эффективных тренировок</p>
                     <a href="{% url 'equipment' %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
@@ -287,8 +36,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
+                        </div>
                     <h5>Профессиональные тренеры</h5>
                     <p>Опытные специалисты с международными сертификатами и индивидуальным подходом</p>
                     <a href="{% url 'trainers' %}" class="btn btn-sm btn-outline-primary">Наши тренеры</a>
@@ -297,8 +45,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
+                        </div>
                     <h5>Гибкое расписание</h5>
                     <p>Групповые и индивидуальные тренировки в удобное для вас время с 6:00 до 23:00</p>
                     <a href="{% url 'trainings' %}" class="btn btn-sm btn-outline-primary">Расписание</a>
@@ -307,8 +54,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
+                        </div>
                     <h5>Индивидуальный подход</h5>
                     <p>Персональные программы тренировок и питания, адаптированные под ваши цели</p>
                     <a href="{% url 'about_company' %}" class="btn btn-sm btn-outline-primary">О нас</a>

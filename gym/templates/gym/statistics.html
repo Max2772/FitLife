@@ -11,7 +11,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-calculator"></i> Статистические показатели — время на сайте (мин.)</h5>
+                <h5 class="mb-0">Статистические показатели — время на сайте (мин.)</h5>
             </div>
             <div class="card-body">
                 <div class="row text-center">
@@ -37,7 +37,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-calculator"></i> Статистические показатели — стоимость абонементов (BYN)</h5>
+                <h5 class="mb-0">Статистические показатели — стоимость абонементов (BYN)</h5>
             </div>
             <div class="card-body">
                 <div class="row text-center">
@@ -106,23 +106,23 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-file-alt"></i> Отчеты</h5>
+                <h5 class="mb-0">Отчеты</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <a href="{% url 'training_group_report' %}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-users"></i> Список клиентов в группе
+                            Список клиентов в группе
                         </a>
                     </div>
                     <div class="col-md-4 mb-3">
                         <a href="{% url 'training_count_report' %}" class="btn btn-outline-success w-100">
-                            <i class="fas fa-chart-bar"></i> Количество занятий по группам
+                            Количество занятий по группам
                         </a>
                     </div>
                     <div class="col-md-4 mb-3">
                         <a href="{% url 'client_cost_report' %}" class="btn btn-outline-info w-100">
-                            <i class="fas fa-dollar-sign"></i> Стоимость услуг по клиентам
+                            Стоимость услуг по клиентам
                         </a>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
 <div class="container mb-4 dark-page">
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-chart-bar"></i> График времени на сайте (среднее / медиана / мода)</h5>
+            <h5 class="mb-0">График времени на сайте (среднее / медиана / мода)</h5>
         </div>
         <div class="card-body text-center">
             <img src="data:image/png;base64,{{ chart_data }}" class="img-fluid" alt="Статистика сессий">

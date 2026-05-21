@@ -44,7 +44,7 @@ FitLife Gym - это полнофункциональный веб-сайт тр
 ## Технологии
 
 - **Backend**: Django 5.2, Python 3.11
-- **Frontend**: Bootstrap 5, HTML5, CSS3
+- **Frontend**: HTML5, CSS3 (собственные стили в `gym/static/gym/site.css`)
 - **База данных**: SQLite3
 - **Визуализация**: Matplotlib, Pandas
 - **Дополнительно**: Django Signals для логирования сессий

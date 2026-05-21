@@ -2,264 +2,11 @@
 
 {% block title %}Профиль - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1920&q=80') center/cover;
-        padding: 80px 0;
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .page-header h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-
-    .profile-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        font-weight: 700;
-        color: white;
-        margin: 0 auto 1.5rem;
-        border: 4px solid rgba(255, 69, 0, 0.3);
-    }
-
-    .profile-card h5 {
-        color: var(--text-light);
-        font-size: 1.8rem;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .profile-info {
-        background: rgba(255, 69, 0, 0.1);
-        border-left: 3px solid var(--primary-color);
-        padding: 1rem;
-        border-radius: 5px;
-        margin-top: 1rem;
-    }
-
-    .profile-info p {
-        margin: 0.5rem 0;
-        color: var(--text-muted);
-    }
-
-    .profile-info strong {
-        color: var(--text-light);
-    }
-
-    .nav-tabs {
-        border-bottom: 2px solid rgba(255, 69, 0, 0.2);
-        margin-bottom: 2rem;
-        display: flex;
-        gap: 0;
-    }
-
-    .nav-tabs .nav-item {
-        margin-bottom: 0;
-    }
-
-    .nav-tabs .nav-link {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        padding: 1rem 1.5rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        position: relative;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .nav-tabs .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0.0rem;
-        right: 0.5rem;
-        width: auto;
-        height: 2px;
-        background: var(--primary-color);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-
-    .nav-tabs .nav-link:hover {
-        color: var(--primary-color);
-    }
-
-    .nav-tabs .nav-link.active {
-        color: var(--primary-color);
-        background: transparent;
-        border: none;
-    }
-
-    .nav-tabs .nav-link.active::after {
-        transform: scaleX(1);
-    }
-
-    .tab-content {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        padding: 2rem;
-    }
-
-    .table {
-        color: var(--text-light);
-        margin-top: 1rem;
-    }
-
-    .table thead th {
-        background: rgba(255, 69, 0, 0.1);
-        border-color: rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        padding: 1rem;
-    }
-
-    .table tbody td {
-        border-color: rgba(255, 69, 0, 0.1);
-        padding: 1rem;
-        vertical-align: middle;
-    }
-
-    .table tbody tr {
-        transition: all 0.3s ease;
-    }
-
-    .table tbody tr:hover {
-        background: rgba(255, 69, 0, 0.05);
-    }
-
-    .badge {
-        padding: 8px 15px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        border-radius: 20px;
-        text-transform: uppercase;
-    }
-
-    .badge.bg-success {
-        background: linear-gradient(135deg, #10b981, #059669) !important;
-    }
-
-    .badge.bg-secondary {
-        background: linear-gradient(135deg, #6b7280, #4b5563) !important;
-    }
-
-    .list-group-item {
-        background: rgba(255, 69, 0, 0.05);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        color: var(--text-light);
-        margin-bottom: 1rem;
-        border-radius: 10px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-    }
-
-    .list-group-item:hover {
-        background: rgba(255, 69, 0, 0.1);
-        border-color: var(--primary-color);
-        transform: translateX(5px);
-    }
-
-    .training-section-title {
-        color: var(--text-light);
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        margin: 1.5rem 0 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(255, 69, 0, 0.2);
-    }
-
-    .training-section-title:first-of-type {
-        margin-top: 0;
-    }
-
-    .review-card-profile {
-        background: rgba(255, 69, 0, 0.05);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .review-card-profile:hover {
-        background: rgba(255, 69, 0, 0.1);
-        border-color: var(--primary-color);
-    }
-
-    .review-card-profile h6 {
-        color: var(--text-light);
-        margin-bottom: 0.5rem;
-    }
-
-    .review-card-profile p {
-        color: var(--text-muted);
-        margin: 0.5rem 0;
-    }
-
-    .empty-message {
-        text-align: center;
-        padding: 3rem;
-        color: var(--text-muted);
-    }
-
-    .empty-message i {
-        font-size: 3rem;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .page-header h1 {
-            font-size: 2rem;
-        }
-
-        .tab-content {
-            padding: 1.5rem;
-        }
-
-        .nav-tabs .nav-link {
-            padding: 0.8rem 1rem;
-            font-size: 0.8rem;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <!-- Page Header -->
 <div class="page-header">
     <div class="container">
-        <h1><i class="fas fa-user-circle"></i> МОЙ ПРОФИЛЬ</h1>
+        <h1>Мой профиль</h1>
     </div>
 </div>
 
@@ -274,38 +21,29 @@
 
                 {% if client %}
                 <div class="profile-info">
-                    <p><strong><i class="fas fa-user"></i> Имя:</strong> {{ client.first_name }} {{ client.last_name }}</p>
-                    <p><strong><i class="fas fa-phone"></i> Телефон:</strong> {{ client.phone }}</p>
+                    <p><strong>Имя:</strong> {{ client.first_name }} {{ client.last_name }}</p>
+                    <p><strong>Телефон:</strong> {{ client.phone }}</p>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="memberships-tab" data-bs-toggle="tab" data-bs-target="#memberships" type="button">
-                        <i class="fas fa-ticket-alt"></i> Абонементы
-                    </button>
+        <div class="col-lg-8" data-tabs>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <button class="nav-link active" type="button" data-tab-target="memberships">Абонементы</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="trainings-tab" data-bs-toggle="tab" data-bs-target="#trainings" type="button">
-                        <i class="fas fa-dumbbell"></i> Тренировки
-                    </button>
+                <li class="nav-item">
+                    <button class="nav-link" type="button" data-tab-target="trainings">Тренировки</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
-                        <i class="fas fa-star"></i> Отзывы
-                    </button>
+                <li class="nav-item">
+                    <button class="nav-link" type="button" data-tab-target="reviews">Отзывы</button>
                 </li>
             </ul>
 
-            <div class="tab-content" id="myTabContent">
-                <!-- Memberships Tab -->
-                <div class="tab-pane fade show active" id="memberships" role="tabpanel">
-                    <a href="{% url 'buy_membership' %}" class="btn btn-primary mb-3">
-                        <i class="fas fa-shopping-cart"></i> Купить абонемент
-                    </a>
+            <div>
+                <div class="tab-pane active" id="memberships" data-tab-pane>
+                    <a href="{% url 'buy_membership' %}" class="btn btn-primary mb-3">Купить абонемент</a>
 
                     {% if memberships %}
                     <div class="table-responsive">
@@ -326,13 +64,9 @@
                                     <td>{{ membership.end_date|date:"d.m.Y" }}</td>
                                     <td>
                                         {% if membership.is_active %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check"></i> Активен
-                                        </span>
+                                        <span class="badge bg-success">Активен</span>
                                         {% else %}
-                                        <span class="badge bg-secondary">
-                                            <i class="fas fa-times"></i> Неактивен
-                                        </span>
+                                        <span class="badge bg-secondary">Неактивен</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -342,85 +76,65 @@
                     </div>
                     {% else %}
                     <div class="empty-message">
-                        <i class="fas fa-ticket-alt"></i>
                         <p>У вас пока нет абонементов</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Trainings Tab -->
-                <div class="tab-pane fade" id="trainings" role="tabpanel">
-                    <a href="{% url 'book_training' %}" class="btn btn-primary mb-3">
-                        <i class="fas fa-calendar-plus"></i> Записаться на тренировку
-                    </a>
+                <div class="tab-pane" id="trainings" data-tab-pane>
+                    <a href="{% url 'book_training' %}" class="btn btn-primary mb-3">Записаться на тренировку</a>
 
                     {% if trainings or personal_trainings %}
                         {% if trainings %}
-                        <h6 class="training-section-title"><i class="fas fa-users"></i> Групповые тренировки</h6>
+                        <h6>Групповые тренировки</h6>
                         <ul class="list-group">
                             {% for training in trainings %}
                             <li class="list-group-item">
-                                <strong><i class="fas fa-dumbbell"></i> {{ training.training_type }}</strong><br>
-                                <i class="fas fa-user-tie"></i> Тренеры: {% for trainer in training.trainers.all %}{{ trainer }}{% if not forloop.last %}, {% endif %}{% endfor %}<br>
-                                <i class="fas fa-calendar"></i> Дата: {{ training.date|date:"d.m.Y" }} в {{ training.time|time:"H:i" }}
+                                <strong>{{ training.training_type }}</strong><br>
+                                Тренеры: {% for trainer in training.trainers.all %}{{ trainer }}{% if not forloop.last %}, {% endif %}{% endfor %}<br>
+                                Дата: {{ training.date|date:"d.m.Y" }} в {{ training.time|time:"H:i" }}
                             </li>
                             {% endfor %}
                         </ul>
                         {% endif %}
 
                         {% if personal_trainings %}
-                        <h6 class="training-section-title"><i class="fas fa-user-clock"></i> Индивидуальные занятия</h6>
+                        <h6>Индивидуальные занятия</h6>
                         <ul class="list-group">
                             {% for session in personal_trainings %}
                             <li class="list-group-item">
-                                <strong><i class="fas fa-user"></i> {{ session.trainer }}</strong><br>
-                                {% if session.training_type %}
-                                <i class="fas fa-dumbbell"></i> {{ session.training_type }}<br>
-                                {% endif %}
-                                <i class="fas fa-calendar"></i> Дата: {{ session.date|date:"d.m.Y" }} с {{ session.start_time|time:"H:i" }} до {{ session.end_time|time:"H:i" }}<br>
-                                <i class="fas fa-tag"></i> Стоимость: {{ session.price }} BYN
-                                {% if session.notes %}
-                                <br><i class="fas fa-comment"></i> {{ session.notes }}
-                                {% endif %}
+                                <strong>{{ session.trainer }}</strong><br>
+                                {% if session.training_type %}{{ session.training_type }}<br>{% endif %}
+                                Дата: {{ session.date|date:"d.m.Y" }} с {{ session.start_time|time:"H:i" }} до {{ session.end_time|time:"H:i" }}<br>
+                                Стоимость: {{ session.price }} BYN
+                                {% if session.notes %}<br>{{ session.notes }}{% endif %}
                             </li>
                             {% endfor %}
                         </ul>
                         {% endif %}
                     {% else %}
                     <div class="empty-message">
-                        <i class="fas fa-running"></i>
                         <p>Вы не записаны на тренировки</p>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Reviews Tab -->
-                <div class="tab-pane fade" id="reviews" role="tabpanel">
-                    <a href="{% url 'add_review' %}" class="btn btn-primary mb-3">
-                        <i class="fas fa-pen"></i> Добавить отзыв
-                    </a>
+                <div class="tab-pane" id="reviews" data-tab-pane>
+                    <a href="{% url 'add_review' %}" class="btn btn-primary mb-3">Добавить отзыв</a>
 
                     {% if reviews %}
                     {% for review in reviews %}
                     <div class="review-card-profile">
-                        <h6>
-                            <i class="fas fa-star" style="color: #fbbf24;"></i>
-                            Оценка: {{ review.rating }}/5
-                        </h6>
+                        <h6>Оценка: {{ review.rating }}/5</h6>
                         {% if review.trainer %}
-                        <p class="text-secondary">
-                            <i class="fas fa-user-tie"></i> Тренер: {{ review.trainer }}
-                        </p>
+                        <p class="text-secondary">Тренер: {{ review.trainer }}</p>
                         {% endif %}
                         <p>{{ review.text }}</p>
-                        <small class="text-primary">
-                            <i class="fas fa-clock"></i> {{ review.created_at|date:"d.m.Y H:i" }}
-                        </small>
+                        <small class="text-primary">{{ review.created_at|date:"d.m.Y H:i" }}</small>
                     </div>
                     {% endfor %}
                     {% else %}
                     <div class="empty-message">
-                        <i class="fas fa-comments"></i>
                         <p>Вы еще не оставляли отзывов</p>
                     </div>
                     {% endif %}

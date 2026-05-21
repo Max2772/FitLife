@@ -2,234 +2,6 @@
 
 {% block title %}Запись на тренировку - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80') center/cover;
-        padding: 100px 0;
-        text-align: center;
-        margin-bottom: 60px;
-    }
-
-    .page-header h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .breadcrumb {
-        background: var(--dark-card);
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-
-    .breadcrumb-item a {
-        color: var(--primary-color);
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .breadcrumb-item a:hover {
-        color: var(--secondary-color);
-    }
-
-    .breadcrumb-item.active {
-        color: var(--text-muted);
-    }
-
-    .breadcrumb-item + .breadcrumb-item::before {
-        color: var(--text-muted);
-    }
-
-    h1 {
-        color: var(--text-light);
-        font-weight: 700;
-        margin-bottom: 2rem;
-    }
-
-    .card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        transition: all 0.3s ease;
-    }
-
-    .card:hover {
-        border-color: var(--primary-color);
-        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    .form-label {
-        color: var(--text-light);
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-    }
-
-    .form-control, .form-select {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-        padding: 12px 20px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus, .form-select:focus {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: var(--primary-color);
-        color: var(--text-light);
-        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
-    }
-
-    .form-control::placeholder {
-        color: var(--text-muted);
-    }
-
-    .form-text, .text-muted {
-        color: #9ca3af !important;
-        font-size: 0.85rem;
-    }
-
-    small.text-muted {
-        color: #9ca3af !important;
-    }
-
-    textarea.form-control {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-check-input {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 69, 0, 0.3);
-        width: 1.2rem;
-        height: 1.2rem;
-    }
-
-    .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-
-    .form-check-input:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(255, 69, 0, 0.25);
-    }
-
-    .form-check-label {
-        color: var(--text-light);
-        margin-left: 0.5rem;
-    }
-
-    .form-check-label a {
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-
-    .form-check-label a:hover {
-        color: var(--secondary-color);
-        text-decoration: underline;
-    }
-
-    .btn-success {
-        background: linear-gradient(135deg, #10b981, #059669);
-        border: none;
-        padding: 12px 30px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-success:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 12px 30px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .alert-info {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-left: 4px solid #3b82f6;
-        color: var(--text-light);
-        border-radius: 10px;
-        padding: 1.5rem;
-    }
-
-    .alert-info h6 {
-        color: #3b82f6;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .alert-info ul {
-        color: var(--text-muted);
-        line-height: 1.8;
-    }
-
-    .booking-type-banner {
-        background: rgba(255, 69, 0, 0.12);
-        border: 1px solid rgba(255, 69, 0, 0.35);
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-        color: var(--text-light);
-    }
-
-    .booking-type-banner a {
-        color: var(--primary-color);
-    }
-
-    .booking-section-title {
-        color: var(--text-light);
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .manual-booking-block {
-        border-top: 1px solid rgba(255, 69, 0, 0.2);
-        padding-top: 1.5rem;
-        margin-top: 0.5rem;
-    }
-
-    .manual-booking-block.is-disabled {
-        opacity: 0.45;
-        pointer-events: none;
-    }
-
-    @media (max-width: 768px) {
-        .btn-success, .btn-secondary {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -248,7 +20,6 @@
                 <div class="card-body">
                     {% if training_type %}
                     <div class="booking-type-banner">
-                        <i class="fas fa-dumbbell"></i>
                         Направление: <strong>{{ training_type.name }}</strong>
                         <a href="{% url 'training_detail' training_type.pk %}" class="ms-2">Подробнее о формате</a>
                     </div>
@@ -272,7 +43,7 @@
                         </div>
                         {% endif %}
 
-                        <h5 class="booking-section-title"><i class="fas fa-users"></i> Групповое занятие</h5>
+                        <h5 class="booking-section-title">Групповое занятие</h5>
 
                         {% if has_sessions %}
                         <div class="mb-3">
@@ -300,7 +71,7 @@
                         {% endif %}
 
                         <div class="manual-booking-block" id="manual-booking">
-                            <h5 class="booking-section-title"><i class="fas fa-user-clock"></i> Индивидуальная запись</h5>
+                            <h5 class="booking-section-title">Индивидуальная запись</h5>
                             <p class="form-text text-muted mb-3">Укажите дату, время и тренера, если записываетесь на персональное занятие</p>
 
                             <div class="mb-3">

@@ -2,68 +2,9 @@
 
 {% block title %}Количество занятий по группам - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .report-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 2rem;
-    }
-
-    .filter-form {
-        background-color: var(--card-bg);
-        padding: 2rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .results-table {
-        background-color: var(--card-bg);
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .table {
-        color: var(--text-color);
-    }
-
-    .table thead {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .table tbody tr {
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .table tbody tr:hover {
-        background-color: var(--hover-bg);
-    }
-
-    .form-control, .btn {
-        border-radius: 8px;
-    }
-
-    h1, h2 {
-        color: var(--text-color);
-    }
-
-    .summary-card {
-        background: linear-gradient(135deg, var(--primary-color), #0056b3);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="report-container">
-    <h1 class="mb-4"><i class="fas fa-chart-bar"></i> Количество занятий по группам</h1>
+    <h1 class="mb-4">Количество занятий по группам</h1>
 
     <div class="filter-form">
         <form method="get">
@@ -78,7 +19,7 @@
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search"></i> Показать
+                        Показать
                     </button>
                 </div>
             </div>
@@ -117,7 +58,7 @@
     </div>
     {% elif start_date and end_date %}
     <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i> За выбранный период занятий не найдено.
+        За выбранный период занятий не найдено.
     </div>
     {% endif %}
 </div>

@@ -2,34 +2,6 @@
 
 {% block title %}{{ trainer.full_name }} - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Карточки Bootstrap по умолчанию светлые — выравниваем под тёмную тему */
-    .trainer-detail-page.dark-page .card {
-        background-color: var(--dark-card) !important;
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-    }
-    .trainer-detail-page.dark-page .card .card {
-        background-color: rgba(0, 0, 0, 0.35) !important;
-        border-color: rgba(255, 69, 0, 0.15);
-    }
-    .trainer-detail-page.dark-page .card h4,
-    .trainer-detail-page.dark-page .card h5,
-    .trainer-detail-page.dark-page .card h6 {
-        color: var(--text-light);
-    }
-    .trainer-detail-page.dark-page .card .card-title,
-    .trainer-detail-page.dark-page .card .card-text {
-        color: var(--text-light);
-    }
-    .trainer-detail-page.dark-page .card .small,
-    .trainer-detail-page.dark-page .card small {
-        color: var(--text-muted) !important;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container dark-page trainer-detail-page">
 <nav aria-label="breadcrumb">

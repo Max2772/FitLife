@@ -2,127 +2,6 @@
 
 {% block title %}Вакансии - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .page-header {
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(10, 10, 10, 0.9)),
-                    url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920&q=80') center/cover;
-        padding: 100px 0;
-        text-align: center;
-        margin-bottom: 60px;
-    }
-
-    .page-header h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .page-header p {
-        font-size: 1.2rem;
-        color: var(--text-muted);
-    }
-
-    .vacancy-card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.1);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.4s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .vacancy-card:hover {
-        transform: translateY(-8px);
-        border-color: var(--primary-color);
-        box-shadow: 0 15px 40px rgba(255, 69, 0, 0.25);
-    }
-
-    .vacancy-card .card-body {
-        padding: 2rem;
-        flex-grow: 1;
-    }
-
-    .vacancy-card .card-title {
-        color: var(--text-light);
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .vacancy-card h6 {
-        color: var(--primary-color);
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        margin-top: 1.25rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .vacancy-card p,
-    .vacancy-card .requirements-text {
-        color: var(--text-muted);
-        line-height: 1.7;
-    }
-
-    .salary-badge {
-        display: inline-block;
-        background: rgba(255, 69, 0, 0.15);
-        color: var(--primary-color);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-    }
-
-    .vacancy-card .card-footer {
-        background: rgba(255, 69, 0, 0.05);
-        border-top: 1px solid rgba(255, 69, 0, 0.1);
-        padding: 1.5rem 2rem;
-    }
-
-    .benefits-section {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        padding: 2.5rem;
-        margin-top: 3rem;
-    }
-
-    .benefits-section h3 {
-        color: var(--text-light);
-        margin-bottom: 1.5rem;
-    }
-
-    .benefits-section li {
-        color: var(--text-muted);
-        padding: 0.5rem 0;
-        line-height: 1.6;
-    }
-
-    .apply-alert {
-        background: rgba(255, 69, 0, 0.1);
-        border: 1px solid rgba(255, 69, 0, 0.3);
-        border-radius: 15px;
-        padding: 2rem;
-        margin-top: 2rem;
-        color: var(--text-muted);
-    }
-
-    .apply-alert h5 {
-        color: var(--text-light);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        color: var(--text-muted);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="page-header">
     <div class="container">
@@ -148,7 +27,7 @@
                 </div>
                 <div class="card-footer">
                     <a href="{% url 'contacts' %}" class="btn btn-primary w-100">
-                        <i class="fas fa-paper-plane"></i> Откликнуться
+                        Откликнуться
                     </a>
                 </div>
             </div>
@@ -156,7 +35,6 @@
         {% empty %}
         <div class="col-12">
             <div class="empty-state">
-                <i class="fas fa-briefcase fa-3x mb-3" style="color: var(--primary-color);"></i>
                 <h3>Активных вакансий нет</h3>
                 <p>Следите за обновлениями или отправьте резюме через страницу контактов.</p>
             </div>
@@ -165,7 +43,7 @@
     </div>
 
     <div class="benefits-section">
-        <h3><i class="fas fa-star"></i> Почему стоит работать у нас?</h3>
+        <h3>Почему стоит работать у нас?</h3>
         <ul>
             <li>Конкурентная заработная плата</li>
             <li>Бесплатный абонемент в зал</li>

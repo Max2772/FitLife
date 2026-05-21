@@ -2,35 +2,6 @@
 
 {% block title %}Диаграмма абонементов - FitLife Gym{% endblock %}
 
-{% block extra_css %}
-<style>
-    .chart-page h1, .chart-page h5 { color: var(--text-light); }
-    .chart-page .card {
-        background: var(--dark-card);
-        border: 1px solid rgba(255, 69, 0, 0.2);
-        border-radius: 15px;
-        margin-bottom: 1.5rem;
-    }
-    .chart-page .card-header {
-        background: rgba(255, 69, 0, 0.1);
-        border-bottom: 1px solid rgba(255, 69, 0, 0.2);
-    }
-    .chart-page .card-body { color: var(--text-light); }
-    .chart-page .table { color: var(--text-light); }
-    .chart-page .table thead th {
-        background: rgba(255, 69, 0, 0.1);
-        border-color: rgba(255, 69, 0, 0.2);
-        color: var(--text-light);
-    }
-    .chart-page .text-muted { color: #9ca3af !important; }
-    .chart-page .chart-empty {
-        color: var(--text-muted);
-        text-align: center;
-        padding: 2rem;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container dark-page chart-page my-4">
     <nav aria-label="breadcrumb">
