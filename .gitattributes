@@ -1,0 +1,14 @@
+# Текстовые типы проекта
+*.py    text eol=lf
+*.json  text eol=lf
+*.toml  text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.lock  text eol=lf
+
+# Бинарники
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.ttf   binary
+*.db    binary
