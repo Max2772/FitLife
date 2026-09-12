@@ -224,3 +224,6 @@ Media/
 
 # Pdf
 *.pdf
+
+#macOS
+.DS_Store
