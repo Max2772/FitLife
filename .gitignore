@@ -222,8 +222,10 @@ Media/
 # Cursor
 .cursorignore
 
-# Pdf
+# Documents
 *.pdf
+*.docx
+*.doc
 
 #macOS
 .DS_Store
