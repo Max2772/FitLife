@@ -29,18 +29,18 @@
                 <th id="row-{{ item.pk }}" scope="row">{{ item.membership_type.name }}</th>
                 <td headers="row-{{ item.pk }} c-price">{{ item.membership_type.price }}</td>
                 <td headers="row-{{ item.pk }} c-qty">
-                    <!-- увеличить количество -->
-                    <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="increase">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
-                    </form>
-                    {{ item.quantity }}
                     <!-- уменьшить количество -->
                     <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="decrease">
                         <button type="submit" class="btn btn-sm btn-outline-secondary">&minus;</button>
+                    </form>
+                    {{ item.quantity }}
+                    <!-- увеличить количество -->
+                    <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
                     </form>
                 </td>
                 <td headers="row-{{ item.pk }} c-sum">{{ item.subtotal }}</td>
