@@ -1,4 +1,4 @@
-~from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from django.contrib.auth.models import User
