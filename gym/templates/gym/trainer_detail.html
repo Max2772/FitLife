@@ -19,15 +19,15 @@
             <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.full_name }}">
             {% endif %}
             <div class="card-body text-center">
-                <h4 class="card-title">{{ trainer.full_name }}</h4>
+                <h1 class="card-title">{{ trainer.full_name }}</h1>
                 <p class="text-muted">{{ trainer.specialization }}</p>
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-center align-items-center">
                         {% if rating_avg is not None %}
-                        <h3 class="mb-0 me-2 text-light">{{ rating_avg|floatformat:1 }}</h3>
+                        <h2 class="mb-0 me-2 text-light">{{ rating_avg|floatformat:1 }}</h2>
                         {% else %}
-                        <h3 class="mb-0 me-2 text-muted">—</h3>
+                        <h2 class="mb-0 me-2 text-muted">—</h2>
                         {% endif %}
                         <div>
                             {% if rating_avg is not None %}
@@ -59,7 +59,7 @@
 
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Контакты</h5>
+                <h2 class="card-title">Контакты</h2>
                 {% if trainer.phone %}
                 <p class="mb-2"><strong>Телефон:</strong><br>{{ trainer.phone }}</p>
                 {% endif %}
@@ -71,14 +71,14 @@
     <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">О тренере</h5>
-                <p class="card-text">{{ trainer.bio|default:"Информация скоро появится."|linebreaks }}</p>
+                <h2 class="card-title">О тренере</h2>
+                <div class="card-text">{{ trainer.bio|default:"Информация скоро появится."|linebreaks }}</div>
             </div>
         </div>
 
         <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Специализация</h5>
+                <h2 class="card-title">Специализация</h2>
                 <p class="card-text">{{ trainer.specialization }}</p>
                 <div class="d-flex flex-wrap gap-2">
                     <span class="badge bg-primary">Персональные тренировки</span>
@@ -90,7 +90,7 @@
 
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Направления в расписании</h5>
+                <h2 class="mb-0">Направления в расписании</h2>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -98,7 +98,7 @@
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h6 class="card-title">{{ training.name }}</h6>
+                                <h3 class="card-title">{{ training.name }}</h3>
                                 <p class="card-text small">{{ training.description|truncatewords:15 }}</p>
                                 <p class="card-text mb-2">
                                     <small class="text-muted">
@@ -120,7 +120,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Отзывы клиентов</h5>
+                <h2 class="mb-0">Отзывы клиентов</h2>
             </div>
             <div class="card-body">
                 {% for review in reviews %}

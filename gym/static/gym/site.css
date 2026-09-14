@@ -135,6 +135,7 @@ img { max-width: 100%; height: auto; }
 }
 
 .site-footer ul { list-style: none; padding: 0; margin: 0; }
+.footer-title { font-weight: 700; font-size: 0.83em; margin: 0 0 0.5em; }
 .site-footer hr { border: none; border-top: 1px solid #ccc; margin: 16px 0; }
 
 /* Кнопки */
@@ -198,6 +199,9 @@ img { max-width: 100%; height: auto; }
     border-bottom: 2px solid #333;
     margin-bottom: 20px;
 }
+
+.hero-content { text-align: center; }
+.hero-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
 .features-section, .news-section, .cta-section, .auth-section { padding: 20px 0; }
 .feature-card, .training-card { padding: 12px; }
@@ -401,3 +405,86 @@ select, textarea {
 }
 
 .chart-container { margin: 16px 0; }
+
+
+/* ==== ЛР1: минимальные стили для новых блоков ==== */
+.product-card { border: 1px solid #dcdde1; border-radius: 8px; overflow: hidden; background: #fff; height: 100%; }
+.product-card img { display: block; width: 100%; height: auto; }
+.product-card .card-body { padding: 12px; }
+.product-price, .product-price-big { font-weight: bold; color: #ff6b00; }
+.product-price-big { font-size: 24px; }
+.partners-grid { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.partner-card img { display: block; width: 160px; height: auto; }
+.employee-card { border: 1px solid #dcdde1; border-radius: 8px; overflow: hidden; background: #fff; }
+.employee-card img { display: block; width: 100%; height: auto; }
+.employee-body { padding: 12px; }
+.timeline { padding-left: 20px; }
+table.table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+table.table caption { text-align: left; font-weight: bold; padding: 6px 0; }
+table.table th, table.table td { border: 1px solid #dcdde1; padding: 6px 10px; text-align: left; }
+table.table thead th { background: #111216; color: #fff; }
+fieldset { border: 1px solid #dcdde1; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
+legend { font-weight: bold; padding: 0 6px; }
+.form-field label, .form-check label { display: block; font-weight: bold; margin: 8px 0 2px; }
+iframe { border: 1px solid #dcdde1; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ==== ЛР1: минимальные стили для новых блоков ==== */
+.product-card { border: 1px solid #dcdde1; border-radius: 8px; overflow: hidden; background: #fff; height: 100%; }
+.product-card img { display: block; width: 100%; height: auto; }
+.product-card .card-body { padding: 12px; }
+.product-price, .product-price-big { font-weight: bold; color: #ff6b00; }
+.product-price-big { font-size: 24px; }
+.partners-grid { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.partner-card img { display: block; width: 160px; height: auto; }
+.employee-card { border: 1px solid #dcdde1; border-radius: 8px; overflow: hidden; background: #fff; }
+.employee-card img { display: block; width: 100%; height: auto; }
+.employee-body { padding: 12px; }
+.timeline { padding-left: 20px; }
+table.table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+table.table caption { text-align: left; font-weight: bold; padding: 6px 0; }
+table.table th, table.table td { border: 1px solid #dcdde1; padding: 6px 10px; text-align: left; }
+table.table thead th { background: #111216; color: #fff; }
+fieldset { border: 1px solid #dcdde1; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
+legend { font-weight: bold; padding: 0 6px; }
+.form-field label, .form-check label { display: block; font-weight: bold; margin: 8px 0 2px; }
+iframe { border: 1px solid #dcdde1; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ==== ЛР1: баннеры и заголовки секций ==== */
+.section-title-plain { text-align: center; margin: 16px 0; }
+.banner-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.banner-row figure { flex: 1 1 240px; }
+.banner-row figcaption { font-size: 14px; color: #555; padding-top: 6px; text-align: center; }
+
+/* ==== ЛР1: рейтинг звёздами в отзывах ==== */
+.rating-stars { font-size: 18px; color: #dcdde1; white-space: nowrap; }
+.rating-stars .star-filled { color: #ff9d00; }
+.author-avatar { cursor: default; }
+
+/* ==== ЛР1: выбор оценки звёздами при добавлении отзыва ====
+   Радиокнопки идут в разметке от 5 к 1 (см. add_review.html), поэтому
+   визуально их разворачивают в обратном порядке (row-reverse) — тогда
+   при наведении на звезду подсвечиваются все звёзды "слева" от неё
+   через общий CSS-селектор ~. */
+.rating-input {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 2px;
+}
+.rating-input input { position: absolute; opacity: 0; width: 0; height: 0; }
+.rating-input label {
+    font-size: 28px;
+    line-height: 1;
+    color: #dcdde1;
+    cursor: pointer;
+}
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: #ff9d00;
+}
+
+/* ==== ЛР1: навигация по якорям ==== */
+.anchor-nav ul { display: flex; flex-wrap: wrap; gap: 8px 16px; list-style: none; padding: 10px 14px; margin: 0 0 20px; background: #f5f5f7; border-left: 4px solid #ff6b00; font-size: 14px; }
+.hero-slogan { font-style: italic; color: #555; }

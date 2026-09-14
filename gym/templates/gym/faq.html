@@ -1,40 +1,34 @@
 {% extends 'gym/base.html' %}
 
-{% block title %}FAQ - FitLife Gym{% endblock %}
+{% block title %}Словарь терминов и понятий — FitLife Gym{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div class="container">
-        <h1>FAQ</h1>
-        <p>Ответы на часто задаваемые вопросы</p>
+        <h1>СЛОВАРЬ ТЕРМИНОВ И ПОНЯТИЙ</h1>
+        <p>Часто задаваемые вопросы. Нажмите на вопрос, чтобы увидеть ответ.</p>
     </div>
 </div>
 
 <div class="container mb-5">
-    {% if faqs %}
-    <div class="faq-list">
-        {% for faq in faqs %}
-        <details {% if forloop.first %}open{% endif %}>
-            <summary>{{ faq.question }}</summary>
-            <div class="faq-answer">
-                {{ faq.answer|linebreaks }}
-                <p class="faq-date mb-0">
-                    Дата добавления: {{ faq.created_at|date:"d.m.Y H:i" }}
-                </p>
-            </div>
-        </details>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="empty-state">
-        <h3>Вопросы пока не добавлены</h3>
-        <p>Загляните позже.</p>
-    </div>
-    {% endif %}
 
-    <div class="faq-footer">
-        <h3>Не нашли ответ?</h3>
-        <p class="mb-0">Свяжитесь через <a href="{% url 'contacts' %}">контакты</a>{% if company %} или по телефону <strong>{{ company.phone }}</strong>{% endif %}.</p>
-    </div>
+    <!-- список из базы данных (модель FAQ); дата добавления, раскрывающийся ответ -->
+    <section aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="visually-hidden">Частые вопросы</h2>
+        {% if faqs %}
+            {% for faq in faqs %}
+            <details>
+                <summary>
+                    {{ faq.question }}
+                    <small>добавлен <time datetime="{{ faq.created_at|date:'Y-m-d' }}">{{ faq.created_at|date:"d/m/Y" }}</time></small>
+                </summary>
+                <p>{{ faq.answer }}</p>
+            </details>
+            {% endfor %}
+        {% else %}
+        <p>Вопросы пока не добавлены.</p>
+        {% endif %}
+    </section>
+
 </div>
 {% endblock %}

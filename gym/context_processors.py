@@ -15,3 +15,19 @@ def site_calendar(request):
             f"часовой пояс {settings.TIME_ZONE}"
         ),
     }
+
+
+def cart_summary(request):
+    """Счётчик корзины для шапки сайта (доступен во всех шаблонах)."""
+    from .utils import get_cart
+
+    try:
+        cart = get_cart(request, create=False)
+    except Exception:  # noqa: BLE001 — шапка не должна падать из-за корзины
+        cart = None
+    if cart is None:
+        return {'cart_quantity': 0, 'cart_total': 0}
+    return {
+        'cart_quantity': cart.total_quantity,
+        'cart_total': cart.total_price,
+    }

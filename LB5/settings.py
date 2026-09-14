@@ -23,7 +23,7 @@ except ImportError:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG').upper()
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 
 # Quick-start development settings - unsuitable for production
@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'gym.context_processors.site_calendar',
+                'gym.context_processors.cart_summary',
             ],
         },
     },

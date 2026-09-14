@@ -34,14 +34,14 @@
         <div class="col-lg-3 col-md-6">
             <div class="membership-card {% if forloop.counter == 3 %}featured{% endif %}">
                 <div class="card-header">
-                    <h4>{{ membership.name }}</h4>
+                    <h2>{{ membership.name }}</h2>
                 </div>
 
                 <div class="card-body">
                     <div class="price-tag">
-                        <h2>
+                        <h3>
                             <span class="currency">BYN</span> {{ membership.price }}
-                        </h2>
+                        </h3>
                         <p class="duration">{{ membership.duration_months }} {% if membership.duration_months == 1 %}месяц{% elif membership.duration_months < 5 %}месяца{% else %}месяцев{% endif %}</p>
                     </div>
 
@@ -84,7 +84,7 @@
         {% empty %}
         <div class="col-12">
             <div class="empty-state">
-                <h3>Абонементы не найдены</h3>
+                <h2>Абонементы не найдены</h2>
                 <p class="text-muted">В данный момент список абонементов пуст</p>
             </div>
         </div>

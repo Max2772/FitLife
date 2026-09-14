@@ -76,7 +76,7 @@
                 <span class="type-badge">{{ training.get_type_display }}</span>
 
                 <div class="card-body">
-                    <h5 class="card-title">{{ training.name }}</h5>
+                    <h2 class="card-title">{{ training.name }}</h2>
                     <p class="card-text">{{ training.description|truncatewords:20 }}</p>
 
                     <div class="training-info">
@@ -113,7 +113,7 @@
         {% empty %}
         <div class="col-12">
             <div class="empty-state">
-                <h3>Тренировки не найдены</h3>
+                <h2>Тренировки не найдены</h2>
                 <p class="text-muted">Попробуйте изменить параметры фильтрации</p>
             </div>
         </div>

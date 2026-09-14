@@ -23,7 +23,7 @@
                 {% endif %}
 
                 <div class="card-body">
-                    <h5 class="card-title">{{ trainer.first_name }} {{ trainer.last_name }}</h5>
+                    <h2 class="card-title">{{ trainer.first_name }} {{ trainer.last_name }}</h2>
                     <p class="card-text">{{ trainer.bio|truncatewords:25|default:"Опытный тренер с индивидуальным подходом к каждому клиенту." }}</p>
 
                     <div class="trainer-info">
@@ -44,7 +44,7 @@
         {% empty %}
         <div class="col-12">
             <div class="empty-state">
-                <h3>Тренеры не найдены</h3>
+                <h2>Тренеры не найдены</h2>
                 <p class="text-muted">В данный момент список тренеров пуст</p>
             </div>
         </div>

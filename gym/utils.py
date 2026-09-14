@@ -137,3 +137,91 @@ def dual_datetime_display(dt):
         f"{local.strftime('%d/%m/%Y %H:%M')} "
         f"(UTC: {utc.strftime('%d/%m/%Y %H:%M')})"
     )
+
+
+# --------------------------------------------------------------------------
+# ЛР1: работа с корзиной заказа
+# --------------------------------------------------------------------------
+
+def get_cart(request, create=True):
+    """
+    Возвращает корзину текущего посетителя.
+
+    Для авторизованного пользователя корзина привязана к User, для гостя —
+    к ключу сессии. При входе в аккаунт гостевая корзина сливается с личной.
+    """
+    from .models import Cart  # локальный импорт: избегаем циклической зависимости
+
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart is None and create:
+            cart = Cart.objects.create(user=request.user)
+        return cart
+
+    if not request.session.session_key:
+        if not create:
+            return None
+        request.session.create()
+    session_key = request.session.session_key
+    cart = Cart.objects.filter(session_key=session_key, user__isnull=True).first()
+    if cart is None and create:
+        cart = Cart.objects.create(session_key=session_key)
+    return cart
+
+
+def merge_session_cart(request, user):
+    """Переносит позиции гостевой корзины в корзину пользователя после входа."""
+    from .models import Cart, CartItem
+
+    session_key = request.session.session_key
+    if not session_key:
+        return
+    guest_cart = Cart.objects.filter(session_key=session_key, user__isnull=True).first()
+    if guest_cart is None:
+        return
+    user_cart, _ = Cart.objects.get_or_create(user=user)
+    for item in guest_cart.items.all():
+        target, created = CartItem.objects.get_or_create(
+            cart=user_cart, membership_type=item.membership_type,
+            defaults={'quantity': item.quantity},
+        )
+        if not created:
+            target.quantity = min(target.quantity + item.quantity, 99)
+            target.save(update_fields=['quantity'])
+    guest_cart.delete()
+
+
+def generate_order_number():
+    """Человекочитаемый номер заказа вида FL-20260912-A3F19C."""
+    import uuid
+    return f"FL-{date.today():%Y%m%d}-{uuid.uuid4().hex[:6].upper()}"
+
+
+def get_valid_promocode(code):
+    """Проверяет промокод без привязки к конкретному абонементу (для корзины)."""
+    if not code:
+        return None, None
+    code = str(code).strip()
+    if not code:
+        return None, None
+    promo = Promocode.objects.filter(code__iexact=code, is_active=True).first()
+    if promo is None:
+        return None, 'Неверный или неактивный промокод.'
+    if promo.valid_until and promo.valid_until < date.today():
+        return None, 'Срок действия промокода истёк.'
+    return promo, None
+
+
+def get_main_company():
+    """
+    Возвращает основную запись CompanyInfo (используется на страницах
+    «О компании» и «Контакты»).
+
+    load_test_data создаёт несколько тестовых "филиалов" с разными
+    названиями для демонстрации выборок из прошлой лабы. Чтобы страница
+    «О компании» не показывала случайный из них, ищем по конкретному имени;
+    если не нашли — берём любую запись, лишь бы страница не была пустой.
+    """
+    from .models import CompanyInfo  # локальный импорт: избегаем циклической зависимости
+
+    return CompanyInfo.objects.filter(name='FitLife Gym').first() or CompanyInfo.objects.first()

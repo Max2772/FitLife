@@ -223,9 +223,20 @@ Media/
 .cursorignore
 
 # Documents
+docs/
 *.pdf
 *.docx
-*.doc
+*.docker
 
 #macOS
 .DS_Store
+# ===== ЛР1 (СТРВП) =====
+# PDF-документы сайта нужны в репозитории: на них ведут ссылки с download.
+# Исключение из общего правила *.pdf выше.
+!gym/static/gym/docs/*.pdf
+
+# Медиафайлы, которые создаёт "python manage.py load_lab1_data"
+/media/
+
+# Страницы, выгруженные "python scripts/dump_pages.py" для валидации
+rendered/

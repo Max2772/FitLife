@@ -18,6 +18,46 @@ from .utils import (
 )
 
 
+# ==========================================================================
+# ЛР1: виджеты для input-типов, которых нет в стандартном наборе Django.
+# Тип поля нужно задавать через input_type, а не через attrs={'type': ...},
+# иначе в разметку попадут два атрибута type и документ не пройдёт валидацию.
+# ==========================================================================
+
+
+class TelInput(forms.TextInput):
+    input_type = 'tel'
+
+
+class DateInput(forms.DateInput):
+    """<input type="date">. У стандартного forms.DateInput input_type = 'text'."""
+
+    input_type = 'date'
+
+    def __init__(self, attrs=None, date_format='%Y-%m-%d'):
+        # format обязателен: без него Django печатает дату как 12.09.2026,
+        # а input[type=date] принимает только ГГГГ-ММ-ДД.
+        super().__init__(attrs=attrs, format=date_format)
+
+
+class TimeInput(forms.TimeInput):
+    """<input type="time">. У стандартного forms.TimeInput input_type = 'text'."""
+
+    input_type = 'time'
+
+    def __init__(self, attrs=None, time_format='%H:%M'):
+        super().__init__(attrs=attrs, format=time_format)
+
+
+class RangeInput(forms.NumberInput):
+    input_type = 'range'
+
+
+class ColorInput(forms.TextInput):
+    input_type = 'color'
+
+
+
 def get_ordered_trainers():
     return Trainer.objects.order_by('last_name', 'first_name')
 
@@ -72,7 +112,7 @@ class RegisterForm(UserCreationForm):
     patronymic = forms.CharField(label="Отчество", max_length=100, required=False)
     address = forms.CharField(label="Адрес", max_length=255)
     phone = forms.CharField(label="Телефон", max_length=25)
-    birth_date = forms.DateField(label="Дата рождения", widget=forms.DateInput(attrs={'type': 'date'}))
+    birth_date = forms.DateField(label="Дата рождения", widget=DateInput())
 
     class Meta:
         model = User
@@ -104,7 +144,7 @@ class RegisterForm(UserCreationForm):
                 'class': 'form-control',
                 'autocomplete': 'off',
             })
-        self.fields['birth_date'].widget.attrs.update({'type': 'date'})
+        self.fields['birth_date'].widget.format = '%Y-%m-%d'
         self.fields['patronymic'].required = False
 
 
@@ -115,7 +155,7 @@ class MembershipForm(forms.ModelForm):
         model = Membership
         fields = ['membership_type', 'start_date']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'start_date': DateInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'membership_type': 'Тип абонемента',
@@ -149,7 +189,7 @@ class TrainingBookingForm(forms.Form):
     date = forms.DateField(
         label="Дата тренировки",
         required=False,
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        widget=DateInput(attrs={'class': 'form-control'}),
     )
     time = forms.TimeField(
         label="Время начала",
@@ -296,7 +336,7 @@ class PromocodeForm(forms.ModelForm):
         model = Promocode
         fields = ['code', 'membership_type', 'discount_percent', 'valid_until', 'is_active']
         widgets = {
-            'valid_until': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'valid_until': DateInput(attrs={'class': 'form-control'}),
             'code': forms.TextInput(attrs={'class': 'form-control'}),
             'discount_percent': forms.NumberInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -327,9 +367,9 @@ class TrainingForm(forms.ModelForm):
         model = Training
         fields = ['training_type', 'trainers', 'hall', 'date', 'time', 'end_time']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'date': DateInput(attrs={'class': 'form-control'}),
+            'time': TimeInput(attrs={'class': 'form-control'}),
+            'end_time': TimeInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'training_type': 'Тип тренировки',
@@ -354,9 +394,9 @@ class PersonalTrainingForm(forms.ModelForm):
         model = PersonalTraining
         fields = ['client', 'trainer', 'training_type', 'date', 'start_time', 'end_time', 'price', 'notes']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'start_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'date': DateInput(attrs={'class': 'form-control'}),
+            'start_time': TimeInput(attrs={'class': 'form-control'}),
+            'end_time': TimeInput(attrs={'class': 'form-control'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
@@ -380,7 +420,7 @@ class TrainerForm(forms.ModelForm):
             'phone', 'email', 'bio', 'birth_date',
         ]
         widgets = {
-            'birth_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'birth_date': DateInput(attrs={'class': 'form-control'}),
         }
 
     def clean_birth_date(self):
@@ -393,6 +433,161 @@ class TrainerForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
+        try:
+            return format_belarus_phone(phone)
+        except ValueError as exc:
+            raise ValidationError(str(exc))
+
+
+# ==========================================================================
+# ЛР1: оформление заказа и форма обратной связи
+# ==========================================================================
+
+
+class CheckoutForm(forms.Form):
+    """
+    Форма страницы оплаты. Демонстрирует разные типы элементов управления
+    и двойную валидацию — атрибутами HTML и методами clean_*() на сервере.
+    """
+
+    PAYMENT_CHOICES = [
+        ('card', 'Банковская карта'),
+        ('erip', 'ЕРИП «Расчёт»'),
+        ('cash', 'Наличными на ресепшене'),
+    ]
+
+    full_name = forms.CharField(
+        label="ФИО плательщика", min_length=5, max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'Иванов Иван Иванович',
+            'autocomplete': 'name', 'minlength': 5, 'maxlength': 150, 'required': True,
+        }),
+    )
+    email = forms.EmailField(
+        label="Электронная почта",
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control', 'placeholder': 'name@example.by',
+            'autocomplete': 'email', 'required': True,
+        }),
+    )
+    phone = forms.CharField(
+        label="Контактный телефон", max_length=20,
+        widget=TelInput(attrs={
+            'class': 'form-control', 'placeholder': '+375 (29) 123-45-67',
+            'pattern': r'^\+?375[\s\-()]*\d{2}[\s\-()]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}$',
+            'autocomplete': 'tel', 'required': True,
+        }),
+    )
+    start_date = forms.DateField(
+        label="Желаемая дата начала действия",
+        widget=DateInput(attrs={'class': 'form-control', 'required': True}),
+        input_formats=['%Y-%m-%d'],
+        initial=date.today,
+    )
+    payment_method = forms.ChoiceField(
+        label="Способ оплаты", choices=PAYMENT_CHOICES, initial='card',
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+    )
+    card_number = forms.CharField(
+        label="Номер карты", required=False, max_length=23,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': '4111 1111 1111 1111',
+            'inputmode': 'numeric', 'autocomplete': 'cc-number', 'maxlength': 23,
+        }),
+    )
+    promocode = forms.CharField(
+        label="Промокод", required=False, max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': 'FITNESS10', 'maxlength': 20,
+        }),
+    )
+    agree = forms.BooleanField(
+        label="Согласен с условиями оферты и политикой конфиденциальности",
+    )
+
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        try:
+            return format_belarus_phone(phone)
+        except ValueError as exc:
+            raise ValidationError(str(exc))
+
+    def clean_start_date(self):
+        start_date = self.cleaned_data['start_date']
+        if start_date < date.today():
+            raise ValidationError("Дата начала не может быть в прошлом.")
+        if start_date > date.today() + timedelta(days=180):
+            raise ValidationError("Абонемент можно активировать не позднее чем через 180 дней.")
+        return start_date
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data['full_name'].strip()
+        if len(full_name.split()) < 2:
+            raise ValidationError("Укажите фамилию и имя полностью.")
+        return full_name
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get('payment_method') == 'card':
+            digits = ''.join(ch for ch in (cleaned.get('card_number') or '') if ch.isdigit())
+            if not digits:
+                self.add_error('card_number', "Для оплаты картой укажите номер карты.")
+            elif len(digits) not in (16, 18, 19):
+                self.add_error('card_number', "Номер карты должен содержать 16–19 цифр.")
+        return cleaned
+
+
+class FeedbackForm(forms.Form):
+    """Форма обращения на странице «Контакты»."""
+
+    TOPIC_CHOICES = [
+        ('personal', 'Персональные занятия'),
+        ('membership', 'Абонементы'),
+        ('vacancy', 'Вакансия'),
+        ('other', 'Другой вопрос'),
+    ]
+    CHANNEL_CHOICES = [
+        ('email', 'Электронная почта'),
+        ('phone', 'Телефонный звонок'),
+    ]
+
+    full_name = forms.CharField(
+        label="Как к вам обращаться", max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Иван'}),
+    )
+    email = forms.EmailField(
+        label="Email для ответа",
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'name@example.by'}),
+    )
+    phone = forms.CharField(
+        label="Телефон", required=False, max_length=20,
+        widget=TelInput(attrs={'class': 'form-control', 'placeholder': '+375 (29) 123-45-67'}),
+    )
+    topic = forms.ChoiceField(
+        label="Тема обращения", choices=TOPIC_CHOICES, initial='personal',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    channels = forms.MultipleChoiceField(
+        label="Удобные способы связи", choices=CHANNEL_CHOICES,
+        initial=['email'], required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    attachment = forms.FileField(
+        label="Прикрепить файл", required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
+    )
+    message = forms.CharField(
+        label="Сообщение", min_length=10, max_length=1000,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+    )
+    agree = forms.BooleanField(
+        label="Даю согласие на обработку персональных данных",
+    )
+
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if not phone:
+            return ''
         try:
             return format_belarus_phone(phone)
         except ValueError as exc:

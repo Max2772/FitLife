@@ -1,98 +1,150 @@
 {% extends 'gym/base.html' %}
+{% load static gym_filters %}
 
-{% block title %}О компании - FitLife Gym{% endblock %}
+{% block title %}О компании — FitLife Gym{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <div class="page-header">
     <div class="container">
         <h1>О КОМПАНИИ</h1>
-        <p>Узнайте больше о FitLife Gym</p>
     </div>
 </div>
 
 <div class="container mb-5">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="about-section">
-                {% if company %}
-                {% if company.logo %}
-                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="mb-4" style="max-height: 80px;">
-                {% endif %}
-                <h2>{{ company.name }}</h2>
-                <p class="lead">Работаем с {{ company.founding_year }} года</p>
 
-                <h3>История компании</h3>
-                <div>{{ company.history|linebreaks }}</div>
+    <!-- побочное содержимое страницы: быстрые ссылки на разделы -->
+    <aside class="anchor-nav">
+        <nav aria-label="Разделы страницы">
+            <ul>
+                <li><a href="#video">Видео</a></li>
+                <li><a href="#audio">Аудио</a></li>
+                <li><a href="#history">История</a></li>
+                <li><a href="#requisites">Реквизиты</a></li>
+                <li><a href="#certificate">Сертификат</a></li>
+            </ul>
+        </nav>
+    </aside>
 
-                {% if company.requisites %}
-                <h3>Реквизиты</h3>
-                <div>{{ company.requisites|linebreaks }}</div>
-                {% endif %}
+    <section id="company" aria-labelledby="company-heading">
+        <h2 id="company-heading">{{ company.name|default:"FitLife Gym" }}</h2>
+        <img src="{% static 'gym/img/logo.svg' %}" width="220" height="63" alt="Логотип {{ company.name }}">
+        <p class="lead">Работаем с <time datetime="{{ company.founding_year|default:'2015' }}">{{ company.founding_year|default:"2015" }}</time> года.</p>
+        {% if company.history %}
+        <div>{{ company.history|linebreaks }}</div>
+        {% endif %}
 
-                <h3>О нас в цифрах</h3>
-                <div class="stats-section">
-                    <div class="row">
-                        <div class="col-md-6 col-12">
-                            <div class="stat-item">
-                                <h2>{{ company.founding_year }}</h2>
-                                <p>Год основания</p>
-                            </div>
-                        </div>
-                        {% if years_on_market %}
-                        <div class="col-md-6 col-12">
-                            <div class="stat-item">
-                                <h2>{{ years_on_market }}</h2>
-                                <p>Лет на рынке</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% else %}
-                <h2>О компании</h2>
-                <p class="lead text-muted">Информация о компании пока не добавлена в базу данных.</p>
-                {% endif %}
-            </div>
-        </div>
+        <!-- семантическое выделение текста -->
+        <p>
+            Каждому клиенту проводится <dfn id="dfn-testing">фитнес-тестирование</dfn> —
+            <strong>обязательная</strong> процедура перед началом тренировок, а формат
+            <abbr title="Высокоинтенсивный интервальный тренинг">ВИИТ</abbr> входит
+            в любой абонемент. Абонемент «Премиум» стоит <del>690 BYN</del>
+            <ins>590 BYN</ins> до конца месяца — <em>только сейчас</em>.
+        </p>
+        <p>
+            Клуб занимает площадь 1200 м<sup>2</sup> и включает три зала, зону
+            кислородных коктейлей (дозировка рассчитывается индивидуально —
+            в миллилитрах на кг<sub>массы тела</sub>) и зону восстановления.
+            Тренеры часто используют термин <i lang="en">functional training</i> —
+            на английском так называют функциональный тренинг, а не смысловое
+            ударение. <mark>Новинка месяца</mark> в зоне восстановления —
+            крио-сауна, которая подходит и опытным спортсменам, и новичкам.
+        </p>
+        <p><small>Информация носит справочный характер.</small></p>
 
-        <div class="col-lg-4">
-            {% if company %}
-            <div class="contact-card mb-4">
-                <h5>Контактная информация</h5>
-                <p>
-                    <strong>Адрес:</strong>
-                    {{ company.address }}
-                </p>
-                <p>
-                    <strong>Телефон:</strong>
-                    <a href="tel:{{ company.phone }}" class="text-decoration-none">{{ company.phone }}</a>
-                </p>
-                <p>
-                    <strong>Email:</strong>
-                    <a href="mailto:{{ company.email }}" class="text-decoration-none">{{ company.email }}</a>
-                </p>
-            </div>
-            {% endif %}
+        <!-- цитата -->
+        <blockquote cite="https://www.who.int/news-room/fact-sheets/detail/physical-activity">
+            <p>Взрослым рекомендуется не менее 150 минут аэробной нагрузки в неделю.</p>
+        </blockquote>
+        <p>— <cite>Всемирная организация здравоохранения, 2022</cite></p>
+    </section>
 
-            <div class="contact-card">
-                <h5>Социальные сети</h5>
-                <div class="social-buttons">
-                    <a href="#" class="btn btn-outline-primary">
-                        Instagram
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        Facebook
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        VKontakte
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        Telegram
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- видео -->
+    <section id="video" aria-labelledby="video-heading">
+        <h2 id="video-heading">Видео о клубе</h2>
+        <video controls muted loop width="640" height="360"
+               poster="{% static 'gym/media/promo-poster.jpg' %}">
+            <source src="{% static 'gym/media/promo.mp4' %}" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
+    </section>
+
+    <!-- аудио -->
+    <section id="audio" aria-labelledby="audio-heading">
+        <h2 id="audio-heading">Аудиогид</h2>
+        <audio controls>
+            <source src="{% static 'gym/media/audioguide.mp3' %}" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+        </audio>
+    </section>
+
+    <!-- история по годам -->
+    <section id="history" aria-labelledby="history-heading">
+        <h2 id="history-heading">История компании по годам</h2>
+        {% if milestones %}
+        <ol class="timeline">
+            {% for milestone in milestones %}
+            <li>
+                <h3><time datetime="{{ milestone.year }}">{{ milestone.year }}</time> — {{ milestone.title }}</h3>
+                <p>{{ milestone.description }}</p>
+            </li>
+            {% endfor %}
+        </ol>
+        {% else %}
+        <p>История пока не заполнена.</p>
+        {% endif %}
+    </section>
+
+    <!-- реквизиты -->
+    <section id="requisites" aria-labelledby="requisites-heading">
+        <h2 id="requisites-heading">Реквизиты</h2>
+        <dl>
+            <dt>Адрес</dt>
+            <dd>{{ company.address|default:"г. Минск, ул. Спортивная, 15" }}</dd>
+            <dt>Телефон</dt>
+            <dd><a href="tel:{{ company.phone|default:'+375291234567'|tel_href }}">{{ company.phone|default:"+375 29 123-45-67" }}</a></dd>
+            <dt>Email</dt>
+            <dd><a href="mailto:{{ company.email|default:'info@fitlifegym.by' }}">{{ company.email|default:"info@fitlifegym.by" }}</a></dd>
+        </dl>
+        {% if company.requisites %}
+        <pre>{{ company.requisites }}</pre>
+        {% endif %}
+    </section>
+
+    <!-- сертификат (текст без оформления стилями) -->
+    <section id="certificate" aria-labelledby="certificate-heading">
+        <h2 id="certificate-heading">Сертификат</h2>
+        {% for certificate in certificates %}
+        <p>
+            {{ certificate.title }}. Номер {{ certificate.number }}. Выдан: {{ certificate.issued_by }}.
+            Дата выдачи: <time datetime="{{ certificate.issue_date|date:'Y-m-d' }}">{{ certificate.issue_date|date:"d/m/Y" }}</time>,
+            действителен до <time datetime="{{ certificate.valid_until|date:'Y-m-d' }}">{{ certificate.valid_until|date:"d/m/Y" }}</time>.
+        </p>
+        {% empty %}
+        <p>Сертификат соответствия на физкультурно-оздоровительные услуги. Номер BY/112 04.07.021 01234.</p>
+        {% endfor %}
+        <p><a href="{% static 'gym/docs/fitlife-certificate.pdf' %}" download="FitLife-сертификат.pdf">Скачать сертификат (PDF)</a></p>
+    </section>
+
+    <!-- девиз клуба: перенос строки фиксированный (pre) и потенциальный (br) -->
+    <section id="motto" aria-labelledby="motto-heading">
+        <h2 id="motto-heading">Наш девиз</h2>
+        <p>
+            Мы верим, что дисциплина сильнее любых обстоятельств — этот девиз
+            висит на баннере при входе в зал и его знает каждый тренер:
+        </p>
+        <pre>Железо холодное, утро седое,
+Ступени ведут на четвёртый этаж.
+Привычка сильнее, чем всё остальное, —
+И это единственный подлинный наш.</pre>
+        <p>Тот же текст на страницах наших буклетов:</p>
+        <p>
+            Железо холодное, утро седое,<br>
+            Ступени ведут на четвёртый этаж.<br>
+            Привычка сильнее, чем всё остальное, —<br>
+            И это единственный подлинный наш.
+        </p>
+    </section>
+
 </div>
 {% endblock %}

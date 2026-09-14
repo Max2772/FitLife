@@ -1,129 +1,138 @@
 {% extends 'gym/base.html' %}
+{% load static gym_filters %}
 
-{% block title %}Главная - FitLife Gym{% endblock %}
+{% block title %}FitLife Gym — фитнес-клуб в Минске{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+
+<!-- логотип компании -->
+<div class="text-center mt-4">
+    <img src="{% static 'gym/img/logo.svg' %}" width="220" height="63" alt="Логотип FitLife Gym">
+</div>
+
+<!-- реклама компании в виде баннера: подготовлено несколько картинок -->
+<section aria-labelledby="promo-heading" class="mt-3">
+    <h2 id="promo-heading" class="section-title-plain">Наши акции</h2>
+    <div class="banner-row">
+        <figure class="mb-0">
+            <!-- адаптивное изображение: браузер выбирает файл по ширине экрана -->
+            <img src="{% static 'gym/img/banners/banner-1.jpg' %}"
+                 srcset="{% static 'gym/img/banners/banner-1-sm.jpg' %} 400w,
+                         {% static 'gym/img/banners/banner-1.jpg' %} 800w"
+                 sizes="(max-width: 500px) 400px, 800px"
+                 width="800" height="320" style="width:100%; height:auto;"
+                 alt="Баннер: годовой абонемент со скидкой 25%">
+            <figcaption>Годовой абонемент со скидкой 25% до конца месяца.</figcaption>
+        </figure>
+        <figure class="mb-0">
+            <img src="{% static 'gym/img/banners/banner-2.jpg' %}"
+                 width="800" height="320" style="width:100%; height:auto;"
+                 alt="Баннер: первая тренировка с тренером бесплатно">
+            <figcaption>Первая тренировка с тренером — бесплатно.</figcaption>
+        </figure>
+        <figure class="mb-0">
+            <img src="{% static 'gym/img/banners/banner-3.jpg' %}"
+                 width="800" height="320" style="width:100%; height:auto;"
+                 alt="Баннер: групповые программы клуба">
+            <figcaption>Более 20 групповых программ каждую неделю.</figcaption>
+        </figure>
+    </div>
+</section>
+
 <section class="hero-section">
     <div class="hero-content">
-        <span>Добро пожаловать в FitLife Gym</span>
-        <h1>БУДЬ <strong>СИЛЬНЫМ</strong> ТРЕНИРУЙСЯ УСЕРДНО</h1>
-        <p>Ваш путь к здоровью, силе и красоте начинается здесь. Современное оборудование, профессиональные тренеры и индивидуальный подход к каждому клиенту.</p>
+        <h1>БУДЬ <strong>СИЛЬНЫМ</strong>, ТРЕНИРУЙСЯ УСЕРДНО</h1>
+        <p>Ваш путь к здоровью и силе начинается здесь.</p>
+        <!-- строчная цитата: браузер сам добавляет кавычки -->
+        <p class="hero-slogan">
+            <q cite="https://www.who.int/news-room/fact-sheets/detail/physical-activity">
+                Движение — это лекарство, которое не имеет побочных эффектов
+            </q>
+        </p>
         <div class="hero-buttons">
-            <a href="{% url 'memberships' %}" class="btn btn-primary btn-lg">Купить абонемент</a>
+            <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg">Купить абонемент</a>
             <a href="{% url 'trainings' %}" class="btn btn-outline-primary btn-lg">Наши тренировки</a>
+            <!-- якорь: переход к разделу на этой же странице -->
+            <a href="#catalog" class="btn btn-outline-secondary btn-lg">Смотреть каталог ниже</a>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="features-section">
+<!-- каталог услуг/товаров -->
+<section class="features-section" id="catalog">
     <div class="container">
         <div class="section-title">
-            <span>Почему выбирают нас?</span>
-            <h2>ПРЕОДОЛЕВАЙ СВОИ ГРАНИЦЫ</h2>
+            <span>Каталог</span>
+            <h2>АБОНЕМЕНТЫ И УСЛУГИ</h2>
         </div>
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        </div>
-                    <h5>Современное оборудование</h5>
-                    <p>Новейшие тренажеры от ведущих мировых производителей для эффективных тренировок</p>
-                    <a href="{% url 'equipment' %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+            {% for item in catalog %}
+            <article class="col-lg-4 col-md-6" itemscope itemtype="https://schema.org/Product">
+                <div class="product-card">
+                    <a href="{% url 'product_detail' item.pk %}">
+                        <img src="{% static 'gym/img/products/membership-1.jpg' %}"
+                             width="400" height="266" loading="lazy"
+                             alt="Абонемент {{ item.name }}" itemprop="image">
+                    </a>
+                    <div class="card-body">
+                        <h3 class="card-title"><a href="{% url 'product_detail' item.pk %}" itemprop="name">{{ item.name }}</a></h3>
+                        <p itemprop="description">{{ item.description|truncatewords:15 }}</p>
+                        <p class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                            <span itemprop="price" content="{{ item.price }}">{{ item.price }}</span>
+                            <span itemprop="priceCurrency" content="BYN">BYN</span>
+                        </p>
+                        <a href="{% url 'product_detail' item.pk %}" class="btn btn-primary btn-sm">Подробнее</a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        </div>
-                    <h5>Профессиональные тренеры</h5>
-                    <p>Опытные специалисты с международными сертификатами и индивидуальным подходом</p>
-                    <a href="{% url 'trainers' %}" class="btn btn-sm btn-outline-primary">Наши тренеры</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        </div>
-                    <h5>Гибкое расписание</h5>
-                    <p>Групповые и индивидуальные тренировки в удобное для вас время с 6:00 до 23:00</p>
-                    <a href="{% url 'trainings' %}" class="btn btn-sm btn-outline-primary">Расписание</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        </div>
-                    <h5>Индивидуальный подход</h5>
-                    <p>Персональные программы тренировок и питания, адаптированные под ваши цели</p>
-                    <a href="{% url 'about_company' %}" class="btn btn-sm btn-outline-primary">О нас</a>
-                </div>
-            </div>
+            </article>
+            {% empty %}
+            <p>Каталог пока пуст.</p>
+            {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Latest Article Section -->
+<!-- последняя опубликованная статья -->
 {% if latest_article %}
-<section class="features-section" style="padding-top: 0;">
+<section class="features-section" style="padding-top:0;">
     <div class="container">
         <div class="section-title">
             <span>Новости</span>
             <h2>ПОСЛЕДНЯЯ СТАТЬЯ</h2>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="training-card">
-                    <div class="card-body p-5">
-                        <h3 class="card-title mb-4">{{ latest_article.title }}</h3>
-                        <p class="card-text mb-2">{{ latest_article.short_description }}</p>
-                        <p class="text-secondary small mb-4">Опубликовано: {{ latest_article.published_at|date:"d/m/Y H:i" }}</p>
-                        <a href="{% url 'news_detail' latest_article.pk %}" class="btn btn-primary">Читать далее</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <article itemscope itemtype="https://schema.org/BlogPosting">
+            <h3 itemprop="headline">{{ latest_article.title }}</h3>
+            <p class="text-muted small">
+                <time datetime="{{ latest_article.published_at|html_datetime }}" itemprop="datePublished">
+                    {{ latest_article.published_at|date:"d/m/Y H:i" }}
+                </time>
+            </p>
+            <p itemprop="description">{{ latest_article.short_description }}</p>
+            <a href="{% url 'news_detail' latest_article.pk %}" class="btn btn-primary">Читать далее</a>
+        </article>
     </div>
 </section>
 {% endif %}
 
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2>ГОТОВ НАЧАТЬ СВОЙ ПУТЬ?</h2>
-        <p>Присоединяйся к нашему сообществу и достигай своих целей вместе с профессионалами</p>
-        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Зарегистрироваться сейчас</a>
-    </div>
-</section>
-
-<!-- News Section -->
-{% if articles %}
-<section class="news-section">
+<!-- компании-партнёры -->
+<section class="features-section">
     <div class="container">
         <div class="section-title">
-            <span>Блог</span>
-            <h2>ПОСЛЕДНИЕ НОВОСТИ</h2>
+            <h2>КОМПАНИИ-ПАРТНЁРЫ</h2>
         </div>
-        <div class="row g-4">
-            {% for article in articles %}
-            <div class="col-lg-4 col-md-6">
-                <div class="news-card">
-                    {% if article.image %}
-                    <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
-                    {% else %}
-                    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" class="card-img-top" alt="{{ article.title }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ article.title }}</h5>
-                        <p class="card-text">{{ article.short_description }}</p>
-                        <a href="{% url 'news_detail' article.pk %}" class="btn btn-sm btn-primary">Читать далее</a>
-                    </div>
-                </div>
-            </div>
+        <ul class="partners-grid">
+            {% for partner in partners %}
+            <li class="partner-card">
+                <!-- ссылка на сайт партнёра в новой вкладке -->
+                <a href="{{ partner.website }}" target="_blank" rel="noopener noreferrer" title="Сайт {{ partner.name }}">
+                    <img src="{{ partner.logo.url }}" width="200" height="63" loading="lazy" alt="Логотип {{ partner.name }}">
+                </a>
+            </li>
+            {% empty %}
+            <li>Партнёры не загружены. Выполните <code>python manage.py load_lab1_data</code>.</li>
             {% endfor %}
-        </div>
+        </ul>
     </div>
 </section>
-{% endif %}
+
 {% endblock %}

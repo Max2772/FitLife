@@ -28,18 +28,26 @@ from django.views.decorators.http import require_POST
 from .forms import (
     RegisterForm, MembershipForm, TrainingBookingForm, ReviewForm,
     PromocodeForm, TrainingForm, PersonalTrainingForm, TrainerForm,
+    CheckoutForm, FeedbackForm,
     get_ordered_trainers,
 )
 from .models import (
     Client, Trainer, Membership, MembershipType, Training, TrainingType,
     Review, Equipment, FAQ, Article, Vacancy, CompanyInfo, UserSessionLog,
     Hall, Promocode, PersonalTraining,
+    Partner, CompanyMilestone, Certificate, Employee,
+    Cart, CartItem, Order, OrderItem,
 )
 from .utils import (
     apply_promocode_discount,
     calculate_age,
     dual_datetime_display,
+    generate_order_number,
+    get_cart,
+    get_main_company,
+    get_valid_promocode,
     get_valid_promocode_for_membership,
+    merge_session_cart,
 )
 
 logger = logging.getLogger('gym')
@@ -47,34 +55,66 @@ logger = logging.getLogger('gym')
 
 def main_view(request):
     latest_article = Article.objects.order_by('-published_at').first()
-    articles = Article.objects.order_by('-published_at')[:3]
+    articles = Article.objects.order_by('-published_at')[1:4]
+    catalog = MembershipType.objects.order_by('price')[:6]
+    partners = Partner.objects.filter(is_active=True)
+    company = get_main_company()
     return render(request, 'gym/main.html', {
         'latest_article': latest_article,
         'articles': articles,
+        'catalog': catalog,
+        'partners': partners,
+        'company': company,
     })
 
 
 def about_company_view(request):
-    company = CompanyInfo.objects.first()
+    company = get_main_company()
     years_on_market = date.today().year - company.founding_year if company else None
+    milestones = company.milestones.all() if company else CompanyMilestone.objects.none()
+    certificates = company.certificates.all() if company else Certificate.objects.none()
     return render(request, 'gym/about_company.html', {
         'company': company,
         'years_on_market': years_on_market,
+        'milestones': milestones,
+        'certificates': certificates,
+        'partners': Partner.objects.filter(is_active=True),
     })
 
 
 def contacts_view(request):
-    trainers = get_ordered_trainers()
-    company = CompanyInfo.objects.first()
+    company = get_main_company()
+    employees = Employee.objects.all()
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, request.FILES)
+        if form.is_valid():
+            logger.info(
+                "Обращение с сайта: тема=%s, email=%s",
+                form.cleaned_data['topic'], form.cleaned_data['email'],
+            )
+            messages.success(
+                request,
+                "Спасибо! Обращение принято, ответим в течение одного рабочего дня.",
+            )
+            return redirect(f"{request.path}#feedback")
+        messages.error(request, "Проверьте правильность заполнения формы.")
+    else:
+        initial_topic = request.GET.get('topic')
+        initial = {'topic': initial_topic} if initial_topic in dict(FeedbackForm.TOPIC_CHOICES) else {}
+        form = FeedbackForm(initial=initial)
+
     return render(request, 'gym/contacts.html', {
-        'trainers': trainers,
+        'trainers': get_ordered_trainers(),
+        'employees': employees,
         'company': company,
+        'form': form,
     })
 
 
 def faq_view(request):
     faqs = FAQ.objects.order_by('-created_at')
-    company = CompanyInfo.objects.first()
+    company = get_main_company()
     return render(request, 'gym/faq.html', {'faqs': faqs, 'company': company})
 
 
@@ -94,7 +134,7 @@ def privacy_policy_view(request):
 
 def vacancies_view(request):
     vacancies = Vacancy.objects.filter(is_active=True).order_by('-created_at')
-    company = CompanyInfo.objects.first()
+    company = get_main_company()
     return render(request, 'gym/vacancies.html', {
         'vacancies': vacancies,
         'company': company,
@@ -261,6 +301,7 @@ def register_view(request):
                 phone=form.cleaned_data["phone"],
                 birth_date=form.cleaned_data["birth_date"],
             )
+            merge_session_cart(request, user)
             login(request, user)
             return redirect("profile")
     else:
@@ -273,6 +314,7 @@ def login_view(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            merge_session_cart(request, user)
             login(request, user)
             return redirect("main")
     else:
@@ -1092,3 +1134,297 @@ def quote_api_view(request):
             'status': 'ok',
             'quote': {'quote': 'Сила — в движении!', 'author': 'FitLife Gym'},
         })
+
+
+# ==========================================================================
+# ЛР1: каталог, карточка товара, корзина, оплата
+# ==========================================================================
+
+CART_MAX_QUANTITY = 10
+
+
+def catalog_view(request):
+    """Каталог абонементов: поиск, фильтр по цене и наличию тренера, сортировка."""
+    items = MembershipType.objects.all()
+
+    search_query = request.GET.get('q', '').strip()
+    with_trainer = request.GET.get('trainer', '')
+    duration = request.GET.get('duration', '')
+    sort_by = request.GET.get('sort', 'price')
+
+    if search_query:
+        items = items.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+    if with_trainer == 'yes':
+        items = items.filter(includes_trainer=True)
+    elif with_trainer == 'no':
+        items = items.filter(includes_trainer=False)
+    if duration:
+        try:
+            items = items.filter(duration_months=int(duration))
+        except ValueError:
+            pass
+
+    sort_options = {
+        'price': 'price',
+        'price_desc': '-price',
+        'name': 'name',
+        'duration': 'duration_months',
+        'duration_desc': '-duration_months',
+    }
+    items = items.order_by(sort_options.get(sort_by, 'price'))
+
+    durations = (
+        MembershipType.objects.values_list('duration_months', flat=True)
+        .distinct().order_by('duration_months')
+    )
+
+    return render(request, 'gym/catalog.html', {
+        'items': items,
+        'search_query': search_query,
+        'with_trainer': with_trainer,
+        'duration': duration,
+        'sort_by': sort_by,
+        'durations': durations,
+    })
+
+
+def product_detail_view(request, pk):
+    """Страница товара: описание, характеристики, кнопка «Добавить в корзину»."""
+    product = get_object_or_404(MembershipType, pk=pk)
+    related = MembershipType.objects.exclude(pk=product.pk).order_by('price')[:3]
+    reviews = Review.objects.select_related('client').order_by('-created_at')[:4]
+    active_promocodes = Promocode.objects.filter(is_active=True).filter(
+        Q(membership_type__isnull=True) | Q(membership_type=product)
+    ).filter(Q(valid_until__isnull=True) | Q(valid_until__gte=date.today()))[:3]
+    cart = get_cart(request, create=False)
+    in_cart = (
+        cart.items.filter(membership_type=product).first() if cart else None
+    )
+    return render(request, 'gym/product_detail.html', {
+        'product': product,
+        'related': related,
+        'reviews': reviews,
+        'active_promocodes': active_promocodes,
+        'in_cart': in_cart,
+        'price_per_month': (
+            (product.price / product.duration_months).quantize(Decimal('0.01'))
+            if product.duration_months else product.price
+        ),
+    })
+
+
+@require_POST
+def cart_add_view(request, pk):
+    """Добавление абонемента в корзину."""
+    product = get_object_or_404(MembershipType, pk=pk)
+    cart = get_cart(request)
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
+    quantity = max(1, min(quantity, CART_MAX_QUANTITY))
+
+    item, created = CartItem.objects.get_or_create(
+        cart=cart, membership_type=product, defaults={'quantity': quantity}
+    )
+    if not created:
+        item.quantity = min(item.quantity + quantity, CART_MAX_QUANTITY)
+        item.save(update_fields=['quantity'])
+
+    messages.success(request, f"«{product.name}» добавлен в корзину.")
+    logger.info("Добавление в корзину: %s ×%s", product.name, quantity)
+
+    if request.POST.get('next') == 'cart':
+        return redirect('cart')
+    return redirect('product_detail', pk=product.pk)
+
+
+@require_POST
+def cart_update_view(request, pk):
+    """Увеличение/уменьшение количества товара в корзине."""
+    cart = get_cart(request, create=False)
+    if cart is None:
+        return redirect('cart')
+    item = get_object_or_404(CartItem, pk=pk, cart=cart)
+    action = request.POST.get('action', 'increase')
+
+    if action == 'increase':
+        item.quantity = min(item.quantity + 1, CART_MAX_QUANTITY)
+        item.save(update_fields=['quantity'])
+    elif action == 'decrease':
+        if item.quantity <= 1:
+            item.delete()
+            messages.info(request, "Позиция удалена из корзины.")
+            return redirect('cart')
+        item.quantity -= 1
+        item.save(update_fields=['quantity'])
+    elif action == 'set':
+        try:
+            quantity = int(request.POST.get('quantity', item.quantity))
+        except (TypeError, ValueError):
+            quantity = item.quantity
+        quantity = max(1, min(quantity, CART_MAX_QUANTITY))
+        item.quantity = quantity
+        item.save(update_fields=['quantity'])
+
+    return redirect('cart')
+
+
+@require_POST
+def cart_remove_view(request, pk):
+    """Удаление позиции из корзины."""
+    cart = get_cart(request, create=False)
+    if cart is None:
+        return redirect('cart')
+    item = get_object_or_404(CartItem, pk=pk, cart=cart)
+    name = item.membership_type.name
+    item.delete()
+    messages.info(request, f"«{name}» удалён из корзины.")
+    return redirect('cart')
+
+
+@require_POST
+def cart_clear_view(request):
+    """Полная очистка корзины."""
+    cart = get_cart(request, create=False)
+    if cart is not None:
+        cart.items.all().delete()
+        messages.info(request, "Корзина очищена.")
+    return redirect('cart')
+
+
+def cart_view(request):
+    """Страница корзины со списком позиций и расчётом итога."""
+    cart = get_cart(request, create=False)
+    items = (
+        cart.items.select_related('membership_type').all() if cart else []
+    )
+    promo_code = request.GET.get('promocode', '').strip()
+    promocode, promo_error = get_valid_promocode(promo_code) if promo_code else (None, None)
+
+    subtotal = sum((item.subtotal for item in items), Decimal('0.00'))
+    discount = Decimal('0.00')
+    if promocode:
+        discount = (subtotal * Decimal(promocode.discount_percent) / Decimal('100')).quantize(
+            Decimal('0.01')
+        )
+
+    return render(request, 'gym/cart.html', {
+        'cart': cart,
+        'items': items,
+        'subtotal': subtotal,
+        'discount': discount,
+        'total': subtotal - discount,
+        'promocode': promocode,
+        'promo_error': promo_error,
+        'promo_code_input': promo_code,
+        'available_promocodes': Promocode.objects.filter(is_active=True)[:5],
+        'max_quantity': CART_MAX_QUANTITY,
+    })
+
+
+def checkout_view(request):
+    """Страница оплаты: форма плательщика, способ оплаты, промокод, итог."""
+    cart = get_cart(request, create=False)
+    items = list(cart.items.select_related('membership_type').all()) if cart else []
+
+    if not items:
+        messages.info(request, "Корзина пуста — сначала добавьте абонемент.")
+        return redirect('catalog')
+
+    subtotal = sum((item.subtotal for item in items), Decimal('0.00'))
+
+    initial = {}
+    if request.user.is_authenticated:
+        client = Client.objects.filter(user=request.user).first()
+        initial = {
+            'full_name': (
+                f"{client.last_name} {client.first_name}" if client
+                else request.user.get_full_name()
+            ),
+            'email': request.user.email,
+            'phone': client.phone if client else '',
+        }
+
+    if request.method == 'POST':
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            promocode, promo_error = get_valid_promocode(form.cleaned_data.get('promocode'))
+            if promo_error:
+                form.add_error('promocode', promo_error)
+            else:
+                discount = Decimal('0.00')
+                if promocode:
+                    discount = (
+                        subtotal * Decimal(promocode.discount_percent) / Decimal('100')
+                    ).quantize(Decimal('0.01'))
+                total = subtotal - discount
+
+                order = Order.objects.create(
+                    number=generate_order_number(),
+                    user=request.user if request.user.is_authenticated else None,
+                    full_name=form.cleaned_data['full_name'],
+                    email=form.cleaned_data['email'],
+                    phone=form.cleaned_data['phone'],
+                    payment_method=form.cleaned_data['payment_method'],
+                    promocode=promocode,
+                    subtotal=subtotal,
+                    discount=discount,
+                    total=total,
+                    status=Order.Status.PAID,
+                )
+                for item in items:
+                    OrderItem.objects.create(
+                        order=order,
+                        membership_type=item.membership_type,
+                        title=item.membership_type.name,
+                        price=item.membership_type.price,
+                        quantity=item.quantity,
+                    )
+
+                _create_memberships_for_order(request, order, items, form.cleaned_data['start_date'])
+                cart.items.all().delete()
+
+                logger.info("Оплачен заказ %s на сумму %s", order.number, order.total)
+                messages.success(request, f"Заказ {order.number} успешно оплачен.")
+                return redirect('order_success', number=order.number)
+    else:
+        form = CheckoutForm(initial=initial)
+
+    return render(request, 'gym/checkout.html', {
+        'form': form,
+        'items': items,
+        'subtotal': subtotal,
+        'available_promocodes': Promocode.objects.filter(is_active=True)[:5],
+    })
+
+
+def _create_memberships_for_order(request, order, items, start_date):
+    """После оплаты выдаёт клиенту абонементы из заказа."""
+    if not request.user.is_authenticated:
+        return
+    client = Client.objects.filter(user=request.user).first()
+    if client is None:
+        return
+    for item in items:
+        for _ in range(item.quantity):
+            months = item.membership_type.duration_months
+            Membership.objects.create(
+                client=client,
+                membership_type=item.membership_type,
+                start_date=start_date,
+                end_date=start_date + timedelta(days=30 * months),
+                price_paid=item.membership_type.price,
+                promocode=order.promocode,
+            )
+
+
+def order_success_view(request, number):
+    """Подтверждение успешной оплаты заказа."""
+    order = get_object_or_404(Order.objects.prefetch_related('items'), number=number)
+    return render(request, 'gym/order_success.html', {'order': order})
+
+
+

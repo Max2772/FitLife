@@ -4,6 +4,8 @@ from .models import (
     CompanyInfo, Trainer, Client, MembershipType, Membership,
     TrainingType, Training, Hall, Equipment, Review, Promocode,
     FAQ, Article, Vacancy, UserSessionLog, PersonalTraining,
+    Partner, CompanyMilestone, Certificate, Employee,
+    Cart, CartItem, Order, OrderItem,
 )
 
 
@@ -19,9 +21,22 @@ class PersonalTrainingInline(admin.TabularInline):
     fields = ['trainer', 'date', 'start_time', 'end_time', 'price']
 
 
+class CompanyMilestoneInline(admin.TabularInline):
+    model = CompanyMilestone
+    extra = 1
+    fields = ['year', 'title', 'description']
+
+
+class CertificateInline(admin.TabularInline):
+    model = Certificate
+    extra = 0
+    fields = ['title', 'number', 'issued_by', 'issue_date', 'valid_until']
+
+
 @admin.register(CompanyInfo)
 class CompanyInfoAdmin(admin.ModelAdmin):
     list_display = ['name', 'founding_year', 'phone', 'email']
+    inlines = [CompanyMilestoneInline, CertificateInline]
 
 
 @admin.register(Trainer)
@@ -131,3 +146,61 @@ class PersonalTrainingAdmin(admin.ModelAdmin):
     list_display = ['client', 'trainer', 'date', 'start_time', 'end_time', 'price']
     list_filter = ['date', 'trainer']
     search_fields = ['client__last_name', 'trainer__last_name']
+
+
+# ------------------------- ЛР1: партнёры, сотрудники, магазин -------------------------
+
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category', 'website', 'since_year', 'is_active', 'sort_order']
+    list_filter = ['category', 'is_active']
+    search_fields = ['name', 'description']
+    list_editable = ['sort_order', 'is_active']
+
+
+@admin.register(CompanyMilestone)
+class CompanyMilestoneAdmin(admin.ModelAdmin):
+    list_display = ['year', 'title', 'company']
+    list_filter = ['year']
+    search_fields = ['title', 'description']
+
+
+@admin.register(Certificate)
+class CertificateAdmin(admin.ModelAdmin):
+    list_display = ['title', 'number', 'issued_by', 'issue_date', 'valid_until']
+    search_fields = ['title', 'number', 'issued_by']
+
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ['last_name', 'first_name', 'position', 'phone', 'email', 'sort_order']
+    search_fields = ['last_name', 'first_name', 'position', 'duties']
+    list_editable = ['sort_order']
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    fields = ['membership_type', 'quantity', 'added_at']
+    readonly_fields = ['added_at']
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'user', 'total_quantity', 'total_price', 'updated_at']
+    inlines = [CartItemInline]
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    fields = ['title', 'membership_type', 'price', 'quantity']
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['number', 'full_name', 'total', 'payment_method', 'status', 'created_at']
+    list_filter = ['status', 'payment_method', 'created_at']
+    search_fields = ['number', 'full_name', 'email', 'phone']
+    inlines = [OrderItemInline]

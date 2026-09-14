@@ -1,138 +1,106 @@
 {% extends 'gym/base.html' %}
+{% load static gym_filters %}
 
-{% block title %}Контакты - FitLife Gym{% endblock %}
+{% block title %}Контакты — FitLife Gym{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <div class="page-header">
     <div class="container">
         <h1>КОНТАКТЫ</h1>
-        <p>Свяжитесь с нами удобным способом</p>
     </div>
 </div>
 
 <div class="container mb-5">
-    <div class="row">
-        <!-- Contact Info -->
-        <div class="col-lg-6 mb-4">
-            {% if company %}
-            <div class="contact-card">
-                <h5>
-                    Адрес
-                </h5>
-                <p>{{ company.address }}</p>
-            </div>
 
-            <div class="contact-card">
-                <h5>
-                    Телефон
-                </h5>
-                <p><a href="tel:{{ company.phone }}" class="text-decoration-none">{{ company.phone }}</a></p>
-            </div>
-
-            <div class="contact-card">
-                <h5>
-                    Email
-                </h5>
-                <p><a href="mailto:{{ company.email }}" class="text-decoration-none">{{ company.email }}</a></p>
-            </div>
-            {% else %}
-            <div class="contact-card">
-                <p class="text-muted mb-0">Контактная информация компании пока не добавлена.</p>
-            </div>
-            {% endif %}
-
-            <div class="contact-card">
-                <h5>
-                    Социальные сети
-                </h5>
-                <div class="social-buttons">
-                    <a href="#" class="btn btn-outline-primary">
-                        Instagram
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        Facebook
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        VK
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact Form -->
-        <div class="col-lg-6">
-            <div class="contact-form">
-                <h3>Напишите нам</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Ваше имя</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Иван Иванов" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="example@mail.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Телефон</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+375 29 123-45-67">
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Сообщение</label>
-                        <textarea class="form-control" id="message" name="message" rows="5" placeholder="Ваше сообщение..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        Отправить сообщение
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Staff Section -->
-    <div class="staff-section">
-        <h3>Наша команда</h3>
+    <!-- сотрудники с фото, описанием работ, телефоном, почтой -->
+    <section aria-labelledby="staff-heading">
+        <h2 id="staff-heading">Сотрудники</h2>
         <div class="row g-4">
-            {% for trainer in trainers %}
-            <div class="col-lg-4 col-md-6">
-                <div class="staff-card">
-                    {% if trainer.photo %}
-                    <img src="{{ trainer.photo.url }}" class="card-img-top" alt="{{ trainer.full_name }}">
-                    {% else %}
-                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80" class="card-img-top" alt="{{ trainer.full_name }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ trainer.full_name }}</h5>
-                        <p class="specialization">{{ trainer.specialization }}</p>
-                        {% if trainer.bio %}
-                        <p>{{ trainer.bio|truncatewords:30 }}</p>
-                        {% endif %}
-                        <p>Опыт: {{ trainer.experience_years }} лет</p>
-                        <p><a href="tel:{{ trainer.phone }}" class="text-decoration-none">{{ trainer.phone }}</a></p>
-                        <p><a href="mailto:{{ trainer.email }}" class="text-decoration-none">{{ trainer.email }}</a></p>
-                        <a href="{% url 'trainer_detail' trainer.pk %}" class="btn btn-outline-primary btn-sm mt-2">
-                            Подробнее
-                        </a>
+            {% for employee in employees %}
+            <article class="col-lg-4 col-md-6" itemscope itemtype="https://schema.org/Person">
+                <div class="employee-card">
+                    <img src="{{ employee.photo.url }}" width="300" height="300" loading="lazy"
+                         alt="{{ employee.full_name }}" itemprop="image">
+                    <div class="employee-body">
+                        <h3 itemprop="name">{{ employee.full_name }}</h3>
+                        <p itemprop="jobTitle">{{ employee.position }}</p>
+                        <p itemprop="description">{{ employee.duties }}</p>
+                        <p><a href="tel:{{ employee.phone|tel_href }}" itemprop="telephone">{{ employee.phone }}</a></p>
+                        <p><a href="mailto:{{ employee.email }}" itemprop="email">{{ employee.email }}</a></p>
                     </div>
                 </div>
-            </div>
+            </article>
             {% empty %}
-            <div class="col-12 text-center text-muted py-4">
-                <p>Сотрудники пока не добавлены в базу данных.</p>
-            </div>
+            <p>Сотрудники не загружены. Выполните <code>python manage.py load_lab1_data</code>.</p>
             {% endfor %}
         </div>
-    </div>
+    </section>
 
-    <!-- Map Section -->
-    <div class="map-section">
-        <h3>Как нас найти</h3>
-        <div class="map-container">
-            <div class="ratio ratio-16x9">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.5!2d27.5615!3d53.9045!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTPCsDU0JzE2LjIiTiAyN8KwMzMnNDEuNCJF!5e0!3m2!1sru!2sby!4v1234567890" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen="" loading="lazy"></iframe>
-            </div>
-        </div>
-    </div>
+    <!-- схема проезда во фрейме -->
+    <section aria-labelledby="map-heading">
+        <h2 id="map-heading">Схема проезда</h2>
+        <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=27.5350%2C53.8930%2C27.5650%2C53.9080&amp;layer=mapnik&amp;marker=53.9005%2C27.5500"
+            width="800" height="360" title="Карта FitLife Gym"></iframe>
+    </section>
+
+    <!-- форма обратной связи с разными видами input -->
+    <section aria-labelledby="feedback-heading">
+        <h2 id="feedback-heading">Написать нам</h2>
+
+        <form method="post" action="{% url 'contacts' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Ваше обращение</legend>
+
+                <div class="form-field">
+                    <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<p class="text-danger small">{{ form.full_name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.topic.id_for_label }}">{{ form.topic.label }}</label>
+                    {{ form.topic }}
+                </div>
+
+                <fieldset>
+                    <legend>{{ form.channels.label }}</legend>
+                    {% for checkbox in form.channels %}
+                        <label>{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+                    {% endfor %}
+                </fieldset>
+
+                <div class="form-field">
+                    <label for="{{ form.attachment.id_for_label }}">{{ form.attachment.label }}</label>
+                    {{ form.attachment }}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                    {{ form.message }}
+                    {% if form.message.errors %}<p class="text-danger small">{{ form.message.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="form-check">
+                    {{ form.agree }}
+                    <label for="{{ form.agree.id_for_label }}">{{ form.agree.label }}</label>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </section>
+
 </div>
 {% endblock %}

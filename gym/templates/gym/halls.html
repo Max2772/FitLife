@@ -10,10 +10,10 @@
         <div class="col-md-6">
             <div class="card hall-card h-100">
                 <div class="card-body">
-                    <h4>{{ hall.name }}</h4>
+                    <h2>{{ hall.name }}</h2>
                     <p class="hall-meta">Площадь: {{ hall.area }} м² | Вместимость: {{ hall.capacity }} чел.</p>
                     <p class="hall-description">{{ hall.description }}</p>
-                    <h6>Оборудование в зале:</h6>
+                    <h3>Оборудование в зале:</h3>
                     <ul>
                         {% for item in hall.equipment.all %}
                         <li>{{ item.name }} — {{ item.quantity }} шт. ({{ item.get_condition_display }})</li>

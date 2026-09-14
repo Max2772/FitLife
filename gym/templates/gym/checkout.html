@@ -1,0 +1,58 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Оплата — FitLife Gym{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>ОПЛАТА ЗАКАЗА</h1>
+    </div>
+</div>
+
+<div class="container mb-5">
+
+    <p>К оплате: <strong>{{ subtotal }} BYN</strong></p>
+
+    <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+
+        <fieldset>
+            <legend>Данные плательщика</legend>
+
+            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}<p class="text-danger small">{{ form.full_name.errors.0 }}</p>{% endif %}
+
+            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+            {{ form.email }}
+
+            <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+            {{ form.phone }}
+
+            <label for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
+            {{ form.start_date }}
+        </fieldset>
+
+        <fieldset>
+            <legend>Способ оплаты</legend>
+            {% for radio in form.payment_method %}
+                <label>{{ radio.tag }} {{ radio.choice_label }}</label>
+            {% endfor %}
+
+            <label for="{{ form.card_number.id_for_label }}">{{ form.card_number.label }}</label>
+            {{ form.card_number }}
+
+            <label for="{{ form.promocode.id_for_label }}">{{ form.promocode.label }}</label>
+            {{ form.promocode }}
+        </fieldset>
+
+        <div class="form-check">
+            {{ form.agree }}
+            <label for="{{ form.agree.id_for_label }}">{{ form.agree.label }}</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Оплатить {{ subtotal }} BYN</button>
+    </form>
+
+</div>
+{% endblock %}

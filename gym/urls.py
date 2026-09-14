@@ -13,6 +13,17 @@ urlpatterns = [
     path('promocodes/', views.promocodes_view, name='promocodes'),
     path('halls/', views.halls_view, name='halls'),
 
+    # ЛР1: каталог → карточка товара → корзина → оплата
+    path('catalog/', views.catalog_view, name='catalog'),
+    path('catalog/<int:pk>/', views.product_detail_view, name='product_detail'),
+    path('cart/', views.cart_view, name='cart'),
+    path('cart/add/<int:pk>/', views.cart_add_view, name='cart_add'),
+    path('cart/update/<int:pk>/', views.cart_update_view, name='cart_update'),
+    path('cart/remove/<int:pk>/', views.cart_remove_view, name='cart_remove'),
+    path('cart/clear/', views.cart_clear_view, name='cart_clear'),
+    path('checkout/', views.checkout_view, name='checkout'),
+    path('order/<str:number>/', views.order_success_view, name='order_success'),
+
     path('trainers/', views.trainers_view, name='trainers'),
     re_path(r'^trainers/(?P<pk>[0-9]+)/$', views.trainer_detail_view, name='trainer_detail'),
 

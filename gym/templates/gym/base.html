@@ -1,173 +1,208 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static gym_filters %}<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}FitLife Gym{% endblock %}</title>
+
+    <!-- метаданные для поисковых систем -->
+    <meta name="description" content="{% block meta_description %}FitLife Gym — фитнес-клуб в Минске: абонементы, тренировки, тренеры.{% endblock %}">
+    <meta name="keywords" content="фитнес-клуб, тренажёрный зал, абонемент, тренировки">
+    <meta name="author" content="FitLife Gym">
+
+    <!-- preconnect: заранее открыть соединение с доменом шрифтов -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- иконка сайта -->
+    <link rel="icon" href="{% static 'gym/img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="alternate icon" href="{% static 'gym/img/favicon.ico' %}">
+
     <link rel="stylesheet" href="{% static 'gym/site.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <header class="site-nav">
-        <div class="container site-nav-inner">
-            <a class="site-brand" href="{% url 'main' %}">FitLife</a>
-            <button type="button" class="nav-toggle" data-nav-toggle aria-label="Меню">Меню</button>
-            <div class="nav-menu-wrap" data-nav-menu>
+<!-- микроданные: вся страница описывает организацию -->
+<body itemscope itemtype="https://schema.org/HealthClub">
+
+<header class="site-nav">
+    <div class="container site-nav-inner">
+        <a class="site-brand" href="{% url 'main' %}" title="Вернуться на главную">
+            <img src="{% static 'gym/img/logo.svg' %}" width="150" height="43" alt="Логотип FitLife Gym" itemprop="logo">
+            <meta itemprop="name" content="FitLife Gym">
+        </a>
+        <button type="button" class="nav-toggle" data-nav-toggle aria-label="Меню">Меню</button>
+        <div class="nav-menu-wrap" data-nav-menu>
+            <!-- горизонтальная навигация -->
+            <nav aria-label="Основная навигация">
                 <ul class="nav-menu">
                     <li><a href="{% url 'main' %}">Главная</a></li>
-                    <li><a href="{% url 'about_company' %}">О нас</a></li>
+                    <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                    <li><a href="{% url 'about_company' %}">О компании</a></li>
                     <li><a href="{% url 'trainings' %}">Тренировки</a></li>
                     <li><a href="{% url 'trainers' %}">Тренеры</a></li>
-                    <li><a href="{% url 'memberships' %}">Абонементы</a></li>
-                    <li><a href="{% url 'halls' %}">Залы</a></li>
-                    <li><a href="{% url 'equipment' %}">Оборудование</a></li>
-                    <li><a href="{% url 'promocodes' %}">Промокоды</a></li>
-                    <li><a href="{% url 'reviews' %}">Отзывы</a></li>
                     <li><a href="{% url 'news' %}">Новости</a></li>
+                    <li><a href="{% url 'faq' %}">Словарь</a></li>
+                    <li><a href="{% url 'reviews' %}">Отзывы</a></li>
+                    <li><a href="{% url 'promocodes' %}">Промокоды</a></li>
                     <li><a href="{% url 'contacts' %}">Контакты</a></li>
                 </ul>
-                <ul class="nav-menu nav-menu-auth">
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'profile' %}">Профиль</a></li>
-                        {% if user.is_staff %}
-                            <li><a href="{% url 'statistics' %}">Статистика</a></li>
-                            <li><a href="{% url 'personal_training_list' %}">Индив. занятия</a></li>
-                            <li><a href="{% url 'trainer_dashboard' %}">Панель</a></li>
-                        {% endif %}
-                        <li><a href="{% url 'logout' %}">Выход</a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Вход</a></li>
-                        <li><a href="{% url 'register' %}">Регистрация</a></li>
+            </nav>
+            <ul class="nav-menu nav-menu-auth">
+                <li><a href="{% url 'cart' %}">Корзина ({{ cart_quantity }})</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile' %}">Профиль</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'statistics' %}">Статистика</a></li>
+                        <li><a href="{% url 'personal_training_list' %}">Индив. занятия</a></li>
+                        <li><a href="{% url 'trainer_dashboard' %}">Панель</a></li>
                     {% endif %}
-                </ul>
-            </div>
-        </div>
-    </header>
-
-    <div class="info-bar">
-        <div class="container info-bar-inner">
-            <div>Дата: <span id="current-date">Загрузка...</span></div>
-            <div>Время: <span id="current-time">--:--:--</span></div>
-            <div>Часовой пояс: <span id="user-timezone">...</span></div>
-            {% if user.is_authenticated %}
-            <div>Погода: <span id="weather-info">загрузка...</span></div>
-            {% endif %}
+                    <li><a href="{% url 'logout' %}">Выход</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Вход</a></li>
+                    <li><a href="{% url 'register' %}">Регистрация</a></li>
+                {% endif %}
+            </ul>
         </div>
     </div>
+</header>
 
-    <div class="text-calendar-bar">
-        <div class="container">
-            <details>
-                <summary>
-                    Календарь месяца (текстовая сетка)
-                    <span class="text-muted">{{ text_calendar_caption }}</span>
-                </summary>
-                <pre class="text-calendar-grid" aria-label="Календарь">{{ text_calendar }}</pre>
-            </details>
-        </div>
-    </div>
-
-    <main class="content">
-        {% if messages %}
-            <div class="container mt-4">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Закрыть"></button>
-                    </div>
-                {% endfor %}
-            </div>
+<div class="info-bar">
+    <div class="container info-bar-inner">
+        <div>Дата: <span id="current-date">Загрузка...</span></div>
+        <div>Время: <span id="current-time">--:--:--</span></div>
+        <div>Часовой пояс: <span id="user-timezone">...</span></div>
+        {% if user.is_authenticated %}
+        <div>Погода: <span id="weather-info">загрузка...</span></div>
         {% endif %}
+    </div>
+</div>
 
-        {% block content %}{% endblock %}
-    </main>
+<div class="text-calendar-bar">
+    <div class="container">
+        <details>
+            <summary>
+                Календарь месяца
+                <span class="text-muted">{{ text_calendar_caption }}</span>
+            </summary>
+            <pre class="text-calendar-grid">{{ text_calendar }}</pre>
+        </details>
+    </div>
+</div>
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <h5>FitLife Gym</h5>
-                    <p>Фитнес-клуб: тренировки, абонементы, тренеры.</p>
+<main class="content" id="main-content">
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Закрыть"></button>
                 </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5>Навигация</h5>
-                    <ul>
-                        <li><a href="{% url 'about_company' %}">О нас</a></li>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <p class="footer-title">FitLife Gym</p>
+                <p>Фитнес-клуб: тренировки, абонементы, тренеры.</p>
+                <p>
+                    <a href="{% static 'gym/docs/fitlife-price-list.pdf' %}" download="FitLife-прайс-лист.pdf">
+                        Скачать прайс-лист (PDF)
+                    </a>
+                </p>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <!-- вертикальная навигация -->
+                <nav aria-label="Навигация">
+                    <p class="footer-title">Навигация</p>
+                    <ul class="nav-vertical">
+                        <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                        <li><a href="{% url 'about_company' %}">О компании</a></li>
                         <li><a href="{% url 'trainings' %}">Тренировки</a></li>
                         <li><a href="{% url 'trainers' %}">Тренеры</a></li>
-                        <li><a href="{% url 'memberships' %}">Абонементы</a></li>
                     </ul>
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <h5>Информация</h5>
-                    <ul>
-                        <li><a href="{% url 'faq' %}">FAQ</a></li>
+                </nav>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <!-- вертикальная навигация -->
+                <nav aria-label="Информация">
+                    <p class="footer-title">Информация</p>
+                    <ul class="nav-vertical">
+                        <li><a href="{% url 'faq' %}">Словарь терминов</a></li>
                         <li><a href="{% url 'vacancies' %}">Вакансии</a></li>
                         <li><a href="{% url 'privacy_policy' %}">Конфиденциальность</a></li>
                         <li><a href="{% url 'news' %}">Новости</a></li>
+                        <li><a href="{% url 'reviews' %}">Отзывы</a></li>
+                        <li><a href="{% url 'promocodes' %}">Промокоды</a></li>
                     </ul>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <h5>Контакты</h5>
-                    <p>г. Минск, ул. Спортивная, 15</p>
-                    <p>+375 29 123-45-67</p>
-                    <p>info@fitlifegym.by</p>
-                    <p>Пн–Вс: 06:00 – 23:00</p>
-                </div>
+                </nav>
             </div>
-            <hr>
-            <p class="mb-0">&copy; 2026 FitLife Gym</p>
-            <p id="footer-quote" class="text-muted small"></p>
+            <div class="col-lg-4 col-md-6">
+                <p class="footer-title">Контакты</p>
+                <address itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                    <span itemprop="streetAddress">ул. Спортивная, 15</span>,
+                    <span itemprop="addressLocality">Минск</span>
+                </address>
+                <p><a href="tel:{{ '+375291234567'|tel_href }}" itemprop="telephone">+375 29 123-45-67</a></p>
+                <p><a href="mailto:info@fitlifegym.by" itemprop="email">info@fitlifegym.by</a></p>
+                <p>Режим работы: Пн–Вс 06:00–23:00</p>
+            </div>
         </div>
-    </footer>
+        <hr>
+        <p class="mb-0">&copy; <time datetime="2026">2026</time> FitLife Gym. <small>Все права защищены.</small></p>
+        <p id="footer-quote" class="text-muted small"></p>
+    </div>
+</footer>
 
-    <script src="{% static 'gym/site.js' %}"></script>
-    <script>
-        (function() {
-            document.getElementById('user-timezone').textContent =
-                Intl.DateTimeFormat().resolvedOptions().timeZone;
+<script src="{% static 'gym/site.js' %}"></script>
+<script>
+    (function() {
+        document.getElementById('user-timezone').textContent =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-            function updateDateTime() {
-                var now = new Date();
-                var dd = String(now.getDate()).padStart(2, '0');
-                var mm = String(now.getMonth() + 1).padStart(2, '0');
-                document.getElementById('current-date').textContent =
-                    dd + '/' + mm + '/' + now.getFullYear();
-                document.getElementById('current-time').textContent =
-                    now.toLocaleTimeString('ru-RU');
-            }
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+        function updateDateTime() {
+            var now = new Date();
+            var dd = String(now.getDate()).padStart(2, '0');
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('current-date').textContent =
+                dd + '/' + mm + '/' + now.getFullYear();
+            document.getElementById('current-time').textContent =
+                now.toLocaleTimeString('ru-RU');
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
 
-            {% if user.is_authenticated %}
-            var weatherEl = document.getElementById('weather-info');
-            if (weatherEl) {
-                fetch('/api/weather/')
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        if (data.status === 'ok') {
-                            var w = data.weather;
-                            weatherEl.textContent =
-                                'Минск: ' + w.temp_c + '°C, ' + w.description +
-                                ', влажность ' + w.humidity + '%';
-                        }
-                    })
-                    .catch(function() { weatherEl.textContent = 'недоступна'; });
-            }
-            fetch('/api/quote/')
+        {% if user.is_authenticated %}
+        var weatherEl = document.getElementById('weather-info');
+        if (weatherEl) {
+            fetch('/api/weather/')
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     if (data.status === 'ok') {
-                        var q = data.quote;
-                        document.getElementById('footer-quote').textContent =
-                            '"' + q.quote + '" — ' + q.author;
+                        var w = data.weather;
+                        weatherEl.textContent =
+                            'Минск: ' + w.temp_c + '°C, ' + w.description + ', влажность ' + w.humidity + '%';
                     }
                 })
-                .catch(function() {});
-            {% endif %}
-        })();
-    </script>
-    {% block extra_js %}{% endblock %}
+                .catch(function() { weatherEl.textContent = 'недоступна'; });
+        }
+        fetch('/api/quote/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.status === 'ok') {
+                    var q = data.quote;
+                    document.getElementById('footer-quote').textContent = '"' + q.quote + '" — ' + q.author;
+                }
+            })
+            .catch(function() {});
+        {% endif %}
+    })();
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

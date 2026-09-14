@@ -1,0 +1,91 @@
+{% extends 'gym/base.html' %}
+{% load static %}
+
+{% block title %}Каталог абонементов — FitLife Gym{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>КАТАЛОГ АБОНЕМЕНТОВ</h1>
+    </div>
+</div>
+
+<div class="container mb-5">
+
+    <!-- форма фильтра -->
+    <form method="get" action="{% url 'catalog' %}" class="mb-4">
+        <fieldset>
+            <legend>Фильтр</legend>
+            <label for="q">Поиск</label>
+            <input type="search" id="q" name="q" class="form-control" value="{{ search_query }}" placeholder="Например: премиум">
+
+            <label for="sort">Сортировка</label>
+            <select id="sort" name="sort" class="form-control">
+                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Сначала дешёвые</option>
+                <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Сначала дорогие</option>
+            </select>
+
+            <label>
+                <input type="radio" name="trainer" value="" {% if not with_trainer %}checked{% endif %}> Не важно
+            </label>
+            <label>
+                <input type="radio" name="trainer" value="yes" {% if with_trainer == 'yes' %}checked{% endif %}> С тренером
+            </label>
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+        </fieldset>
+    </form>
+
+    <!-- каталог -->
+    <div class="row g-4">
+        {% for item in items %}
+        <article class="col-lg-4 col-md-6" itemscope itemtype="https://schema.org/Product">
+            <div class="product-card">
+                <a href="{% url 'product_detail' item.pk %}">
+                    <img src="{% static 'gym/img/products/membership-2.jpg' %}" width="400" height="266"
+                         loading="lazy" alt="Абонемент {{ item.name }}" itemprop="image">
+                </a>
+                <div class="card-body">
+                    <h2><a href="{% url 'product_detail' item.pk %}" itemprop="name">{{ item.name }}</a></h2>
+                    <p itemprop="description">{{ item.description|truncatewords:15 }}</p>
+                    <p class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                        <span itemprop="price" content="{{ item.price }}">{{ item.price }}</span> BYN
+                    </p>
+                    <a href="{% url 'product_detail' item.pk %}" class="btn btn-primary btn-sm">Подробнее</a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <p>Ничего не найдено.</p>
+        {% endfor %}
+    </div>
+
+    <!-- таблица с заголовочными ячейками и атрибутом headers -->
+    <section class="mt-5" aria-labelledby="compare-heading">
+        <h2 id="compare-heading">Сравнение тарифов</h2>
+        <table class="table table-striped">
+            <caption>Таблица 1 — Абонементы FitLife Gym</caption>
+            <thead>
+                <tr>
+                    <th id="h-name" scope="col" rowspan="2">Название</th>
+                    <th id="h-terms" scope="colgroup" colspan="2">Условия</th>
+                </tr>
+                <tr>
+                    <th id="h-price" scope="col">Цена, BYN</th>
+                    <th id="h-duration" scope="col">Срок, мес.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <th id="row-{{ item.pk }}" scope="row">{{ item.name }}</th>
+                    <td headers="row-{{ item.pk }} h-terms h-price">{{ item.price }}</td>
+                    <td headers="row-{{ item.pk }} h-terms h-duration">{{ item.duration_months }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</div>
+{% endblock %}

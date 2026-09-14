@@ -1,0 +1,69 @@
+{% extends 'gym/base.html' %}
+
+{% block title %}Корзина — FitLife Gym{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>КОРЗИНА ЗАКАЗА</h1>
+    </div>
+</div>
+
+<div class="container mb-5">
+{% if items %}
+
+    <table class="table">
+        <caption>Таблица 1 — Состав заказа</caption>
+        <thead>
+            <tr>
+                <th id="c-item" scope="col">Абонемент</th>
+                <th id="c-price" scope="col">Цена, BYN</th>
+                <th id="c-qty" scope="col">Количество</th>
+                <th id="c-sum" scope="col">Сумма, BYN</th>
+                <th id="c-act" scope="col">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <th id="row-{{ item.pk }}" scope="row">{{ item.membership_type.name }}</th>
+                <td headers="row-{{ item.pk }} c-price">{{ item.membership_type.price }}</td>
+                <td headers="row-{{ item.pk }} c-qty">
+                    <!-- увеличить количество -->
+                    <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+                    </form>
+                    {{ item.quantity }}
+                    <!-- уменьшить количество -->
+                    <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="decrease">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">&minus;</button>
+                    </form>
+                </td>
+                <td headers="row-{{ item.pk }} c-sum">{{ item.subtotal }}</td>
+                <td headers="row-{{ item.pk }} c-act">
+                    <!-- удалить из корзины -->
+                    <form action="{% url 'cart_remove' item.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Итого: {{ subtotal }} BYN</strong></p>
+
+    <!-- оплатить -->
+    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Оплатить</a>
+
+{% else %}
+    <p>Корзина пуста.</p>
+    <a href="{% url 'catalog' %}" class="btn btn-primary">Перейти в каталог</a>
+{% endif %}
+</div>
+{% endblock %}
