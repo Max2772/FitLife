@@ -19,7 +19,6 @@
     </p>
     <p>Срок действия: {{ product.duration_months }} мес. Артикул: <b>FL-{{ product.pk|stringformat:"04d" }}</b></p>
 
-    <!-- добавить в корзину -->
     <form action="{% url 'cart_add' product.pk %}" method="post">
         {% csrf_token %}
         <label for="quantity">Количество</label>

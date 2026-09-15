@@ -12,7 +12,6 @@
 
 <div class="container mb-5">
 
-    <!-- форма фильтра -->
     <form method="get" action="{% url 'catalog' %}" class="mb-4">
         <fieldset>
             <legend>Фильтр</legend>
@@ -36,7 +35,6 @@
         </fieldset>
     </form>
 
-    <!-- каталог -->
     <div class="row g-4">
         {% for item in items %}
         <article class="col-lg-4 col-md-6" itemscope itemtype="https://schema.org/Product">
@@ -60,7 +58,6 @@
         {% endfor %}
     </div>
 
-    <!-- таблица с заголовочными ячейками и атрибутом headers -->
     <section class="mt-5" aria-labelledby="compare-heading">
         <h2 id="compare-heading">Сравнение тарифов</h2>
         <table class="table table-striped">

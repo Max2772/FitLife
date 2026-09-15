@@ -29,14 +29,12 @@
                 <th id="row-{{ item.pk }}" scope="row">{{ item.membership_type.name }}</th>
                 <td headers="row-{{ item.pk }} c-price">{{ item.membership_type.price }}</td>
                 <td headers="row-{{ item.pk }} c-qty">
-                    <!-- уменьшить количество -->
                     <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="decrease">
                         <button type="submit" class="btn btn-sm btn-outline-secondary">&minus;</button>
                     </form>
                     {{ item.quantity }}
-                    <!-- увеличить количество -->
                     <form action="{% url 'cart_update' item.pk %}" method="post" style="display:inline">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="increase">
@@ -45,7 +43,6 @@
                 </td>
                 <td headers="row-{{ item.pk }} c-sum">{{ item.subtotal }}</td>
                 <td headers="row-{{ item.pk }} c-act">
-                    <!-- удалить из корзины -->
                     <form action="{% url 'cart_remove' item.pk %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
@@ -58,7 +55,6 @@
 
     <p><strong>Итого: {{ subtotal }} BYN</strong></p>
 
-    <!-- оплатить -->
     <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Оплатить</a>
 
 {% else %}

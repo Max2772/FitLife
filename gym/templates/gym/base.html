@@ -5,23 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}FitLife Gym{% endblock %}</title>
 
-    <!-- метаданные для поисковых систем -->
     <meta name="description" content="{% block meta_description %}FitLife Gym — фитнес-клуб в Минске: абонементы, тренировки, тренеры.{% endblock %}">
     <meta name="keywords" content="фитнес-клуб, тренажёрный зал, абонемент, тренировки">
     <meta name="author" content="FitLife Gym">
 
-    <!-- preconnect: заранее открыть соединение с доменом шрифтов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- иконка сайта -->
     <link rel="icon" href="{% static 'gym/img/favicon.svg' %}" type="image/svg+xml">
     <link rel="alternate icon" href="{% static 'gym/img/favicon.ico' %}">
 
     <link rel="stylesheet" href="{% static 'gym/site.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<!-- микроданные: вся страница описывает организацию -->
 <body itemscope itemtype="https://schema.org/HealthClub">
 
 <header class="site-nav">
@@ -32,7 +28,6 @@
         </a>
         <button type="button" class="nav-toggle" data-nav-toggle aria-label="Меню">Меню</button>
         <div class="nav-menu-wrap" data-nav-menu>
-            <!-- горизонтальная навигация -->
             <nav aria-label="Основная навигация">
                 <ul class="nav-menu">
                     <li><a href="{% url 'main' %}">Главная</a></li>
@@ -117,7 +112,6 @@
                 </p>
             </div>
             <div class="col-lg-2 col-md-6">
-                <!-- вертикальная навигация -->
                 <nav aria-label="Навигация">
                     <p class="footer-title">Навигация</p>
                     <ul class="nav-vertical">
@@ -129,7 +123,6 @@
                 </nav>
             </div>
             <div class="col-lg-2 col-md-6">
-                <!-- вертикальная навигация -->
                 <nav aria-label="Информация">
                     <p class="footer-title">Информация</p>
                     <ul class="nav-vertical">

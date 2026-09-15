@@ -12,7 +12,6 @@
 
 <div class="container mb-5">
 
-    <!-- побочное содержимое страницы: быстрые ссылки на разделы -->
     <aside class="anchor-nav">
         <nav aria-label="Разделы страницы">
             <ul>
@@ -33,7 +32,6 @@
         <div>{{ company.history|linebreaks }}</div>
         {% endif %}
 
-        <!-- семантическое выделение текста -->
         <p>
             Каждому клиенту проводится <dfn id="dfn-testing">фитнес-тестирование</dfn> —
             <strong>обязательная</strong> процедура перед началом тренировок, а формат
@@ -52,14 +50,12 @@
         </p>
         <p><small>Информация носит справочный характер.</small></p>
 
-        <!-- цитата -->
         <blockquote cite="https://www.who.int/news-room/fact-sheets/detail/physical-activity">
             <p>Взрослым рекомендуется не менее 150 минут аэробной нагрузки в неделю.</p>
         </blockquote>
         <p>— <cite>Всемирная организация здравоохранения, 2022</cite></p>
     </section>
 
-    <!-- видео -->
     <section id="video" aria-labelledby="video-heading">
         <h2 id="video-heading">Видео о клубе</h2>
         <video controls muted loop width="640" height="360"
@@ -69,7 +65,6 @@
         </video>
     </section>
 
-    <!-- аудио -->
     <section id="audio" aria-labelledby="audio-heading">
         <h2 id="audio-heading">Аудиогид</h2>
         <audio controls>
@@ -78,7 +73,6 @@
         </audio>
     </section>
 
-    <!-- история по годам -->
     <section id="history" aria-labelledby="history-heading">
         <h2 id="history-heading">История компании по годам</h2>
         {% if milestones %}
@@ -95,7 +89,6 @@
         {% endif %}
     </section>
 
-    <!-- реквизиты -->
     <section id="requisites" aria-labelledby="requisites-heading">
         <h2 id="requisites-heading">Реквизиты</h2>
         <dl>
@@ -111,7 +104,6 @@
         {% endif %}
     </section>
 
-    <!-- сертификат (текст без оформления стилями) -->
     <section id="certificate" aria-labelledby="certificate-heading">
         <h2 id="certificate-heading">Сертификат</h2>
         {% for certificate in certificates %}
@@ -126,7 +118,6 @@
         <p><a href="{% static 'gym/docs/fitlife-certificate.pdf' %}" download="FitLife-сертификат.pdf">Скачать сертификат (PDF)</a></p>
     </section>
 
-    <!-- девиз клуба: перенос строки фиксированный (pre) и потенциальный (br) -->
     <section id="motto" aria-labelledby="motto-heading">
         <h2 id="motto-heading">Наш девиз</h2>
         <p>

@@ -4,7 +4,6 @@
 {% block title %}Отзывы - FitLife Gym{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <div class="page-header">
     <div class="container">
         <h1>ОТЗЫВЫ КЛИЕНТОВ</h1>
@@ -38,7 +37,6 @@
                             <span class="date">{{ review.created_at|date:"d.m.Y" }}</span>
                         </div>
                     </div>
-                    <!-- оценка отзыва: заполненные и пустые звёзды -->
                     <div class="rating-stars" role="img" title="Оценка {{ review.rating }} из 5" aria-label="Оценка {{ review.rating }} из 5">
                         {% for i in "12345" %}
                             {% if forloop.counter <= review.rating %}

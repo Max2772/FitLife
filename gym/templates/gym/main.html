@@ -5,17 +5,14 @@
 
 {% block content %}
 
-<!-- логотип компании -->
 <div class="text-center mt-4">
     <img src="{% static 'gym/img/logo.svg' %}" width="220" height="63" alt="Логотип FitLife Gym">
 </div>
 
-<!-- реклама компании в виде баннера: подготовлено несколько картинок -->
 <section aria-labelledby="promo-heading" class="mt-3">
     <h2 id="promo-heading" class="section-title-plain">Наши акции</h2>
     <div class="banner-row">
         <figure class="mb-0">
-            <!-- адаптивное изображение: браузер выбирает файл по ширине экрана -->
             <img src="{% static 'gym/img/banners/banner-1.jpg' %}"
                  srcset="{% static 'gym/img/banners/banner-1-sm.jpg' %} 400w,
                          {% static 'gym/img/banners/banner-1.jpg' %} 800w"
@@ -43,7 +40,6 @@
     <div class="hero-content">
         <h1>БУДЬ <strong>СИЛЬНЫМ</strong>, ТРЕНИРУЙСЯ УСЕРДНО</h1>
         <p>Ваш путь к здоровью и силе начинается здесь.</p>
-        <!-- строчная цитата: браузер сам добавляет кавычки -->
         <p class="hero-slogan">
             <q cite="https://www.who.int/news-room/fact-sheets/detail/physical-activity">
                 Движение — это лекарство, которое не имеет побочных эффектов
@@ -52,13 +48,11 @@
         <div class="hero-buttons">
             <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg">Купить абонемент</a>
             <a href="{% url 'trainings' %}" class="btn btn-outline-primary btn-lg">Наши тренировки</a>
-            <!-- якорь: переход к разделу на этой же странице -->
             <a href="#catalog" class="btn btn-outline-secondary btn-lg">Смотреть каталог ниже</a>
         </div>
     </div>
 </section>
 
-<!-- каталог услуг/товаров -->
 <section class="features-section" id="catalog">
     <div class="container">
         <div class="section-title">
@@ -92,7 +86,6 @@
     </div>
 </section>
 
-<!-- последняя опубликованная статья -->
 {% if latest_article %}
 <section class="features-section" style="padding-top:0;">
     <div class="container">
@@ -114,7 +107,6 @@
 </section>
 {% endif %}
 
-<!-- компании-партнёры -->
 <section class="features-section">
     <div class="container">
         <div class="section-title">
@@ -123,7 +115,6 @@
         <ul class="partners-grid">
             {% for partner in partners %}
             <li class="partner-card">
-                <!-- ссылка на сайт партнёра в новой вкладке -->
                 <a href="{{ partner.website }}" target="_blank" rel="noopener noreferrer" title="Сайт {{ partner.name }}">
                     <img src="{{ partner.logo.url }}" width="200" height="63" loading="lazy" alt="Логотип {{ partner.name }}">
                 </a>
